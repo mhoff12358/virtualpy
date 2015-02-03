@@ -1,9 +1,8 @@
 #include "MainLoop.h"
 
 
-MainLoop::MainLoop()
+MainLoop::MainLoop(FrameStateBuffer* sb) : state_buffer(sb)
 {
-	state_buffer = NULL;
 }
 
 
@@ -11,8 +10,8 @@ MainLoop::~MainLoop()
 {
 }
 
-void MainLoop::Initialize(FrameStateBuffer* sb) {
-	state_buffer = sb;
+PrintColor::PrintColor(FrameStateBuffer* sb) : MainLoop(sb) {
+
 }
 
 void PrintColor::Begin() {

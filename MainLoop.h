@@ -7,10 +7,9 @@
 class MainLoop
 {
 public:
-	MainLoop();
+	MainLoop(FrameStateBuffer* sb);
 	~MainLoop();
 
-	void Initialize(FrameStateBuffer* sb);
 	virtual void Begin() = 0;
 
 protected:
@@ -18,6 +17,9 @@ protected:
 };
 
 class PrintColor : public MainLoop {
+public:
+	PrintColor(FrameStateBuffer* sb);
+
 	void Begin();
 };
 
