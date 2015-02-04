@@ -2,6 +2,8 @@
 
 #include <Windows.h>
 
+#include <chrono>
+
 #include "FrameState.h"
 
 class MainLoop
@@ -14,6 +16,7 @@ public:
 
 protected:
 	FrameStateInterpolater* state_source;
+	double ticks_per_second;
 };
 
 class PrintColor : public MainLoop {

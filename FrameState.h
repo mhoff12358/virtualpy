@@ -44,7 +44,13 @@ protected:
 
 class FiveSecondNoPredictInterpolater : public FrameStateInterpolater {
 public:
-	FiveSecondNoPredictInterpolater(FrameStateBuffer* fsb) : FrameStateInterpolater(fsb) {}
+	FiveSecondNoPredictInterpolater(FrameStateBuffer* fsb);
 
 	virtual FrameState InterpolateCurrentState();
+
+private:
+	// Predicted time between frames. If the latest frame happened at time T,
+	// the latest two frames will interpolate to have it be current at
+	// T+frame_timing_prediction.
+	clock_t frame_timing_prediction;
 };

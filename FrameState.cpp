@@ -46,12 +46,30 @@ FrameState FrameStateInterpolater::InterpolateBetween(FrameState state_0, FrameS
 	return new_state;
 }
 
+FiveSecondNoPredictInterpolater::FiveSecondNoPredictInterpolater(FrameStateBuffer* fsb)
+	: FrameStateInterpolater(fsb) {
+	frame_timing_prediction = 5 * CLOCKS_PER_SEC;
+}
+
 FrameState FiveSecondNoPredictInterpolater::InterpolateCurrentState() {
 	int number_of_states = frame_state_buffer->GetNumberOfStates();
 	if (number_of_states >= 2) {
-		return{ { { 1.0f, 1.0f, 1.0f } } };
+		auto first_state_iter = frame_state_buffer->GetFirstState();
+		for (int i = 0; i < number_of_states - 2; i++) {
+			first_state_iter++;
+		}
+		auto second_state_iter = first_state_iter;
+		second_state_iter++;
+		clock_t interpolate_time = clock();
+		assert(interpolate_time >= first_state_iter->first);
+		assert(interpolate_time >= second_state_iter->first);
+		clock_t time_into_frame = interpolate_time - second_state_iter->first;
+		if (time_into_frame >= frame_timing_prediction) {
+			return second_state_iter->second;
+		}
+		return InterpolateBetween(first_state_iter->second, second_state_iter->second, ((float)time_into_frame) / frame_timing_prediction);
 	} else if (number_of_states == 1) {
-		return{ { { .5, .5, .5 } } };
+		return frame_state_buffer->GetFirstState()->second;
 	} else {
 		return{ { { 0.0f, 0.0f, 0.0f } } };
 	}
