@@ -7,18 +7,18 @@
 class MainLoop
 {
 public:
-	MainLoop(FrameStateBuffer* sb);
+	MainLoop(FrameStateInterpolater* ss);
 	~MainLoop();
 
 	virtual void Begin() = 0;
 
 protected:
-	FrameStateBuffer* state_buffer;
+	FrameStateInterpolater* state_source;
 };
 
 class PrintColor : public MainLoop {
 public:
-	PrintColor(FrameStateBuffer* sb);
+	PrintColor(FrameStateInterpolater* ss);
 
 	void Begin();
 };

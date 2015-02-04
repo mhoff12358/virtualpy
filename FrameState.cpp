@@ -37,3 +37,22 @@ int FrameStateBuffer::GetNumberOfStates() {
 std::list<std::pair<clock_t, FrameState>>::iterator FrameStateBuffer::GetFirstState() {
 	return states.begin();
 }
+
+FrameState FrameStateInterpolater::InterpolateBetween(FrameState state_0, FrameState state_1, float weight) {
+	FrameState new_state;
+	new_state.color[0] = state_1.color[0] * weight + state_0.color[0] * (1 - weight);
+	new_state.color[1] = state_1.color[1] * weight + state_0.color[1] * (1 - weight);
+	new_state.color[2] = state_1.color[2] * weight + state_0.color[2] * (1 - weight);
+	return new_state;
+}
+
+FrameState FiveSecondNoPredictInterpolater::InterpolateCurrentState() {
+	int number_of_states = frame_state_buffer->GetNumberOfStates();
+	if (number_of_states >= 2) {
+		return{ { { 1.0f, 1.0f, 1.0f } } };
+	} else if (number_of_states == 1) {
+		return{ { { .5, .5, .5 } } };
+	} else {
+		return{ { { 0.0f, 0.0f, 0.0f } } };
+	}
+}

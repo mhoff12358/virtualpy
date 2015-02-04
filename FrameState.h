@@ -27,3 +27,24 @@ private:
 	std::mutex write_permission;
 };
 
+class FrameStateInterpolater {
+public:
+	FrameStateInterpolater(FrameStateBuffer* fsb) : frame_state_buffer(fsb) {}
+
+	virtual FrameState InterpolateCurrentState() = 0;
+
+protected:
+	// Interpolates from state_0 to state_1 with weight representing how far.
+	// A weight of 0 means state_0, a weight of 1 means state_1, and a weight
+	// above 1 extrapolates beyond state_1 linearly
+	FrameState InterpolateBetween(FrameState state_0, FrameState state_1, float weight);
+
+	FrameStateBuffer* frame_state_buffer;
+};
+
+class FiveSecondNoPredictInterpolater : public FrameStateInterpolater {
+public:
+	FiveSecondNoPredictInterpolater(FrameStateBuffer* fsb) : FrameStateInterpolater(fsb) {}
+
+	virtual FrameState InterpolateCurrentState();
+};

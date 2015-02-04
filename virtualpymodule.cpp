@@ -7,10 +7,11 @@
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
+FiveSecondNoPredictInterpolater state_interpolater(&state_buffer);
 FrameState current_state;
 
 void NewThread() {
-	MainLoop* main_loop = new PrintColor(&state_buffer);
+	MainLoop* main_loop = new PrintColor(&state_interpolater);
 
 	main_loop->Begin();
 }
