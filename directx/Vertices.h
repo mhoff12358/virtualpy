@@ -18,6 +18,7 @@ struct TEXTUREVERTEX {
 	static int input_element_desc_size;
 	static int number_of_elements;
 	static VERTEXID vertex_type;
+	static int vertex_size;
 };
 
 struct COLORVERTEX {
@@ -28,6 +29,7 @@ struct COLORVERTEX {
 	static int input_element_desc_size;
 	static int number_of_elements;
 	static VERTEXID vertex_type;
+	static int vertex_size;
 };
 
 #endif

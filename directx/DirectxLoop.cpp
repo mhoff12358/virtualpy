@@ -10,7 +10,7 @@ struct VS_CONSTANT_BUFFER{
 
 void DirectxLoop::Begin() {
 	ViewState view_state;
-	ModelGenerator<TEXTUREVERTEX> texture_rendering_model_gen;
+	ModelGenerator texture_rendering_model_gen(TEXTUREVERTEX::vertex_size);
 	Model texture_rendering_model;
 	PerspectiveCamera player_camera;
 	InputHandler input_handler;

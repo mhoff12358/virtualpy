@@ -23,11 +23,11 @@ void Ground::SetRenderArea(std::array<int, 2> area_min, std::array<int, 2> area_
 
 void Ground::FillVertexData(std::array<int,2> point_index) {
 	//OutputDebugString(("Ground Point: " + intToString(point_index[0]) + " " + intToString(point_index[1]) + "\n").c_str());
+
 	TerrainPoint& terrain_point = terrain_map.getPoint(point_index);
-	terrain_model_gen.AddVertex({
-		(float)point_index[0], terrain_point.height, (float)point_index[1],
-		terrain_point.color[0], terrain_point.color[1], terrain_point.color[2]
-	});
+	COLORVERTEX new_vertex = { (float)point_index[0], terrain_point.height, (float)point_index[1],
+		terrain_point.color[0], terrain_point.color[1], terrain_point.color[2], terrain_point.color[3] };
+	terrain_model_gen.AddVertex(&new_vertex);
 }
 
 void Ground::Draw(const RenderMode& render_mode) {

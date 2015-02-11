@@ -1,6 +1,6 @@
 #include "World.h"
 
-World::World(ViewState* vs) : view_state(vs), texture(true, false) {
+World::World(ViewState* vs) : view_state(vs), texture(true, false), triangle_gen(TEXTUREVERTEX::vertex_size), ground_model_gen(COLORVERTEX::vertex_size) {
 };
 
 void World::Initialize(Camera* cam, InputHandler* ih) {
@@ -19,10 +19,14 @@ void World::Initialize(Camera* cam, InputHandler* ih) {
 		);
 	camera_transformation.CreateBuffer();
 
-	triangle_gen.AddVertex({ -1.0f, 1.0f, -1.0f, 0.0f, 0.0f });
-	triangle_gen.AddVertex({ 1.0f, 1.0f, -1.0f, 1.0f, 0.0f });
-	triangle_gen.AddVertex({ -1.0f, -1.0f, -1.0f, 0.0f, 1.0f });
-	triangle_gen.AddVertex({ 1.0f, -1.0f, -1.0f, 1.0f, 1.0f });
+	TEXTUREVERTEX new_vertex = { -1.0f, 1.0f, -1.0f, 0.0f, 0.0f };
+	triangle_gen.AddVertex(&new_vertex);
+	new_vertex = { 1.0f, 1.0f, -1.0f, 1.0f, 0.0f };
+	triangle_gen.AddVertex(&new_vertex);
+	new_vertex = { -1.0f, -1.0f, -1.0f, 0.0f, 1.0f };
+	triangle_gen.AddVertex(&new_vertex);
+	new_vertex = { 1.0f, -1.0f, -1.0f, 1.0f, 1.0f };
+	triangle_gen.AddVertex(&new_vertex);
 	triangle = triangle_gen.DumpModel(view_state->device_interface, view_state->device_context);
 
 	texture.Initialize(view_state->device_interface, view_state->device_context, std::array<int, 2>{ {128, 128} });
@@ -38,10 +42,15 @@ void World::Initialize(Camera* cam, InputHandler* ih) {
 	test_square_draw_handler.Initialize(&shader_number, triangle_transformations, &triangle, &texture, 0, 0);
 	test_square.Initialize(&test_square_draw_handler);
 
-	ground_model_gen.AddVertex({ -1.0f, 1.0f, -1.0f, 0.573f, 0.434f, 0.355f, 1.0f });
-	ground_model_gen.AddVertex({ 1.0f, 1.0f, -1.0f, 0.573f, 0.434f, 0.355f, 1.0f });
-	ground_model_gen.AddVertex({ -1.0f, 1.0f, 1.0f, 0.573f, 0.434f, 0.355f, 1.0f });
-	ground_model_gen.AddVertex({ 1.0f, 1.0f, 1.0f, 0.573f, 0.434f, 0.355f, 1.0f });
+	COLORVERTEX new_color_vertex;
+	new_color_vertex = { -1.0f, 1.0f, -1.0f, 0.573f, 0.434f, 0.355f, 1.0f };
+	ground_model_gen.AddVertex(&new_color_vertex);
+	new_color_vertex = { 1.0f, 1.0f, -1.0f, 0.573f, 0.434f, 0.355f, 1.0f };
+	ground_model_gen.AddVertex(&new_color_vertex);
+	new_color_vertex = { -1.0f, 1.0f, 1.0f, 0.573f, 0.434f, 0.355f, 1.0f };
+	ground_model_gen.AddVertex(&new_color_vertex);
+	new_color_vertex = { 1.0f, 1.0f, 1.0f, 0.573f, 0.434f, 0.355f, 1.0f };
+	ground_model_gen.AddVertex(&new_color_vertex);
 	ground_model = ground_model_gen.DumpModel(view_state->device_interface, view_state->device_context);
 	ground_shader_number = 1;
 
