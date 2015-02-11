@@ -15,11 +15,25 @@ FrameStateBuffer state_buffer;
 FiveSecondNoPredictInterpolater state_interpolater(&state_buffer);
 ResourcePool* resource_pool;
 FrameState current_state;
+std::string resources_location(".");
 
 void NewThread() {
 	//MainLoop* main_loop = new PrintColor(&state_interpolater);
 
 	//main_loop->Begin();
+}
+
+PyObject* SetResourcesLocation(PyObject* self, PyObject* args) {
+	char* res_loc_text;
+	if (!PyArg_ParseTuple(args, "s", &res_loc_text)) {
+		return NULL;
+	}
+
+	resources_location.clear();
+	resources_location.insert(0, res_loc_text);
+
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 PyObject* SpawnThread(PyObject* self, PyObject* args) {
@@ -38,7 +52,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::condition_variable preparation_cv;
 		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
 		resource_pool = new DXResourcePool();
-		DirectxLoop* main_loop = new DirectxLoop(false, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", (DXResourcePool*)resource_pool, &state_interpolater);
+		DirectxLoop* main_loop = new DirectxLoop(false, resources_location, (DXResourcePool*)resource_pool, &state_interpolater);
 		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
@@ -48,7 +62,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::condition_variable preparation_cv;
 		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
 		resource_pool = new DXResourcePool();
-		DirectxLoop* main_loop = new DirectxLoop(true, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", (DXResourcePool*)resource_pool, &state_interpolater);
+		DirectxLoop* main_loop = new DirectxLoop(true, resources_location, (DXResourcePool*)resource_pool, &state_interpolater);
 		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
@@ -103,6 +117,7 @@ PyObject* ex_foo(PyObject *self, PyObject *args)
 }
 
 PyMethodDef virtualpy_methods[] = {
+	{ "set_resources_location", SetResourcesLocation, METH_VARARGS, "set_resources_location() doc string" },
 	{ "spawn_thread", SpawnThread, METH_VARARGS, "spawn_thread() doc string" },
 	{ "set_color", SetColor, METH_VARARGS, "set_color() doc string" },
 	{ "begin_model", BeginModel, METH_VARARGS, "begin_model() doc string" },
