@@ -61,12 +61,15 @@ void ModelGenerator<VERTEX>::InitializeVertexBuffer(ID3D11Device* device, ID3D11
 	buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	device->CreateBuffer(&buffer_desc, NULL, &vertex_buffer);
+	D3D11_SUBRESOURCE_DATA vertices_data;
+	vertices_data.pSysMem = vertices.data();
 
-	D3D11_MAPPED_SUBRESOURCE ms;
+	device->CreateBuffer(&buffer_desc, &vertices_data, &vertex_buffer);
+
+	/*D3D11_MAPPED_SUBRESOURCE ms;
 	device_context->Map(vertex_buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
 	memcpy(ms.pData, vertices.data(), sizeof(VERTEX) * vertices.size());
-	device_context->Unmap(vertex_buffer, NULL);
+	device_context->Unmap(vertex_buffer, NULL);*/
 }
 
 template <class VERTEX>

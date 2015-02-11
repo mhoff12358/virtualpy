@@ -3,12 +3,14 @@
 #include <thread>
 
 #include "FrameState.h"
+#include "ResourcePool.h"
 #include "WindowsMainLoop.h"
 #include "directx/DirectxLoop.h"
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
 FiveSecondNoPredictInterpolater state_interpolater(&state_buffer);
+ResourcePool resource_pool;
 FrameState current_state;
 
 void NewThread() {
@@ -29,12 +31,12 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		new_thread.detach();
 	}
 	else if (strcmp(version_string, "directx") == 0) {
-		DirectxLoop* main_loop = new DirectxLoop(false, "C:\\Users\\mhoff_000\\Documents\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
+		DirectxLoop* main_loop = new DirectxLoop(false, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
 		std::thread new_thread(&DirectxLoop::Begin, main_loop);
 		new_thread.detach();
 	}
 	else if (strcmp(version_string, "directx_oculus") == 0) {
-		DirectxLoop* main_loop = new DirectxLoop(true, "C:\\Users\\mhoff_000\\Documents\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
+		DirectxLoop* main_loop = new DirectxLoop(true, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
 		std::thread new_thread(&DirectxLoop::Begin, main_loop);
 		new_thread.detach();
 	}

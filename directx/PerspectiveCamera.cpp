@@ -1,8 +1,6 @@
 #include "PerspectiveCamera.h"
 
-PerspectiveCamera::PerspectiveCamera() {
-	location = { { 0.0f, 0.0f, 0.0f } };
-	orientaiton = { { 0.0f, 0.0f, 0.0f } };
+PerspectiveCamera::PerspectiveCamera() : Camera() {
 	vertical_fov = 90.0f/180.0f*3.1415;
 }
 

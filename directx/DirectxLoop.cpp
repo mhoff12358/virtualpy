@@ -40,6 +40,7 @@ void DirectxLoop::Begin() {
 
 	EntityFactory::GetInstance().Initialize(view_state.device_interface, view_state.device_context);
 
+	player_camera.aspect_ratio = ((float)view_state.window_details.screen_size[0]) / view_state.window_details.screen_size[1];
 	world.Initialize(&player_camera, &input_handler);
 
 	MSG msg;

@@ -1,8 +1,6 @@
 #include "OrthoCamera.h"
 
-OrthoCamera::OrthoCamera() {
-	location = { { 0.0f, 0.0f, 0.0f } };
-	orientaiton = { { 0.0f, 0.0f, 0.0f } };
+OrthoCamera::OrthoCamera() : Camera() {
 }
 
 void OrthoCamera::BuildProjectionMatrix() {
