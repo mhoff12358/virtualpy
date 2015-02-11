@@ -47,6 +47,7 @@ FrameState FrameStateInterpolater::InterpolateBetween(FrameState state_0, FrameS
 	new_state.color[0] = state_1.color[0] * weight + state_0.color[0] * (1 - weight);
 	new_state.color[1] = state_1.color[1] * weight + state_0.color[1] * (1 - weight);
 	new_state.color[2] = state_1.color[2] * weight + state_0.color[2] * (1 - weight);
+	new_state.number_of_entities = state_1.number_of_entities;
 	return new_state;
 }
 
@@ -106,6 +107,6 @@ FrameState FiveSecondNoPredictInterpolater::InterpolateStateFromBuffer(int num_a
 	} else {
 		//printf("no states\n");
 		*number_states_unused = num_available_states - 0;
-		return{ { { 0.0f, 0.0f, 0.0f } } };
+		return{ { { 0.0f, 0.0f, 0.0f } }, 0 };
 	}
 }

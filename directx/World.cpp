@@ -1,10 +1,12 @@
 #include "World.h"
 
 World::World(ViewState* vs) : view_state(vs), texture(true, false), triangle_gen(TEXTUREVERTEX::vertex_size), ground_model_gen(COLORVERTEX::vertex_size) {
+	num_entities_to_display = 0;
 };
 
-void World::Initialize(Camera* cam, InputHandler* ih) {
+void World::Initialize(Camera* cam, InputHandler* ih, DXResourcePool* dxrp) {
 	input_handler = ih;
+	resource_pool = dxrp;
 
 	player_location = { { 0.0f, 0.3f, 1.0f } };
 	player_orientation = { { 0.0f, 0.0f, 0.0f, 0.0f } };
@@ -66,7 +68,7 @@ void World::Initialize(Camera* cam, InputHandler* ih) {
 	//left_wall_entity = EntityFactory::GetInstance().LoadEntityFromFile("C:\\Users\\Matt\\Desktop\\TerrainButcher\\Project2\\left_wall.mod");
 }
 
-void World::UpdateLogic(const InputHandler& input_handler, int time_delta) {
+void World::UpdateLogic(int time_delta) {
 	/*
 	if (input_handler.GetKeyPressed('W')) {
 		player_location[2] -= 0.0005 * time_delta;
@@ -88,10 +90,13 @@ void World::UpdateLogic(const InputHandler& input_handler, int time_delta) {
 	}
 	*/
 
-	if (input_handler.IsOculusActive()) {
-		ovrPosef head_pose = input_handler.GetHeadPose().ThePose;
+	if (input_handler->IsOculusActive()) {
+		ovrPosef head_pose = input_handler->GetHeadPose().ThePose;
 		player_orientation = OculusHelper::ConvertQuaternionToArray(head_pose.Orientation);
 	}
+
+	FrameState current_frame_state = input_handler->GetFrameState();
+	num_entities_to_display = current_frame_state.number_of_entities;
 }
 
 void World::Draw(RenderMode& render_mode) {
@@ -113,6 +118,9 @@ void World::Draw(RenderMode& render_mode) {
 	//render_mode.PrepareConstantBuffer(&camera_transformation, 0);
 	test_square.Draw(render_mode);
 	ground_entity.Draw(render_mode);
+	for (int i = 0; i < num_entities_to_display; i++) {
+		resource_pool->GetEntity(i)->Draw(render_mode);
+	}
 	//loaded_entity->Draw(render_mode);
 	//left_wall_entity->Draw(render_mode);
 }

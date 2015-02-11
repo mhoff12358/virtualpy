@@ -11,6 +11,7 @@
 
 struct FrameState {
 	std::array<float, 3> color;
+	int number_of_entities;
 };
 
 class FrameStateBuffer {

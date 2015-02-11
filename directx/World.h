@@ -15,14 +15,15 @@
 #include "ModeledEntity.h"
 #include "DrawHandler.h"
 #include "EntityFactory.h"
+#include "DXResourcePool.h"
 
 class World {
 public:
 	World(ViewState* vs);
 
-	void Initialize(Camera* cam, InputHandler* ih);
+	void Initialize(Camera* cam, InputHandler* ih, DXResourcePool* dxrp);
 
-	void UpdateLogic(const InputHandler& input_handler, int time_delta);
+	void UpdateLogic(int time_delta);
 
 	void Draw(RenderMode& render_mode);
 
@@ -32,8 +33,11 @@ public:
 private:
 	ViewState* view_state;
 	InputHandler* input_handler;
+	DXResourcePool* resource_pool;
 	Camera* player_camera;
 	ConstantBuffer camera_transformation;
+
+	int num_entities_to_display;
 
 	std::array<float, 3> player_location;
 	std::array<float, 4> player_orientation;

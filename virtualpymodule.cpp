@@ -1,16 +1,19 @@
 #include "Python.h"
 
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 #include "FrameState.h"
 #include "ResourcePool.h"
 #include "WindowsMainLoop.h"
 #include "directx/DirectxLoop.h"
+#include "directx/DXResourcePool.h"
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
 FiveSecondNoPredictInterpolater state_interpolater(&state_buffer);
-ResourcePool resource_pool;
+ResourcePool* resource_pool;
 FrameState current_state;
 
 void NewThread() {
@@ -31,14 +34,24 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		new_thread.detach();
 	}
 	else if (strcmp(version_string, "directx") == 0) {
-		DirectxLoop* main_loop = new DirectxLoop(false, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
-		std::thread new_thread(&DirectxLoop::Begin, main_loop);
+		std::mutex preparation_mutex;
+		std::condition_variable preparation_cv;
+		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
+		resource_pool = new DXResourcePool();
+		DirectxLoop* main_loop = new DirectxLoop(false, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", (DXResourcePool*)resource_pool, &state_interpolater);
+		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
+		preparation_cv.wait(preparation_lock);
 	}
 	else if (strcmp(version_string, "directx_oculus") == 0) {
-		DirectxLoop* main_loop = new DirectxLoop(true, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
-		std::thread new_thread(&DirectxLoop::Begin, main_loop);
+		std::mutex preparation_mutex;
+		std::condition_variable preparation_cv;
+		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
+		resource_pool = new DXResourcePool();
+		DirectxLoop* main_loop = new DirectxLoop(true, "C:\\Users\\Matt\\Desktop\\cpython\\virtualpy_nt\\resources\\", (DXResourcePool*)resource_pool, &state_interpolater);
+		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
+		preparation_cv.wait(preparation_lock);
 	}
 	
 	Py_INCREF(Py_None);
@@ -49,6 +62,29 @@ PyObject* SetColor(PyObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "fff", current_state.color.data(), current_state.color.data() + 1, current_state.color.data() + 2)) {
 		return NULL;
 	}
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+PyObject* BeginModel(PyObject* self, PyObject* args) {
+	resource_pool->BeginNewModel(7 * sizeof(float)); // Currently assume color vertices
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+PyObject* ColorVertex(PyObject* self, PyObject* args) {
+	float vertex_data[7];
+	if (!PyArg_ParseTuple(args, "fffffff", vertex_data, vertex_data + 1, vertex_data + 2, vertex_data + 3, vertex_data + 4, vertex_data + 5, vertex_data + 6)) {
+		return NULL;
+	}
+	resource_pool->AddModelVertex((void*)vertex_data);
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+PyObject* EndModel(PyObject* self, PyObject* args) {
+	resource_pool->FinishModel();
+	current_state.number_of_entities = resource_pool->GetNumberOfEntities();
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -69,6 +105,9 @@ PyObject* ex_foo(PyObject *self, PyObject *args)
 PyMethodDef virtualpy_methods[] = {
 	{ "spawn_thread", SpawnThread, METH_VARARGS, "spawn_thread() doc string" },
 	{ "set_color", SetColor, METH_VARARGS, "set_color() doc string" },
+	{ "begin_model", BeginModel, METH_VARARGS, "begin_model() doc string" },
+	{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
+	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
 	{ "push_state", PushState, METH_VARARGS, "push_state() doc string" },
 	{ "foo", ex_foo, METH_VARARGS, "foo() doc string" },
 	{ NULL, NULL }

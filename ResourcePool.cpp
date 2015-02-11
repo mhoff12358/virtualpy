@@ -9,3 +9,7 @@ ResourcePool::ResourcePool()
 ResourcePool::~ResourcePool()
 {
 }
+
+void ResourcePool::Initialize() {
+
+}

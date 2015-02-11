@@ -2,13 +2,22 @@
 
 #pragma comment (lib, "winmm.lib")
 
-DirectxLoop::DirectxLoop(bool uo, std::string rl, FrameStateInterpolater* fsi) : MainLoop(fsi), use_oculus(uo), resource_location(rl) {}
+DirectxLoop::DirectxLoop(bool uo, std::string rl, DXResourcePool* dxrp, FrameStateInterpolater* fsi) : MainLoop(fsi), use_oculus(uo), resource_pool(dxrp), resource_location(rl) {}
 
 struct VS_CONSTANT_BUFFER{
 	DirectX::XMFLOAT4X4 mvp;
 };
 
 void DirectxLoop::Begin() {
+	std::mutex preparation_mutex;
+	std::condition_variable preparation_cv;
+	std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
+	preparation_cv.wait(preparation_lock);
+	BeginWithPrep(&preparation_mutex, &preparation_cv);
+}
+
+void DirectxLoop::BeginWithPrep(std::mutex* preparation_mutex, std::condition_variable* preparation_cv) {
+	std::unique_lock<std::mutex> preparation_lock(*preparation_mutex);
 	ViewState view_state;
 	ModelGenerator texture_rendering_model_gen(TEXTUREVERTEX::vertex_size);
 	Model texture_rendering_model;
@@ -31,6 +40,7 @@ void DirectxLoop::Begin() {
 	// Initialize the directx resources and inject them
 	input_handler.Initialize(state_source);
 	view_state.Initialize(GetModuleHandle(NULL), SW_SHOW);
+	resource_pool->Initialize(view_state.device_interface, view_state.device_context);
 	if (use_oculus) {
 		((ToOculusRenderingPipeline*)render_pipeline)->Initialize(&view_state, &world, &input_handler, resource_location, &oculus);
 	}
@@ -40,18 +50,17 @@ void DirectxLoop::Begin() {
 
 	EntityFactory::GetInstance().Initialize(view_state.device_interface, view_state.device_context);
 
+	player_camera.vertical_fov = 120.0f / 180.0f*3.1415f;
 	player_camera.aspect_ratio = ((float)view_state.window_details.screen_size[0]) / view_state.window_details.screen_size[1];
-	world.Initialize(&player_camera, &input_handler);
+	world.Initialize(&player_camera, &input_handler, resource_pool);
+
+	preparation_cv->notify_one();
+	preparation_lock.unlock();
 
 	MSG msg;
 	int prev_time = timeGetTime();
 	int frame_index = 0;
-
-
-	player_camera.vertical_fov = 120.0f / 180.0f*3.1415f;
-	player_camera.aspect_ratio = ((float)view_state.window_details.screen_size[0]) / view_state.window_details.screen_size[1];
-
-
+	
 	while (TRUE)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -70,7 +79,7 @@ void DirectxLoop::Begin() {
 		prev_time = new_time;
 
 		input_handler.UpdateStates(frame_index);
-		world.UpdateLogic(input_handler, time_delta);
+		world.UpdateLogic(time_delta);
 
 		render_pipeline->Render();
 
