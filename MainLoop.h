@@ -26,3 +26,7 @@ public:
 	void Begin();
 };
 
+class WindowsWindow : public MainLoop {
+public:
+	void Begin();
+};

@@ -3,7 +3,8 @@
 #include <thread>
 
 #include "FrameState.h"
-#include "MainLoop.h"
+#include "WindowsMainLoop.h"
+#include "directx/DirectxLoop.h"
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
@@ -11,15 +12,33 @@ FiveSecondNoPredictInterpolater state_interpolater(&state_buffer);
 FrameState current_state;
 
 void NewThread() {
-	MainLoop* main_loop = new PrintColor(&state_interpolater);
+	//MainLoop* main_loop = new PrintColor(&state_interpolater);
 
-	main_loop->Begin();
+	//main_loop->Begin();
 }
 
 PyObject* SpawnThread(PyObject* self, PyObject* args) {
-	std::thread new_thread(NewThread);
-	new_thread.detach();
+	char* version_string;
+	if (!PyArg_ParseTuple(args, "s", &version_string)) {
+		return NULL;
+	}
 
+	if (strcmp(version_string, "console") == 0) {
+		PrintColor* main_loop = new PrintColor(&state_interpolater);
+		std::thread new_thread(&PrintColor::Begin, main_loop);
+		new_thread.detach();
+	}
+	else if (strcmp(version_string, "directx") == 0) {
+		DirectxLoop* main_loop = new DirectxLoop(false, "C:\\Users\\mhoff_000\\Documents\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
+		std::thread new_thread(&DirectxLoop::Begin, main_loop);
+		new_thread.detach();
+	}
+	else if (strcmp(version_string, "directx_oculus") == 0) {
+		DirectxLoop* main_loop = new DirectxLoop(true, "C:\\Users\\mhoff_000\\Documents\\cpython\\virtualpy_nt\\resources\\", &state_interpolater);
+		std::thread new_thread(&DirectxLoop::Begin, main_loop);
+		new_thread.detach();
+	}
+	
 	Py_INCREF(Py_None);
 	return Py_None;
 }

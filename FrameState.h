@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Windows.h>
+
+#include <chrono>
 #include <array>
 #include <mutex>
 #include <atomic>
@@ -19,10 +22,10 @@ public:
 	void PopStates(int num_states);
 
 	int GetNumberOfStates();
-	std::list<std::pair<clock_t, FrameState>>::iterator GetFirstState();
+	std::list<std::pair<LARGE_INTEGER, FrameState>>::iterator GetFirstState();
 
 private:
-	std::list<std::pair<clock_t, FrameState>> states;
+	std::list<std::pair<LARGE_INTEGER, FrameState>> states;
 	std::atomic<int> num_valid_states;
 	std::mutex write_permission;
 };
@@ -39,7 +42,7 @@ protected:
 	// above 1 extrapolates beyond state_1 linearly
 	FrameState InterpolateBetween(FrameState state_0, FrameState state_1, float weight);
 
-	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused) = 0;
+	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) = 0;
 	
 	FrameStateBuffer* frame_state_buffer;
 };
@@ -49,10 +52,10 @@ public:
 	FiveSecondNoPredictInterpolater(FrameStateBuffer* fsb);
 
 private:
-	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused);
+	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time);
 
 	// Predicted time between frames. If the latest frame happened at time T,
 	// the latest two frames will interpolate to have it be current at
 	// T+frame_timing_prediction.
-	clock_t frame_timing_prediction;
+	LARGE_INTEGER frame_timing_prediction;
 };

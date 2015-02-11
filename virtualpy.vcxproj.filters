@@ -13,6 +13,15 @@
       <UniqueIdentifier>{05a91e97-ef56-4036-a1ba-486b0a119bf9}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Directx">
+      <UniqueIdentifier>{49bc1ae5-60d4-4cdc-b6b2-dbde10d568a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Directx\Source Files">
+      <UniqueIdentifier>{7d00f17e-4ead-41e5-8155-383a7968fc88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Directx\Header Files">
+      <UniqueIdentifier>{cde8ce04-d9b6-4222-95a7-90e16da0db5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
@@ -27,6 +36,93 @@
     <ClCompile Include="MainLoop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WindowsMainLoop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Camera.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\ConstantBuffer.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\DirectxLoop.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\DrawHandler.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Entity.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\EntityFactory.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\GridGenerator.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Ground.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\InputHandler.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Logging.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Model.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\ModeledEntity.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\my_math.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Oculus.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\OrthoCamera.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\PerspectiveCamera.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\RenderingPipeline.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\RenderMode.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\ShaderPipeline.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\simplex_generator.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\terrain_generator.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\terrain_map.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\terrain_point.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\terrain_writer.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Texture.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\Vertices.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\ViewState.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="directx\World.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameState.h">
@@ -35,5 +131,103 @@
     <ClInclude Include="MainLoop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WindowsMainLoop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Camera.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\ConstantBuffer.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\DirectxLoop.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\DrawHandler.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Entity.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\EntityFactory.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\GridGenerator.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Ground.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\InputHandler.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Logging.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Model.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\ModeledEntity.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\my_math.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Oculus.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\OrthoCamera.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\PerspectiveCamera.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\RenderingPipeline.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\RenderMode.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\ShaderPipeline.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\simplex_generator.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\terrain_generator.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\terrain_map.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\terrain_point.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\terrain_writer.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Texture.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\Vertices.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\ViewState.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directx\World.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="resources\shaders.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\texture_coords.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\texture_shaders.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
