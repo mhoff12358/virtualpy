@@ -37,7 +37,7 @@ private:
 	Camera* player_camera;
 	ConstantBuffer camera_transformation;
 
-	int num_entities_to_display;
+	std::vector<int> entities_to_display;
 
 	std::array<float, 3> player_location;
 	std::array<float, 4> player_orientation;

@@ -1,7 +1,6 @@
 #include "World.h"
 
 World::World(ViewState* vs) : view_state(vs), texture(true, false), triangle_gen(TEXTUREVERTEX::vertex_size), ground_model_gen(COLORVERTEX::vertex_size) {
-	num_entities_to_display = 0;
 };
 
 void World::Initialize(Camera* cam, InputHandler* ih, DXResourcePool* dxrp) {
@@ -96,7 +95,14 @@ void World::UpdateLogic(int time_delta) {
 	}
 
 	FrameState current_frame_state = input_handler->GetFrameState();
-	num_entities_to_display = current_frame_state.number_of_entities;
+	entities_to_display.clear();
+	for (int i = 0; i < current_frame_state.entities.size(); i++) {
+		Entity* entity_to_update = resource_pool->GetEntity(i);
+		EntityState& entity_state = current_frame_state.entities[i];
+		if (entity_state.display_state == 1) {
+			entities_to_display.push_back(i);
+		}
+	}
 }
 
 void World::Draw(RenderMode& render_mode) {
@@ -112,14 +118,14 @@ void World::Draw(RenderMode& render_mode) {
 	player_camera->InvalidateAllMatrices();
 	XMStoreFloat4x4(&(camera_transformation.GetBufferData().transformation),
 		player_camera->GetViewProjectionMatrix()
-		);
+	);
 	camera_transformation.PushBuffer();
 
 	//render_mode.PrepareConstantBuffer(&camera_transformation, 0);
 	test_square.Draw(render_mode);
-	ground_entity.Draw(render_mode);
-	for (int i = 0; i < num_entities_to_display; i++) {
-		resource_pool->GetEntity(i)->Draw(render_mode);
+	//ground_entity.Draw(render_mode);
+	for (int& entity_id_to_draw : entities_to_display) {
+		resource_pool->GetEntity(entity_id_to_draw)->Draw(render_mode);
 	}
 	//loaded_entity->Draw(render_mode);
 	//left_wall_entity->Draw(render_mode);

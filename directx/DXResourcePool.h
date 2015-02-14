@@ -23,7 +23,7 @@ public:
 
 	virtual void BeginNewModel(int vertex_size);
 	virtual void AddModelVertex(void* new_vertex);
-	virtual void FinishModel();
+	virtual int FinishModel();
 
 	virtual int GetNumberOfEntities();
 

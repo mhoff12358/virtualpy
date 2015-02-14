@@ -97,21 +97,43 @@ PyObject* ColorVertex(PyObject* self, PyObject* args) {
 }
 
 PyObject* EndModel(PyObject* self, PyObject* args) {
-	resource_pool->FinishModel();
-	current_state.number_of_entities = resource_pool->GetNumberOfEntities();
+	int entity_id = resource_pool->FinishModel();
+	if (entity_id < 0) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	return Py_BuildValue("i", entity_id);
+}
+
+PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
+	EntityState new_entity_state;
+	int entity_id = -1;
+
+	static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
+	float scale[3];
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|ffffffffff", kwlist,
+		&entity_id, new_entity_state.location.data(), new_entity_state.location.data() + 1, new_entity_state.location.data() + 2,
+		scale, scale+1, scale+2,
+		new_entity_state.orientation.data(), new_entity_state.orientation.data() + 1, new_entity_state.orientation.data() + 2, new_entity_state.orientation.data() + 3)) {
+		return NULL;
+	}
+
+	printf("%f %f %f %f %f %f %f\n", new_entity_state.location[0], new_entity_state.location[1], new_entity_state.location[2],
+		new_entity_state.orientation[0], new_entity_state.orientation[1], new_entity_state.orientation[2], new_entity_state.orientation[3]);
+	new_entity_state.display_state = 1;
+
+	if (current_state.entities.size() <= entity_id) {
+		current_state.entities.resize(entity_id+1);
+	}
+	current_state.entities[entity_id] = new_entity_state;
+
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
 PyObject* PushState(PyObject* self, PyObject* args) {
 	state_buffer.PushState(current_state);
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-PyObject* ex_foo(PyObject *self, PyObject *args)
-{
-	printf("Hello, world\n");
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -123,8 +145,8 @@ PyMethodDef virtualpy_methods[] = {
 	{ "begin_model", BeginModel, METH_VARARGS, "begin_model() doc string" },
 	{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
+	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
 	{ "push_state", PushState, METH_VARARGS, "push_state() doc string" },
-	{ "foo", ex_foo, METH_VARARGS, "foo() doc string" },
 	{ NULL, NULL }
 };
 

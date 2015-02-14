@@ -4,14 +4,22 @@
 
 #include <chrono>
 #include <array>
+#include <vector>
 #include <mutex>
 #include <atomic>
 #include <list>
 #include <time.h>
 
+struct EntityState {
+	int entity_id;
+	int display_state; // If 0, don't draw, if 1, draw
+	std::array<float, 3> location;
+	std::array<float, 4> orientation;
+};
+
 struct FrameState {
 	std::array<float, 3> color;
-	int number_of_entities;
+	std::vector<EntityState> entities;
 };
 
 class FrameStateBuffer {

@@ -25,7 +25,7 @@ void DXResourcePool::AddModelVertex(void* new_vertex) {
 	active_model_generator.AddVertex(new_vertex);
 }
 
-void DXResourcePool::FinishModel() {
+int DXResourcePool::FinishModel() {
 	Model* model = new Model;
 	*model = active_model_generator.DumpModel(device, device_context);
 	int* shader_number = new int;
@@ -48,6 +48,7 @@ void DXResourcePool::FinishModel() {
 
 	ModelGenerator inactive_generator(0);
 	active_model_generator = inactive_generator;
+	return entities.size() - 1;
 }
 
 int DXResourcePool::GetNumberOfEntities() {
