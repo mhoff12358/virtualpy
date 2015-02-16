@@ -37,17 +37,3 @@ private:
 
 	std::vector<Entity> entities;
 };
-
-class EntityPosition {
-public:
-	virtual void SetPosition(std::array<float, 3> new_location, std::array<float, 3> new_scale, std::array<float, 4> new_orientation);
-	virtual void SetLocation(std::array<float, 3> new_location);
-	virtual void SetScale(std::array<float, 3> new_scale);
-	virtual void SetOrientation(std::array<float, 4> new_orientation);
-
-private:
-	std::array<float, 3> location = { { 0.0f, 0.0f, 0.0f } };
-	std::array<float, 3> scale = { { 0.0f, 0.0f, 0.0f } };
-	std::array<float, 4> orientation = { { 1.0f, 0.0f, 0.0f, 0.0f } };
-};
-

@@ -17,6 +17,8 @@ public:
 	void Initialize(int* shano, std::vector<std::pair<ConstantBuffer*, int>> consts, Model* mod);
 
 	virtual void Draw(RenderMode& render_mode) override;
+	virtual std::vector<std::pair<ConstantBuffer*, int>>& GetConstantBuffers();
+
 protected:
 	int* shader_number;
 	std::vector<std::pair<ConstantBuffer*, int>> constant_buffers;

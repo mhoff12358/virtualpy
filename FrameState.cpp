@@ -26,7 +26,7 @@ void FrameStateBuffer::PopStates(int num_states_to_remove) {
 		}
 		auto first_element_to_remove = states.begin();
 		auto last_element_to_remove = states.begin();
-		for (int i = 1; i < num_states_to_remove; i++) {
+		for (int i = 0; i < num_states_to_remove; i++) {
 			last_element_to_remove++;
 		}
 		states.erase(first_element_to_remove, last_element_to_remove);
@@ -42,12 +42,46 @@ std::list<std::pair<LARGE_INTEGER, FrameState>>::iterator FrameStateBuffer::GetF
 	return states.begin();
 }
 
-FrameState FrameStateInterpolater::InterpolateBetween(FrameState state_0, FrameState state_1, float weight) {
+EntityState* FrameState::GetEntityStateForId(int entity_id) {
+	for (EntityState& entity_state : entities) {
+		if (entity_state.entity_id == entity_id) {
+			return &entity_state;
+		}
+	}
+	return NULL;
+}
+
+FrameState FrameStateInterpolater::InterpolateBetweenFrameStates(FrameState state_0, FrameState state_1, float weight) {
 	FrameState new_state;
-	new_state.color[0] = state_1.color[0] * weight + state_0.color[0] * (1 - weight);
-	new_state.color[1] = state_1.color[1] * weight + state_0.color[1] * (1 - weight);
-	new_state.color[2] = state_1.color[2] * weight + state_0.color[2] * (1 - weight);
-	new_state.entities = state_1.entities;
+	new_state.color = InterpolateBetweenArrays(state_0.color, state_1.color, weight);
+	for (EntityState& state_1_entity : state_1.entities) {
+		EntityState* state_0_entity = state_0.GetEntityStateForId(state_1_entity.entity_id);
+		if (state_0_entity == NULL) {
+			new_state.entities.push_back(state_1_entity);
+		}
+		else {
+			new_state.entities.push_back(InterpolateBetweenEntityStates(*state_0_entity, state_1_entity, weight));
+		}
+	}
+	return new_state;
+}
+
+EntityState FrameStateInterpolater::InterpolateBetweenEntityStates(EntityState state_0, EntityState state_1, float weight) {
+	EntityState new_state;
+	new_state.entity_id = state_1.entity_id;
+	new_state.display_state = state_1.display_state;
+	new_state.location = InterpolateBetweenArrays(state_0.location, state_1.location, weight);
+	new_state.scale = InterpolateBetweenArrays(state_0.scale, state_1.scale, weight);
+	float subtended_angle = 0.0f;
+	for (int i = 0; i < 4; i++) {
+		subtended_angle += state_0.orientation[i] * state_1.orientation[i];
+	}
+	subtended_angle = acos(subtended_angle);
+	if (subtended_angle == 0.0f) {
+		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, 1-weight, weight);
+	} else {
+		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, sin((1-weight)*subtended_angle) / sin(subtended_angle), sin(weight*subtended_angle) / sin(subtended_angle));
+	}
 	return new_state;
 }
 
@@ -57,7 +91,7 @@ FrameState FrameStateInterpolater::InterpolateCurrentState() {
 	LARGE_INTEGER interpolate_time;
 	QueryPerformanceCounter(&interpolate_time);
 	FrameState interpolated_state = this->InterpolateStateFromBuffer(number_of_active_states, &number_unused_states, (long long)interpolate_time.QuadPart);
-	//frame_state_buffer->PopStates(number_unused_states);
+	frame_state_buffer->PopStates(number_unused_states);
 	return interpolated_state;
 }
 
@@ -70,7 +104,7 @@ FiveSecondNoPredictInterpolater::FiveSecondNoPredictInterpolater(FrameStateBuffe
 FrameState FiveSecondNoPredictInterpolater::InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) {
 	//printf("FSNP: ");
 	if (num_available_states >= 2) {
-		//printf("n states");
+		//printf("n states\n");
 		auto first_frame = frame_state_buffer->GetFirstState();
 		auto second_frame = first_frame;
 		second_frame++;
@@ -81,7 +115,7 @@ FrameState FiveSecondNoPredictInterpolater::InterpolateStateFromBuffer(int num_a
 			long long dummy_interpolate_time = third_frame->first.QuadPart;
 			long long time_into_frame = dummy_interpolate_time - second_frame->first.QuadPart;
 			if (time_into_frame < frame_timing_prediction.QuadPart) {
-				second_frame->second = InterpolateBetween(first_frame->second, second_frame->second, ((float)time_into_frame) / frame_timing_prediction.QuadPart);
+				second_frame->second = InterpolateBetweenFrameStates(first_frame->second, second_frame->second, ((float)time_into_frame) / frame_timing_prediction.QuadPart);
 			}
 			second_frame->first.QuadPart = dummy_interpolate_time - frame_timing_prediction.QuadPart;
 			
@@ -99,7 +133,7 @@ FrameState FiveSecondNoPredictInterpolater::InterpolateStateFromBuffer(int num_a
 			return second_frame->second;
 		}
 		*number_states_unused = num_available_states - 2;
-		return InterpolateBetween(first_frame->second, second_frame->second, ((float)time_into_frame) / frame_timing_prediction.QuadPart);
+		return InterpolateBetweenFrameStates(first_frame->second, second_frame->second, ((float)time_into_frame) / frame_timing_prediction.QuadPart);
 	} else if (num_available_states == 1) {
 		//printf("one state\n");
 		*number_states_unused = num_available_states - 1;

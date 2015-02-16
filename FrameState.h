@@ -15,12 +15,14 @@ struct EntityState {
 	int display_state; // If 0, don't draw, if 1, draw
 	std::array<float, 3> location;
 	std::array<float, 3> scale;
-	std::array<float, 4> orientation;
+	std::array<float, 4> orientation; // quaternion in the form x, y, z, w
 };
 
 struct FrameState {
 	std::array<float, 3> color;
 	std::vector<EntityState> entities;
+
+	EntityState* GetEntityStateForId(int entity_id);
 };
 
 class FrameStateBuffer {
@@ -50,7 +52,12 @@ protected:
 	// Interpolates from state_0 to state_1 with weight representing how far.
 	// A weight of 0 means state_0, a weight of 1 means state_1, and a weight
 	// above 1 extrapolates beyond state_1 linearly
-	FrameState InterpolateBetween(FrameState state_0, FrameState state_1, float weight);
+	FrameState InterpolateBetweenFrameStates(FrameState state_0, FrameState state_1, float weight);
+	EntityState InterpolateBetweenEntityStates(EntityState state_0, EntityState state_1, float weight);
+	template<std::size_t SIZE>
+	std::array<float, SIZE> InterpolateBetweenArrays(std::array<float, SIZE> array_0, std::array<float, SIZE> array_1, float weight);
+	template<std::size_t SIZE>
+	std::array<float, SIZE> ScaleBetweenArrays(std::array<float, SIZE> array_0, std::array<float, SIZE> array_1, float array_0_scale, float array_1_scale);
 
 	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) = 0;
 	
@@ -69,3 +76,18 @@ private:
 	// T+frame_timing_prediction.
 	LARGE_INTEGER frame_timing_prediction;
 };
+
+
+template<std::size_t SIZE>
+std::array<float, SIZE> FrameStateInterpolater::InterpolateBetweenArrays(std::array<float, SIZE> array_0, std::array<float, SIZE> array_1, float weight) {
+	return ScaleBetweenArrays(array_0, array_1, (1 - weight), weight);
+}
+
+template<std::size_t SIZE>
+std::array<float, SIZE> FrameStateInterpolater::ScaleBetweenArrays(std::array<float, SIZE> array_0, std::array<float, SIZE> array_1, float array_0_scale, float array_1_scale) {
+	std::array<float, SIZE> new_array;
+	for (size_t i = 0; i < SIZE; i++) {
+		new_array[i] = array_0[i] * array_0_scale + array_1[i] * array_1_scale;
+	}
+	return new_array;
+}

@@ -27,12 +27,6 @@ void TexturedDrawHandler::Draw(RenderMode& render_mode) {
 	texture->UnsetAsResource();
 }
 
-void ModeledDrawHandler::SetPosition(std::array<float, 3> new_location, std::array<float, 3> new_scale, std::array<float, 4> new_orientation) {
-	SetLocation(new_location);
-	SetScale(new_scale);
-	SetOrientation(new_orientation);
-}
-
-void ModeledDrawHandler::SetLocation(std::array<float, 3> new_location) {
-
+std::vector<std::pair<ConstantBuffer*, int>>& ModeledDrawHandler::GetConstantBuffers() {
+	return constant_buffers;
 }

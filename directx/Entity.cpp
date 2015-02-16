@@ -11,3 +11,7 @@ void Entity::Draw(RenderMode& render_mode) {
 void Entity::UpdateLogic(const InputHandler& input_handler, int tick_time) {
 
 }
+
+DrawHandler* Entity::GetDrawHandler() {
+	return draw_handler;
+}

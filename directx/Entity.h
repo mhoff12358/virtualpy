@@ -13,6 +13,8 @@ public:
 	virtual void Draw(RenderMode& render_mode);
 	virtual void UpdateLogic(const InputHandler& input_handler, int tick_time);
 
+	virtual DrawHandler* GetDrawHandler();
+
 private:
 	DrawHandler* draw_handler;
 };

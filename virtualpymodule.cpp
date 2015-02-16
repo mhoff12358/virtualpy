@@ -129,12 +129,12 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 		current_state.entities.resize(entity_id + 1);
 		current_state.entities[entity_id].location = { { 0.0f, 0.0f, 0.0f } };
 		current_state.entities[entity_id].scale = { { 1.0f, 1.0f, 1.0f } };
-		current_state.entities[entity_id].orientation = { { 1.0f, 0.0f, 0.0f, 0.0f } };
+		current_state.entities[entity_id].orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
 	}
 
 	current_state.entities[entity_id].display_state = 1;
 
-	if (location_tuple == Py_None) {
+	if (location_tuple != Py_None) {
 		if (!PyArg_ParseTuple(location_tuple, "fff",
 			current_state.entities[entity_id].location.data(),
 			current_state.entities[entity_id].location.data() + 1,
@@ -142,7 +142,7 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 			return NULL;
 		}
 	}
-	if (scale_tuple == Py_None) {
+	if (scale_tuple != Py_None) {
 		if (!PyArg_ParseTuple(scale_tuple, "fff",
 			current_state.entities[entity_id].scale.data(),
 			current_state.entities[entity_id].scale.data() + 1,
@@ -150,7 +150,7 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 			return NULL;
 		}
 	}
-	if (orientation_tuple == Py_None) {
+	if (orientation_tuple != Py_None) {
 		if (!PyArg_ParseTuple(orientation_tuple, "ffff",
 			current_state.entities[entity_id].orientation.data(),
 			current_state.entities[entity_id].orientation.data() + 1,
@@ -166,6 +166,8 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 
 PyObject* PushState(PyObject* self, PyObject* args) {
 	state_buffer.PushState(current_state);
+	FrameState new_state;
+	current_state = new_state;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
