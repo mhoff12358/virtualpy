@@ -109,25 +109,57 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 	EntityState new_entity_state;
 	int entity_id = -1;
 
-	static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
+	//static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
+	static char *kwlist[] = { "entity_id", "position", "scale", "rotation", NULL };
 	float scale[3];
+	PyObject* location_tuple;
+	PyObject* scale_tuple;
+	PyObject* orientation_tuple;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|ffffffffff", kwlist,
-		&entity_id, new_entity_state.location.data(), new_entity_state.location.data() + 1, new_entity_state.location.data() + 2,
-		scale, scale+1, scale+2,
-		new_entity_state.orientation.data(), new_entity_state.orientation.data() + 1, new_entity_state.orientation.data() + 2, new_entity_state.orientation.data() + 3)) {
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|OOO", kwlist,
+		&entity_id, &location_tuple, &scale_tuple, &orientation_tuple)) {
+		//new_entity_state.location.data(), new_entity_state.location.data() + 1, new_entity_state.location.data() + 2,
+		//scale, scale+1, scale+2,
+		//new_entity_state.orientation.data(), new_entity_state.orientation.data() + 1, new_entity_state.orientation.data() + 2, new_entity_state.orientation.data() + 3)) {
 		return NULL;
 	}
-
-	printf("%f %f %f %f %f %f %f\n", new_entity_state.location[0], new_entity_state.location[1], new_entity_state.location[2],
-		new_entity_state.orientation[0], new_entity_state.orientation[1], new_entity_state.orientation[2], new_entity_state.orientation[3]);
-	new_entity_state.display_state = 1;
-
+	
+	// Ensures that there is an entity state for the current entity
 	if (current_state.entities.size() <= entity_id) {
-		current_state.entities.resize(entity_id+1);
+		current_state.entities.resize(entity_id + 1);
+		current_state.entities[entity_id].location = { { 0.0f, 0.0f, 0.0f } };
+		current_state.entities[entity_id].scale = { { 1.0f, 1.0f, 1.0f } };
+		current_state.entities[entity_id].orientation = { { 1.0f, 0.0f, 0.0f, 0.0f } };
 	}
-	current_state.entities[entity_id] = new_entity_state;
 
+	current_state.entities[entity_id].display_state = 1;
+
+	if (location_tuple == Py_None) {
+		if (!PyArg_ParseTuple(location_tuple, "fff",
+			current_state.entities[entity_id].location.data(),
+			current_state.entities[entity_id].location.data() + 1,
+			current_state.entities[entity_id].location.data() + 2)) {
+			return NULL;
+		}
+	}
+	if (scale_tuple == Py_None) {
+		if (!PyArg_ParseTuple(scale_tuple, "fff",
+			current_state.entities[entity_id].scale.data(),
+			current_state.entities[entity_id].scale.data() + 1,
+			current_state.entities[entity_id].scale.data() + 2)) {
+			return NULL;
+		}
+	}
+	if (orientation_tuple == Py_None) {
+		if (!PyArg_ParseTuple(orientation_tuple, "ffff",
+			current_state.entities[entity_id].orientation.data(),
+			current_state.entities[entity_id].orientation.data() + 1,
+			current_state.entities[entity_id].orientation.data() + 2,
+			current_state.entities[entity_id].orientation.data() + 3)) {
+			return NULL;
+		}
+	}
+	
 	Py_INCREF(Py_None);
 	return Py_None;
 }

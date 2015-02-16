@@ -14,6 +14,7 @@ struct EntityState {
 	int entity_id;
 	int display_state; // If 0, don't draw, if 1, draw
 	std::array<float, 3> location;
+	std::array<float, 3> scale;
 	std::array<float, 4> orientation;
 };
 
