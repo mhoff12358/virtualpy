@@ -21,6 +21,9 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR)
 	output.position = mul(model, position);
 	output.position = mul(view_projection, output.position);
 	output.color = color;
+	output.color.r = output.position.z/output.position.w;
+	output.color.g = 0;
+	output.color.b = 0;
 
     return output;
 }

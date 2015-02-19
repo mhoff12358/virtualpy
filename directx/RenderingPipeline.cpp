@@ -12,27 +12,29 @@ void RenderingPipeline::Initialize(ViewState* vs, World* world, InputHandler* ih
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = true;
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
+	//depth_stencil_desc.DepthFunc = D3D11_COMPARISON_EQUAL;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 
 	depth_stencil_desc.StencilEnable = true;
 	depth_stencil_desc.StencilReadMask = 0xFF;
 	depth_stencil_desc.StencilWriteMask = 0xFF;
 
 	depth_stencil_desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depth_stencil_desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depth_stencil_desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 	depth_stencil_desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depth_stencil_desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	depth_stencil_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depth_stencil_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depth_stencil_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 	depth_stencil_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depth_stencil_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	view_state->device_interface->CreateDepthStencilState(&depth_stencil_desc, &depth_buffer_state);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc;
-	depth_stencil_view_desc.Format = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+	depth_stencil_view_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depth_stencil_view_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depth_stencil_view_desc.Flags = 0;
 	depth_stencil_view_desc.Texture2D.MipSlice = 0;
 
 	view_state->device_interface->CreateDepthStencilView(depth_buffer.GetTexture(), &depth_stencil_view_desc, &depth_buffer_view);
@@ -68,10 +70,13 @@ void ToScreenRenderingPipeline::Render() {
 
 	FrameState frame_state = input_handler->GetFrameState();
 	render_to_back_buffer.Clear(D3DXCOLOR(frame_state.color[0], frame_state.color[1], frame_state.color[2], 1.0f));
+	view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 1);
 	render_to_back_buffer.Prepare();
 	render_to_back_buffer.PrepareConstantBuffer(&player_camera_transformation, 0);
 	view_state->device_context->OMSetDepthStencilState(depth_buffer_state, 1);
 	game_world->Draw(render_to_back_buffer);
+
+
 	view_state->swap_chain->Present(0, 0);
 }
 

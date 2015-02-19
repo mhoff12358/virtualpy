@@ -7,7 +7,7 @@ void World::Initialize(Camera* cam, InputHandler* ih, DXResourcePool* dxrp) {
 	input_handler = ih;
 	resource_pool = dxrp;
 
-	player_location = { { 0.0f, 0.3f, 1.0f } };
+	player_location = { { 0.0f, 0.0f, 0.0f } };
 	player_orientation = { { 0.0f, 0.0f, 0.0f, 0.0f } };
 
 	player_camera = cam;
@@ -102,13 +102,19 @@ void World::Draw(RenderMode& render_mode) {
 	}
 	player_camera->orientaiton = player_orientation;
 	player_camera->InvalidateAllMatrices();
-	XMStoreFloat4x4(&(camera_transformation.GetBufferData().transformation),
-		player_camera->GetViewProjectionMatrix()
-	);
-	camera_transformation.PushBuffer();
+	//XMStoreFloat4x4(&(camera_transformation.GetBufferData().transformation),
+	//	player_camera->GetViewProjectionMatrix()
+	//);
+	//camera_transformation.PushBuffer();
+	auto data = camera_transformation.GetBufferData().transformation.m;
+	OutputFormatted("Player Matrix:\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f",
+		data[0][0], data[0][1], data[0][2], data[0][3],
+		data[1][0], data[1][1], data[1][2], data[1][3],
+		data[2][0], data[2][1], data[2][2], data[2][3],
+		data[3][0], data[3][1], data[3][2], data[3][3]);
 
 	//render_mode.PrepareConstantBuffer(&camera_transformation, 0);
-	test_square.Draw(render_mode);
+	//test_square.Draw(render_mode);
 	//ground_entity.Draw(render_mode);
 	for (int& entity_id_to_draw : entities_to_display) {
 		resource_pool->GetEntity(entity_id_to_draw)->Draw(render_mode);

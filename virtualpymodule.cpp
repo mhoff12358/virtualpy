@@ -106,7 +106,6 @@ PyObject* EndModel(PyObject* self, PyObject* args) {
 }
 
 PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
-	EntityState new_entity_state;
 	int entity_id = -1;
 
 	//static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
@@ -127,6 +126,7 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 	// Ensures that there is an entity state for the current entity
 	if (current_state.entities.size() <= entity_id) {
 		current_state.entities.resize(entity_id + 1);
+		current_state.entities[entity_id].entity_id = entity_id;
 		current_state.entities[entity_id].location = { { 0.0f, 0.0f, 0.0f } };
 		current_state.entities[entity_id].scale = { { 1.0f, 1.0f, 1.0f } };
 		current_state.entities[entity_id].orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
@@ -167,6 +167,7 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 PyObject* PushState(PyObject* self, PyObject* args) {
 	state_buffer.PushState(current_state);
 	FrameState new_state;
+	new_state.color = current_state.color;
 	current_state = new_state;
 	Py_INCREF(Py_None);
 	return Py_None;
