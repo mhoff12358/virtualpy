@@ -21,7 +21,7 @@ class World {
 public:
 	World(ViewState* vs);
 
-	void Initialize(Camera* cam, InputHandler* ih, DXResourcePool* dxrp);
+	void Initialize(InputHandler* ih, DXResourcePool* dxrp);
 
 	void UpdateLogic(int time_delta);
 
@@ -34,7 +34,6 @@ private:
 	ViewState* view_state;
 	InputHandler* input_handler;
 	DXResourcePool* resource_pool;
-	Camera* player_camera;
 	ConstantBuffer camera_transformation;
 
 	std::vector<int> entities_to_display;

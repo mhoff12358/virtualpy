@@ -3,22 +3,12 @@
 World::World(ViewState* vs) : view_state(vs), texture(true, false), triangle_gen(TEXTUREVERTEX::vertex_size), ground_model_gen(COLORVERTEX::vertex_size) {
 };
 
-void World::Initialize(Camera* cam, InputHandler* ih, DXResourcePool* dxrp) {
+void World::Initialize(InputHandler* ih, DXResourcePool* dxrp) {
 	input_handler = ih;
 	resource_pool = dxrp;
 
 	player_location = { { 0.0f, 0.0f, 0.0f } };
 	player_orientation = { { 0.0f, 0.0f, 0.0f, 0.0f } };
-
-	player_camera = cam;
-	player_camera->orientaiton = { { 0.0f, 0.0f, 0.0f } };
-	player_camera->InvalidateAllMatrices();
-
-	camera_transformation.Initialize(view_state->device_interface, view_state->device_context);
-	XMStoreFloat4x4(&(camera_transformation.GetBufferData().transformation),
-		player_camera->GetViewProjectionMatrix()
-		);
-	camera_transformation.CreateBuffer();
 
 	TEXTUREVERTEX new_vertex = { -1.0f, 1.0f, -1.0f, 0.0f, 0.0f };
 	triangle_gen.AddVertex(&new_vertex);
@@ -92,27 +82,6 @@ void World::UpdateLogic(int time_delta) {
 }
 
 void World::Draw(RenderMode& render_mode) {
-	player_camera->location = player_location;
-	if (input_handler->IsOculusActive()) {
-		ovrVector3f head_offset = input_handler->GetHeadOffset();
-		ovrVector3f eye_offset = input_handler->GetActiveEyeOffset();
-		player_camera->location[0] += head_offset.x + eye_offset.x;
-		player_camera->location[1] += head_offset.y + eye_offset.y;
-		player_camera->location[2] += head_offset.z + eye_offset.z;
-	}
-	player_camera->orientaiton = player_orientation;
-	player_camera->InvalidateAllMatrices();
-	//XMStoreFloat4x4(&(camera_transformation.GetBufferData().transformation),
-	//	player_camera->GetViewProjectionMatrix()
-	//);
-	//camera_transformation.PushBuffer();
-	auto data = camera_transformation.GetBufferData().transformation.m;
-	OutputFormatted("Player Matrix:\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f",
-		data[0][0], data[0][1], data[0][2], data[0][3],
-		data[1][0], data[1][1], data[1][2], data[1][3],
-		data[2][0], data[2][1], data[2][2], data[2][3],
-		data[3][0], data[3][1], data[3][2], data[3][3]);
-
 	//render_mode.PrepareConstantBuffer(&camera_transformation, 0);
 	//test_square.Draw(render_mode);
 	//ground_entity.Draw(render_mode);

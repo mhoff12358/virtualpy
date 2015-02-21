@@ -52,7 +52,7 @@ void DirectxLoop::BeginWithPrep(std::mutex* preparation_mutex, std::condition_va
 
 	player_camera.vertical_fov = 120.0f / 180.0f*3.1415f;
 	player_camera.aspect_ratio = ((float)view_state.window_details.screen_size[0]) / view_state.window_details.screen_size[1];
-	world.Initialize(&player_camera, &input_handler, resource_pool);
+	world.Initialize(&input_handler, resource_pool);
 
 	preparation_cv->notify_one();
 	preparation_lock.unlock();

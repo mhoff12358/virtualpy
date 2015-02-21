@@ -68,6 +68,8 @@ void ToScreenRenderingPipeline::Render() {
 		);
 	player_camera_transformation.PushBuffer();
 
+	dumpMatrix(player_camera_transformation.GetBufferData().transformation);
+
 	FrameState frame_state = input_handler->GetFrameState();
 	render_to_back_buffer.Clear(D3DXCOLOR(frame_state.color[0], frame_state.color[1], frame_state.color[2], 1.0f));
 	view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 1);
