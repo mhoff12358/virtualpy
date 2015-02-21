@@ -45,8 +45,8 @@ void RenderMode::Cleanup() {
 }
 
 void RenderMode::Prepare() {
-	device_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
-	//device_context->OMSetRenderTargets(1, &render_target_view, NULL);
+	//device_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
+	device_context->OMSetRenderTargets(1, &render_target_view, NULL);
 	device_context->RSSetViewports(1, &viewport);
 }
 
