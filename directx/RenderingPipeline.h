@@ -23,6 +23,8 @@ public:
 
 	virtual void Render() = 0;
 
+	void InitializeDepthBuffer(std::array<int, 2> depth_buffer_size);
+
 	// Should be moved to protected eventually
 
 protected:

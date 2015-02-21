@@ -21,3 +21,6 @@ int COLORVERTEX::input_element_desc_size = 2;
 int COLORVERTEX::number_of_elements = 7;
 VERTEXID COLORVERTEX::vertex_type = COLORVERTEX_ID;
 int COLORVERTEX::vertex_size = 7 * sizeof(float);
+
+int VERTEX_SIZE_LOOKUP[2] = { TEXTUREVERTEX::number_of_elements,
+COLORVERTEX::number_of_elements };

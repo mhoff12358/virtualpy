@@ -17,6 +17,8 @@ void ModeledDrawHandler::Draw(RenderMode& render_mode) {
 	render_mode.PrepareShader(*shader_number);
 	for (std::pair<ConstantBuffer*, int>& constant_buffer_info : constant_buffers) {
 		render_mode.PrepareConstantBuffer(constant_buffer_info.first, constant_buffer_info.second);
+		OutputFormatted("MODEL_TRANFORM");
+		dumpMatrix(constant_buffer_info.first->GetBufferData().transformation);
 	}
 	render_mode.RenderModel(*model);
 }

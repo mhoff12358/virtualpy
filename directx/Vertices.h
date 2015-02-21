@@ -32,4 +32,6 @@ struct COLORVERTEX {
 	static int vertex_size;
 };
 
+int VERTEX_SIZE_LOOKUP[];
+
 #endif

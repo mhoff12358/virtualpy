@@ -51,10 +51,18 @@ int DXResourcePool::FinishModel() {
 	return entities.size() - 1;
 }
 
+int DXResourcePool::LoadTexture(std::string file_name) {
+	return 0;
+}
+
 int DXResourcePool::GetNumberOfEntities() {
 	return entities.size();
 }
 
 Entity* DXResourcePool::GetEntity(int entity_index) {
 	return &entities[entity_index];
+}
+
+Texture* DXResourcePool::GetTexture(int texture_index) {
+	return &textures[texture_index];
 }

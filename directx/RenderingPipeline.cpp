@@ -6,14 +6,15 @@ void RenderingPipeline::Initialize(ViewState* vs, World* world, InputHandler* ih
 	input_handler = ih;
 	resource_location = rl;
 	back_buffer.Initialize(view_state->device_interface, view_state->device_context, view_state->back_buffer_texture, view_state->window_details.screen_size);
+}
 
-	depth_buffer.Initialize(view_state->device_interface, view_state->device_context, view_state->window_details.screen_size);
+void RenderingPipeline::InitializeDepthBuffer(std::array<int, 2> depth_buffer_size) {
+	depth_buffer.Initialize(view_state->device_interface, view_state->device_context, depth_buffer_size);
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = true;
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	//depth_stencil_desc.DepthFunc = D3D11_COMPARISON_EQUAL;
-	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
 
 	depth_stencil_desc.StencilEnable = true;
 	depth_stencil_desc.StencilReadMask = 0xFF;
@@ -43,6 +44,8 @@ void RenderingPipeline::Initialize(ViewState* vs, World* world, InputHandler* ih
 void ToScreenRenderingPipeline::Initialize(ViewState* vs, World* world, InputHandler* ih, std::string rl) {
 	RenderingPipeline::Initialize(vs, world, ih, rl);
 
+	InitializeDepthBuffer(view_state->window_details.screen_size);
+
 	render_to_back_buffer.Initialize(view_state->device_interface, view_state->device_context, back_buffer.GetRenderTargetView(), depth_buffer_view);
 	render_to_back_buffer.SetViewport(view_state->window_details.screen_size);
 	render_to_back_buffer.AddShader(resource_location + "texture_shaders.hlsl", TEXTUREVERTEX::input_element_desc, TEXTUREVERTEX::input_element_desc_size);
@@ -68,11 +71,12 @@ void ToScreenRenderingPipeline::Render() {
 		);
 	player_camera_transformation.PushBuffer();
 
+	OutputFormatted("CAMERA_MATRIX:");
 	dumpMatrix(player_camera_transformation.GetBufferData().transformation);
 
 	FrameState frame_state = input_handler->GetFrameState();
 	render_to_back_buffer.Clear(D3DXCOLOR(frame_state.color[0], frame_state.color[1], frame_state.color[2], 1.0f));
-	view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 1);
+	view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 1);
 	render_to_back_buffer.Prepare();
 	render_to_back_buffer.PrepareConstantBuffer(&player_camera_transformation, 0);
 	view_state->device_context->OMSetDepthStencilState(depth_buffer_state, 1);
@@ -87,6 +91,9 @@ void ToOculusRenderingPipeline::Initialize(ViewState* vs, World* world, InputHan
 
 	oculus = ocu;
 	input_handler = ih;
+
+
+	InitializeDepthBuffer(OculusHelper::ConvertSizeiToArray(oculus->render_target_viewport.Size));
 	
 	render_texture.Initialize(view_state->device_interface, view_state->device_context, OculusHelper::ConvertSizeiToArray(oculus->render_target_viewport.Size));
 
@@ -108,7 +115,7 @@ void ToOculusRenderingPipeline::Initialize(ViewState* vs, World* world, InputHan
 void ToOculusRenderingPipeline::Render() {
 	FrameState frame_state = input_handler->GetFrameState();
 	render_to_texture.Clear(D3DXCOLOR(frame_state.color[0], frame_state.color[1], frame_state.color[2], 1.0f));
-	//view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 1);
+	view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 1);
 	for (int i = 0; i < 2; i++) {
 		player_camera.location = 
 			OculusHelper::ConvertVector3fToArray(
@@ -119,7 +126,6 @@ void ToOculusRenderingPipeline::Render() {
 		XMStoreFloat4x4(&(player_camera_transformation.GetBufferData().transformation),
 			player_camera.GetViewProjectionMatrix()
 		);
-		OutputFormatted("Location %d: %f, %f, %f", i, player_camera.location[0], player_camera.location[1], player_camera.location[2]);
 		player_camera_transformation.PushBuffer();
 
 		std::array<int, 2> viewport_position = { oculus->eye_viewports[i].Pos.x, oculus->eye_viewports[i].Pos.y };
@@ -127,7 +133,7 @@ void ToOculusRenderingPipeline::Render() {
 		render_to_texture.SetViewport(viewport_position, viewport_size);
 		render_to_texture.Prepare();
 		render_to_texture.PrepareConstantBuffer(&player_camera_transformation, 0);
-		//view_state->device_context->OMSetDepthStencilState(depth_buffer_state, 1);
+		view_state->device_context->OMSetDepthStencilState(depth_buffer_state, 1);
 		game_world->Draw(render_to_texture);
 	}
 

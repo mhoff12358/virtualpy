@@ -7,16 +7,22 @@ struct VOut
 Texture2D model_skin : register(t0);
 sampler skin_sampler : register(s0);
 
-cbuffer transform_matrices : register(b0)
+cbuffer shared_matrices : register(b0)
 {
-	matrix <float, 4, 4> mvp;
+	matrix <float, 4, 4> view_projection;
+};
+
+cbuffer personal_matrices : register(b1)
+{
+	matrix <float, 4, 4> model;
 };
 
 VOut VShader(float4 position : POSITION, float2 tex_coord : TEXCOORD)
 {
 	VOut output;
 
-	output.position = mul(mvp, position);
+	output.position = mul(model, position);
+	output.position = mul(view_projection, output.position);
 	output.tex_coords = tex_coord;
 
 	return output;

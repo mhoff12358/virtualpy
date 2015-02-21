@@ -9,6 +9,7 @@
 #include "WindowsMainLoop.h"
 #include "directx/DirectxLoop.h"
 #include "directx/DXResourcePool.h"
+#include "directx/Vertices.h"
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
@@ -81,7 +82,12 @@ PyObject* SetColor(PyObject* self, PyObject* args) {
 }
 
 PyObject* BeginModel(PyObject* self, PyObject* args) {
-	resource_pool->BeginNewModel(7 * sizeof(float)); // Currently assume color vertices
+	unsigned int vertex_id;
+	if (!PyArg_ParseTuple(args, "I", &vertex_id)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	resource_pool->BeginNewModel(VERTEX_SIZE_LOOKUP[vertex_id] * sizeof(float)); // Currently assume color vertices
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -89,6 +95,16 @@ PyObject* BeginModel(PyObject* self, PyObject* args) {
 PyObject* ColorVertex(PyObject* self, PyObject* args) {
 	float vertex_data[7];
 	if (!PyArg_ParseTuple(args, "fffffff", vertex_data, vertex_data + 1, vertex_data + 2, vertex_data + 3, vertex_data + 4, vertex_data + 5, vertex_data + 6)) {
+		return NULL;
+	}
+	resource_pool->AddModelVertex((void*)vertex_data);
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+PyObject* TextureVertex(PyObject* self, PyObject* args) {
+	float vertex_data[5];
+	if (!PyArg_ParseTuple(args, "fffff", vertex_data, vertex_data + 1, vertex_data + 2, vertex_data + 3, vertex_data + 4)) {
 		return NULL;
 	}
 	resource_pool->AddModelVertex((void*)vertex_data);
@@ -179,6 +195,7 @@ PyMethodDef virtualpy_methods[] = {
 	{ "set_color", SetColor, METH_VARARGS, "set_color() doc string" },
 	{ "begin_model", BeginModel, METH_VARARGS, "begin_model() doc string" },
 	{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
+	{ "texture_vertex", TextureVertex, METH_VARARGS, "texture_vertex() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
 	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
 	{ "push_state", PushState, METH_VARARGS, "push_state() doc string" },

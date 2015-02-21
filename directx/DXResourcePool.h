@@ -25,9 +25,12 @@ public:
 	virtual void AddModelVertex(void* new_vertex);
 	virtual int FinishModel();
 
+	virtual int LoadTexture(std::string file_name);
+
 	virtual int GetNumberOfEntities();
 
 	Entity* GetEntity(int entity_index);
+	Texture* GetTexture(int texture_index);
 
 private:
 	ID3D11Device* device;
@@ -36,4 +39,5 @@ private:
 	ModelGenerator active_model_generator;
 
 	std::vector<Entity> entities;
+	std::vector<Texture> textures;
 };
