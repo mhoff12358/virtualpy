@@ -16,6 +16,9 @@ public:
 
 	virtual int LoadTexture(std::string file_name) = 0;
 
+	virtual int CreateModeledEntity(int model_id) = 0;
+	virtual int CreateTexturedEntity(int model_id, int texture_id) = 0;
+
 	virtual int GetNumberOfEntities() = 0;
 
 private:

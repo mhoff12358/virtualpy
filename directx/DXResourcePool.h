@@ -27,9 +27,13 @@ public:
 
 	virtual int LoadTexture(std::string file_name);
 
+	virtual int CreateModeledEntity(int model_id);
+	virtual int CreateTexturedEntity(int model_id, int texture_id);
+
 	virtual int GetNumberOfEntities();
 
 	Entity* GetEntity(int entity_index);
+	Model* GetModel(int model_index);
 	Texture* GetTexture(int texture_index);
 
 private:
@@ -38,6 +42,7 @@ private:
 
 	ModelGenerator active_model_generator;
 
-	std::vector<Entity> entities;
-	std::vector<Texture> textures;
+	std::vector<Entity*> entities;
+	std::vector<Model*> models;
+	std::vector<Texture*> textures;
 };

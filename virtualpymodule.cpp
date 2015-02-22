@@ -136,6 +136,29 @@ PyObject* LoadTexture(PyObject* self, PyObject* args) {
 	return Py_BuildValue("i", tex_id);
 }
 
+PyObject* CreateModeledEntity(PyObject* self, PyObject* args) {
+	unsigned int model_id;
+	if (!PyArg_ParseTuple(args, "I", &model_id)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	int entity_id = resource_pool->CreateModeledEntity(model_id);
+	return Py_BuildValue("i", entity_id);
+}
+
+PyObject* CreateTexturedEntity(PyObject* self, PyObject* args) {
+	unsigned int model_id;
+	unsigned int texture_id;
+	if (!PyArg_ParseTuple(args, "II", &model_id, &texture_id)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	int entity_id = resource_pool->CreateTexturedEntity(model_id, texture_id);
+	return Py_BuildValue("i", entity_id);
+}
+
 PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 	int entity_id = -1;
 
@@ -213,6 +236,8 @@ PyMethodDef virtualpy_methods[] = {
 	{ "texture_vertex", TextureVertex, METH_VARARGS, "texture_vertex() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
 	{ "load_texture", LoadTexture, METH_VARARGS, "load_texture() doc string" },
+	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
+	{ "create_textured_entity", CreateTexturedEntity, METH_VARARGS, "create_textured_entity() doc string" },
 	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
 	{ "push_state", PushState, METH_VARARGS, "push_state() doc string" },
 	{ NULL, NULL }
