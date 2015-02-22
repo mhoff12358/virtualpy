@@ -19,6 +19,10 @@ void ModelGenerator::AddVertex(void* new_vertex) {
 	memcpy(vertices.data() + original_size, new_vertex, vertex_size);
 }
 
+int ModelGenerator::GetVertexSize() {
+	return vertex_size;
+}
+
 void ModelGenerator::InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceContext* device_context) {
 	D3D11_BUFFER_DESC buffer_desc;
 	ZeroMemory(&buffer_desc, sizeof(buffer_desc));

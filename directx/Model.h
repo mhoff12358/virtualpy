@@ -36,7 +36,7 @@ public:
 	ModelGenerator(int v_size);
 
 	void AddVertex(void* new_vertex);
-	void SetVertexSize();
+	int GetVertexSize();
 
 	Model DumpModel(ID3D11Device* device, ID3D11DeviceContext* device_context);
 

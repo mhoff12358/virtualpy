@@ -84,9 +84,12 @@ void DepthTexture::CreateTexture() {
 }
 
 void Texture::CreateShaderResourceView() {
+	D3D11_TEXTURE2D_DESC tex_desc;
+	texture->GetDesc(&tex_desc);
+
 	D3D11_SHADER_RESOURCE_VIEW_DESC shad_res_view_desc;
 	ZeroMemory(&shad_res_view_desc, sizeof(shad_res_view_desc));
-	shad_res_view_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	shad_res_view_desc.Format = tex_desc.Format;
 	shad_res_view_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shad_res_view_desc.Texture2D.MostDetailedMip = 0;
 	shad_res_view_desc.Texture2D.MipLevels = 1;
@@ -97,7 +100,8 @@ void Texture::CreateShaderResourceView() {
 void Texture::CreateSampler() {
 	D3D11_SAMPLER_DESC samp_desc;
 	ZeroMemory(&samp_desc, sizeof(samp_desc));
-	samp_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//samp_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samp_desc.Filter = D3D11_FILTER_ANISOTROPIC;
 	samp_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samp_desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samp_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;

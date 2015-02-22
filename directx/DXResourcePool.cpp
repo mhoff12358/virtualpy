@@ -31,16 +31,25 @@ int DXResourcePool::FinishModel() {
 	int* shader_number = new int;
 	std::vector<std::pair<ConstantBuffer*, int>> transformations;
 	ConstantBuffer* model_transformation = new ConstantBuffer;
-	ModeledDrawHandler* draw_handler = new ModeledDrawHandler;
-
-	*shader_number = 1;
 
 	model_transformation->Initialize(device, device_context);
 	XMStoreFloat4x4(&(model_transformation->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
 	model_transformation->CreateBuffer();
 	transformations.push_back(std::make_pair(model_transformation, 1));
 
-	draw_handler->Initialize(shader_number, transformations, model);
+	DrawHandler* draw_handler = NULL;
+	if (active_model_generator.GetVertexSize() == 7 * 4) {
+		draw_handler = new ModeledDrawHandler;
+		*shader_number = 1;
+		((ModeledDrawHandler*)draw_handler)->Initialize(shader_number, transformations, model);
+	} else if (active_model_generator.GetVertexSize() == 5 * 4) {
+		draw_handler = new TexturedDrawHandler;
+		*shader_number = 0;
+		((TexturedDrawHandler*)draw_handler)->Initialize(shader_number, transformations, model, &textures[0], 0, 0);
+	} else {
+		OutputFormatted("UNKNOWN VERTEX SIZE %d", active_model_generator.GetVertexSize());
+	}
+
 	Entity new_entity;
 	new_entity.Initialize(draw_handler);
 
@@ -52,7 +61,24 @@ int DXResourcePool::FinishModel() {
 }
 
 int DXResourcePool::LoadTexture(std::string file_name) {
-	return 0;
+	ID3D11Texture2D* loaded_texture;
+	HRESULT load_result;
+	D3DX11CreateTextureFromFile(
+		device,
+		file_name.c_str(),
+		NULL,
+		NULL,
+		(ID3D11Resource**)&loaded_texture,
+		&load_result);
+	if (load_result != S_OK) {
+		return -1;
+	}
+	Texture new_tex(true, false);
+	D3D11_TEXTURE2D_DESC tex_desc;
+	loaded_texture->GetDesc(&tex_desc);
+	new_tex.Initialize(device, device_context, loaded_texture, { { tex_desc.Width, tex_desc.Height } });
+	textures.push_back(new_tex);
+	return textures.size()-1;
 }
 
 int DXResourcePool::GetNumberOfEntities() {

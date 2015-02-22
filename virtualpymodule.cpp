@@ -121,6 +121,21 @@ PyObject* EndModel(PyObject* self, PyObject* args) {
 	return Py_BuildValue("i", entity_id);
 }
 
+PyObject* LoadTexture(PyObject* self, PyObject* args) {
+	char* file_name_cstr;
+	if (!PyArg_ParseTuple(args, "s", &file_name_cstr)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	std::string file_name(file_name_cstr);
+	int tex_id = resource_pool->LoadTexture(resources_location + file_name);
+	if (tex_id < 0) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	return Py_BuildValue("i", tex_id);
+}
+
 PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 	int entity_id = -1;
 
@@ -197,6 +212,7 @@ PyMethodDef virtualpy_methods[] = {
 	{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
 	{ "texture_vertex", TextureVertex, METH_VARARGS, "texture_vertex() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
+	{ "load_texture", LoadTexture, METH_VARARGS, "load_texture() doc string" },
 	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
 	{ "push_state", PushState, METH_VARARGS, "push_state() doc string" },
 	{ NULL, NULL }
