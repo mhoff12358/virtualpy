@@ -1,7 +1,5 @@
 #include "IOState.h"
 
-
-
 IOStateBuffer::IOStateBuffer() {
 	state1primary = true;
 }

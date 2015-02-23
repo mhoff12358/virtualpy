@@ -10,17 +10,23 @@
 #include <list>
 #include <time.h>
 
+struct PositionState {
+	std::array<float, 3> location = { { 0.0f, 0.0f, 0.0f } };
+	std::array<float, 3> scale = { { 1.0f, 1.0f, 1.0f } };
+	std::array<float, 4> orientation = { { 0.0f, 0.0f, 0.0f, 1.0f} }; // quaternion in the form x, y, z, w
+};
+
 struct EntityState {
 	int entity_id;
 	int display_state; // If 0, don't draw, if 1, draw
-	std::array<float, 3> location;
-	std::array<float, 3> scale;
-	std::array<float, 4> orientation; // quaternion in the form x, y, z, w
+	PositionState position;
 };
 
 struct FrameState {
 	std::array<float, 3> color;
 	std::vector<EntityState> entities;
+
+	PositionState camera_position;
 
 	EntityState* GetEntityStateForId(int entity_id);
 };
@@ -54,6 +60,8 @@ protected:
 	// above 1 extrapolates beyond state_1 linearly
 	FrameState InterpolateBetweenFrameStates(FrameState state_0, FrameState state_1, float weight);
 	EntityState InterpolateBetweenEntityStates(EntityState state_0, EntityState state_1, float weight);
+	PositionState InterpolateBetweenPositionStates(PositionState state_0, PositionState state_1, float weight);
+
 	template<std::size_t SIZE>
 	std::array<float, SIZE> InterpolateBetweenArrays(std::array<float, SIZE> array_0, std::array<float, SIZE> array_1, float weight);
 	template<std::size_t SIZE>
@@ -64,9 +72,9 @@ protected:
 	FrameStateBuffer* frame_state_buffer;
 };
 
-class FiveSecondNoPredictInterpolater : public FrameStateInterpolater {
+class SecondFractionNoPredictInterpolater : public FrameStateInterpolater {
 public:
-	FiveSecondNoPredictInterpolater(FrameStateBuffer* fsb);
+	SecondFractionNoPredictInterpolater(FrameStateBuffer* fsb, float num_seconds);
 
 private:
 	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time);
@@ -76,7 +84,6 @@ private:
 	// T+frame_timing_prediction.
 	LARGE_INTEGER frame_timing_prediction;
 };
-
 
 template<std::size_t SIZE>
 std::array<float, SIZE> FrameStateInterpolater::InterpolateBetweenArrays(std::array<float, SIZE> array_0, std::array<float, SIZE> array_1, float weight) {

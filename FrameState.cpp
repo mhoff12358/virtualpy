@@ -54,6 +54,7 @@ EntityState* FrameState::GetEntityStateForId(int entity_id) {
 FrameState FrameStateInterpolater::InterpolateBetweenFrameStates(FrameState state_0, FrameState state_1, float weight) {
 	FrameState new_state;
 	new_state.color = InterpolateBetweenArrays(state_0.color, state_1.color, weight);
+	new_state.camera_position = InterpolateBetweenPositionStates(state_0.camera_position, state_1.camera_position, weight);
 	for (EntityState& state_1_entity : state_1.entities) {
 		EntityState* state_0_entity = state_0.GetEntityStateForId(state_1_entity.entity_id);
 		if (state_0_entity == NULL) {
@@ -70,6 +71,12 @@ EntityState FrameStateInterpolater::InterpolateBetweenEntityStates(EntityState s
 	EntityState new_state;
 	new_state.entity_id = state_1.entity_id;
 	new_state.display_state = state_1.display_state;
+	new_state.position = InterpolateBetweenPositionStates(state_0.position, state_1.position, weight);
+	return new_state;
+}
+
+PositionState FrameStateInterpolater::InterpolateBetweenPositionStates(PositionState state_0, PositionState state_1, float weight) {
+	PositionState new_state;
 	new_state.location = InterpolateBetweenArrays(state_0.location, state_1.location, weight);
 	new_state.scale = InterpolateBetweenArrays(state_0.scale, state_1.scale, weight);
 	float subtended_angle = 0.0f;
@@ -78,9 +85,10 @@ EntityState FrameStateInterpolater::InterpolateBetweenEntityStates(EntityState s
 	}
 	subtended_angle = acos(subtended_angle);
 	if (subtended_angle == 0.0f) {
-		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, 1-weight, weight);
-	} else {
-		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, sin((1-weight)*subtended_angle) / sin(subtended_angle), sin(weight*subtended_angle) / sin(subtended_angle));
+		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, 1 - weight, weight);
+	}
+	else {
+		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, sin((1 - weight)*subtended_angle) / sin(subtended_angle), sin(weight*subtended_angle) / sin(subtended_angle));
 	}
 	return new_state;
 }
@@ -95,13 +103,13 @@ FrameState FrameStateInterpolater::InterpolateCurrentState() {
 	return interpolated_state;
 }
 
-FiveSecondNoPredictInterpolater::FiveSecondNoPredictInterpolater(FrameStateBuffer* fsb)
+SecondFractionNoPredictInterpolater::SecondFractionNoPredictInterpolater(FrameStateBuffer* fsb, float num_seconds)
 	: FrameStateInterpolater(fsb) {
 	QueryPerformanceFrequency(&frame_timing_prediction);
-	frame_timing_prediction.QuadPart = frame_timing_prediction.QuadPart * 5;
+	frame_timing_prediction.QuadPart = frame_timing_prediction.QuadPart * num_seconds;
 }
 
-FrameState FiveSecondNoPredictInterpolater::InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) {
+FrameState SecondFractionNoPredictInterpolater::InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) {
 	//printf("FSNP: ");
 	if (num_available_states >= 2) {
 		//printf("n states\n");

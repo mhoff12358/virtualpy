@@ -14,7 +14,7 @@
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
-FiveSecondNoPredictInterpolater state_interpolater(&state_buffer);
+SecondFractionNoPredictInterpolater state_interpolater(&state_buffer, 0.5);
 ResourcePool* resource_pool;
 FrameState current_state;
 std::string resources_location(".");
@@ -184,41 +184,50 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 	if (current_state.entities.size() <= entity_id) {
 		current_state.entities.resize(entity_id + 1);
 		current_state.entities[entity_id].entity_id = entity_id;
-		current_state.entities[entity_id].location = { { 0.0f, 0.0f, 0.0f } };
-		current_state.entities[entity_id].scale = { { 1.0f, 1.0f, 1.0f } };
-		current_state.entities[entity_id].orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+		current_state.entities[entity_id].position.location = { { 0.0f, 0.0f, 0.0f } };
+		current_state.entities[entity_id].position.scale = { { 1.0f, 1.0f, 1.0f } };
+		current_state.entities[entity_id].position.orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
 	}
 
 	current_state.entities[entity_id].display_state = 1;
 
 	if (location_tuple != Py_None) {
 		if (!PyArg_ParseTuple(location_tuple, "fff",
-			current_state.entities[entity_id].location.data(),
-			current_state.entities[entity_id].location.data() + 1,
-			current_state.entities[entity_id].location.data() + 2)) {
+			current_state.entities[entity_id].position.location.data(),
+			current_state.entities[entity_id].position.location.data() + 1,
+			current_state.entities[entity_id].position.location.data() + 2)) {
 			return NULL;
 		}
 	}
 	if (scale_tuple != Py_None) {
 		if (!PyArg_ParseTuple(scale_tuple, "fff",
-			current_state.entities[entity_id].scale.data(),
-			current_state.entities[entity_id].scale.data() + 1,
-			current_state.entities[entity_id].scale.data() + 2)) {
+			current_state.entities[entity_id].position.scale.data(),
+			current_state.entities[entity_id].position.scale.data() + 1,
+			current_state.entities[entity_id].position.scale.data() + 2)) {
 			return NULL;
 		}
 	}
 	if (orientation_tuple != Py_None) {
 		if (!PyArg_ParseTuple(orientation_tuple, "ffff",
-			current_state.entities[entity_id].orientation.data(),
-			current_state.entities[entity_id].orientation.data() + 1,
-			current_state.entities[entity_id].orientation.data() + 2,
-			current_state.entities[entity_id].orientation.data() + 3)) {
+			current_state.entities[entity_id].position.orientation.data(),
+			current_state.entities[entity_id].position.orientation.data() + 1,
+			current_state.entities[entity_id].position.orientation.data() + 2,
+			current_state.entities[entity_id].position.orientation.data() + 3)) {
 			return NULL;
 		}
 	}
 	
 	Py_INCREF(Py_None);
 	return Py_None;
+}
+
+PyObject* SetCameraLocation(PyObject* self, PyObject* args) {
+	std::array<float, 3> location;
+	if (!PyArg_ParseTuple(args, "(fff)", location.data(), location.data() + 1, location.data() + 2)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	current_state.camera_position.location = location;
 }
 
 PyObject* PushState(PyObject* self, PyObject* args) {
@@ -233,7 +242,10 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
 	IOState latest_state = io_state_buffer.ReadState();
 	PyObject* keyboard_list = PyList_New(0);
-	//PyList_Append(keyboard_list, PyBuild);
+	for (int i = 0; i < 256; ++i) {
+		// Set the value to 0 or 1 based on the highest order bit of the BYTE
+		PyList_Append(keyboard_list, Py_BuildValue("B", latest_state.keyboard[i] / 128));
+	}
 	return keyboard_list;
 }
 
@@ -249,7 +261,9 @@ PyMethodDef virtualpy_methods[] = {
 	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
 	{ "create_textured_entity", CreateTexturedEntity, METH_VARARGS, "create_textured_entity() doc string" },
 	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
+	{ "set_camera_location", SetCameraLocation, METH_VARARGS, "set_camera_location() doc string" },
 	{ "push_state", PushState, METH_VARARGS, "push_state() doc string" },
+	{ "get_keyboard_state", GetKeyboardState, METH_VARARGS, "get_keyboard_state() doc string" },
 	{ NULL, NULL }
 };
 

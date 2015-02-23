@@ -64,6 +64,9 @@ void World::UpdateLogic(int time_delta) {
 	}
 
 	FrameState current_frame_state = input_handler->GetFrameState();
+
+	player_location = current_frame_state.camera_position.location;
+
 	entities_to_display.clear();
 	for (int i = 0; i < current_frame_state.entities.size(); i++) {
 		EntityState& entity_state = current_frame_state.entities[i];
@@ -73,9 +76,9 @@ void World::UpdateLogic(int time_delta) {
 			ConstantBuffer* model_matrix_buffer = ((ModeledDrawHandler*)entity_to_update->GetDrawHandler())->GetConstantBuffers().front().first;
 			DirectX::XMStoreFloat4x4(
 				&model_matrix_buffer->GetBufferData().transformation,
-				DirectX::XMMatrixScaling(entity_state.scale[0], entity_state.scale[1], entity_state.scale[2])*
-				DirectX::XMMatrixRotationQuaternion(DirectX::XMVectorSet(entity_state.orientation[0], entity_state.orientation[1], entity_state.orientation[2], entity_state.orientation[3]))*
-				DirectX::XMMatrixTranslation(entity_state.location[0], entity_state.location[1], entity_state.location[2]));
+				DirectX::XMMatrixScaling(entity_state.position.scale[0], entity_state.position.scale[1], entity_state.position.scale[2])*
+				DirectX::XMMatrixRotationQuaternion(DirectX::XMVectorSet(entity_state.position.orientation[0], entity_state.position.orientation[1], entity_state.position.orientation[2], entity_state.position.orientation[3]))*
+				DirectX::XMMatrixTranslation(entity_state.position.location[0], entity_state.position.location[1], entity_state.position.location[2]));
 			model_matrix_buffer->PushBuffer();
 		}
 	}
