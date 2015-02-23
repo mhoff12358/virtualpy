@@ -1,7 +1,8 @@
 #include "InputHandler.h"
 
-void InputHandler::Initialize(FrameStateInterpolater* fsi) {
+void InputHandler::Initialize(FrameStateInterpolater* fsi, IOStateBuffer* iosb) {
 	frame_state_interpolater = fsi;
+	io_state_buffer = iosb;
 }
 
 FrameState InputHandler::dud_frame_state;
@@ -9,6 +10,7 @@ FrameState InputHandler::dud_frame_state;
 void InputHandler::UpdateStates(int frame_index) {
 	GetKeyboardState(keyboard_state.data());
 
+	io_state_buffer->WriteState({ keyboard_state });
 	active_frame_state = frame_state_interpolater->InterpolateCurrentState();
 
 	if (IsOculusActive()) {

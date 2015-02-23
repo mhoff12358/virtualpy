@@ -5,6 +5,7 @@
 #include <condition_variable>
 
 #include "FrameState.h"
+#include "IOState.h"
 #include "ResourcePool.h"
 #include "WindowsMainLoop.h"
 #include "directx/DirectxLoop.h"
@@ -17,6 +18,8 @@ FiveSecondNoPredictInterpolater state_interpolater(&state_buffer);
 ResourcePool* resource_pool;
 FrameState current_state;
 std::string resources_location(".");
+
+IOStateBuffer io_state_buffer;
 
 void NewThread() {
 	//MainLoop* main_loop = new PrintColor(&state_interpolater);
@@ -44,7 +47,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 	}
 
 	if (strcmp(version_string, "console") == 0) {
-		PrintColor* main_loop = new PrintColor(&state_interpolater);
+		PrintColor* main_loop = new PrintColor(&state_interpolater, &io_state_buffer);
 		std::thread new_thread(&PrintColor::Begin, main_loop);
 		new_thread.detach();
 	}
@@ -53,7 +56,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::condition_variable preparation_cv;
 		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
 		resource_pool = new DXResourcePool();
-		DirectxLoop* main_loop = new DirectxLoop(false, resources_location, (DXResourcePool*)resource_pool, &state_interpolater);
+		DirectxLoop* main_loop = new DirectxLoop(false, resources_location, (DXResourcePool*)resource_pool, &state_interpolater, &io_state_buffer);
 		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
@@ -63,7 +66,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::condition_variable preparation_cv;
 		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
 		resource_pool = new DXResourcePool();
-		DirectxLoop* main_loop = new DirectxLoop(true, resources_location, (DXResourcePool*)resource_pool, &state_interpolater);
+		DirectxLoop* main_loop = new DirectxLoop(true, resources_location, (DXResourcePool*)resource_pool, &state_interpolater, &io_state_buffer);
 		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
@@ -202,6 +205,13 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 	current_state = new_state;
 	Py_INCREF(Py_None);
 	return Py_None;
+}
+
+PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
+	IOState latest_state = io_state_buffer.ReadState();
+	PyObject* keyboard_list = PyList_New(0);
+	//PyList_Append(keyboard_list, PyBuild);
+	return keyboard_list;
 }
 
 PyMethodDef virtualpy_methods[] = {

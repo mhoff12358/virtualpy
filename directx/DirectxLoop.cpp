@@ -2,7 +2,7 @@
 
 #pragma comment (lib, "winmm.lib")
 
-DirectxLoop::DirectxLoop(bool uo, std::string rl, DXResourcePool* dxrp, FrameStateInterpolater* fsi) : MainLoop(fsi), use_oculus(uo), resource_pool(dxrp), resource_location(rl) {}
+DirectxLoop::DirectxLoop(bool uo, std::string rl, DXResourcePool* dxrp, FrameStateInterpolater* fsi, IOStateBuffer* iosb) : MainLoop(fsi, iosb), use_oculus(uo), resource_pool(dxrp), resource_location(rl) {}
 
 struct VS_CONSTANT_BUFFER{
 	DirectX::XMFLOAT4X4 mvp;
@@ -38,7 +38,7 @@ void DirectxLoop::BeginWithPrep(std::mutex* preparation_mutex, std::condition_va
 	}
 
 	// Initialize the directx resources and inject them
-	input_handler.Initialize(state_source);
+	input_handler.Initialize(state_source, io_state_buffer);
 	view_state.Initialize(GetModuleHandle(NULL), SW_SHOW);
 	resource_pool->Initialize(view_state.device_interface, view_state.device_context);
 	if (use_oculus) {

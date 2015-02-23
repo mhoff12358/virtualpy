@@ -7,13 +7,14 @@
 
 #include "Logging.h"
 #include "../FrameState.h"
+#include "../IOState.h"
 #include "Oculus.h"
 
 class InputHandler {
 public:
 	InputHandler() : head_pose_center({0.0f, 0.0f, 0.0f}) {}
 
-	void Initialize(FrameStateInterpolater* fsi);
+	void Initialize(FrameStateInterpolater* fsi, IOStateBuffer* iosb);
 
 	void UpdateStates(int frame_index);
 
@@ -39,6 +40,9 @@ private:
 	std::array<BYTE, 256> keyboard_state;
 	FrameState active_frame_state;
 	FrameStateInterpolater* frame_state_interpolater;
+
+	// State outputting variables
+	IOStateBuffer* io_state_buffer;
 
 	// Information gathering variables
 	Oculus* oculus = NULL;
