@@ -1,7 +1,7 @@
 #include "MainLoop.h"
 
 
-MainLoop::MainLoop(FrameStateInterpolater* ss) : state_source(ss)
+MainLoop::MainLoop(FrameStateInterpolater* ss, IOStateBuffer* iosb) : state_source(ss), io_state_buffer(iosb)
 {
 	LARGE_INTEGER tps;
 	QueryPerformanceFrequency(&tps);
@@ -13,7 +13,7 @@ MainLoop::~MainLoop()
 {
 }
 
-PrintColor::PrintColor(FrameStateInterpolater* ss) : MainLoop(ss) {
+PrintColor::PrintColor(FrameStateInterpolater* ss, IOStateBuffer* iosb) : MainLoop(ss, iosb) {
 
 }
 

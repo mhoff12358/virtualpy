@@ -1,7 +1,7 @@
 #include "WindowsMainLoop.h"
 
 
-MessageBoxLoop::MessageBoxLoop(FrameStateInterpolater* ss) : MainLoop(ss)
+MessageBoxLoop::MessageBoxLoop(FrameStateInterpolater* ss, IOStateBuffer* iosb) : MainLoop(ss, iosb)
 {
 }
 
@@ -16,7 +16,7 @@ void MessageBoxLoop::Begin() {
 	}
 }
 
-ColoredWindow::ColoredWindow(FrameStateInterpolater* ss) : MainLoop(ss) {
+ColoredWindow::ColoredWindow(FrameStateInterpolater* ss, IOStateBuffer* iosb) : MainLoop(ss, iosb) {
 
 }
 

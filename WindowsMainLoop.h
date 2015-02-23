@@ -6,7 +6,7 @@
 class MessageBoxLoop : public MainLoop
 {
 public:
-	MessageBoxLoop(FrameStateInterpolater* ss);
+	MessageBoxLoop(FrameStateInterpolater* ss, IOStateBuffer* iosb);
 
 	void Begin();
 };
@@ -15,7 +15,7 @@ LRESULT CALLBACK WinMainLoopWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 
 class ColoredWindow : public MainLoop {
 public:
-	ColoredWindow(FrameStateInterpolater* ss);
+	ColoredWindow(FrameStateInterpolater* ss, IOStateBuffer* iosb);
 
 	void Begin();
 };

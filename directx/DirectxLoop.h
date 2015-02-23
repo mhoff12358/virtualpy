@@ -26,7 +26,7 @@
 
 class DirectxLoop : public MainLoop {
 public:
-	DirectxLoop(bool uo, std::string rl, DXResourcePool* dxrp, FrameStateInterpolater* ss);
+	DirectxLoop(bool uo, std::string rl, DXResourcePool* dxrp, FrameStateInterpolater* ss, IOStateBuffer* iosb);
 
 	void Begin();
 	void BeginWithPrep(std::mutex* preparation_mutex, std::condition_variable* preparation_cv);

@@ -5,23 +5,25 @@
 #include <chrono>
 
 #include "FrameState.h"
+#include "IOState.h"
 
 class MainLoop
 {
 public:
-	MainLoop(FrameStateInterpolater* ss);
+	MainLoop(FrameStateInterpolater* ss, IOStateBuffer* iosb);
 	~MainLoop();
 
 	virtual void Begin() = 0;
 
 protected:
 	FrameStateInterpolater* state_source;
+	IOStateBuffer* io_state_buffer;
 	double ticks_per_second;
 };
 
 class PrintColor : public MainLoop {
 public:
-	PrintColor(FrameStateInterpolater* ss);
+	PrintColor(FrameStateInterpolater* ss, IOStateBuffer* iosb);
 
 	void Begin();
 };

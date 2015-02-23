@@ -8,6 +8,6 @@ void PerspectiveCamera::BuildProjectionMatrix() {
 	DirectX::XMStoreFloat4x4(&projection_matrix, DirectX::XMMatrixPerspectiveFovRH(
 		vertical_fov,
 		aspect_ratio,
-		0.001f,
-		10.0f));
+		0.5f,
+		1000.0f));
 }
