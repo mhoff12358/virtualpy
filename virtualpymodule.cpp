@@ -224,10 +224,11 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 PyObject* SetCameraLocation(PyObject* self, PyObject* args) {
 	std::array<float, 3> location;
 	if (!PyArg_ParseTuple(args, "(fff)", location.data(), location.data() + 1, location.data() + 2)) {
-		Py_INCREF(Py_None);
-		return Py_None;
+		return NULL;
 	}
 	current_state.camera_position.location = location;
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 PyObject* PushState(PyObject* self, PyObject* args) {
@@ -241,10 +242,10 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 
 PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
 	IOState latest_state = io_state_buffer.ReadState();
-	PyObject* keyboard_list = PyList_New(0);
+	PyObject* keyboard_list = PyList_New(256);
 	for (int i = 0; i < 256; ++i) {
 		// Set the value to 0 or 1 based on the highest order bit of the BYTE
-		PyList_Append(keyboard_list, Py_BuildValue("B", latest_state.keyboard[i] / 128));
+		PyList_SetItem(keyboard_list, i, Py_BuildValue("B", latest_state.keyboard[i] / 128));
 	}
 	return keyboard_list;
 }

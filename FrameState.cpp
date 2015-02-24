@@ -1,5 +1,11 @@
 #include "FrameState.h"
 
+PositionState::PositionState() {
+	location = { { 0.0f, 0.0f, 0.0f } };
+	scale = { { 1.0f, 1.0f, 1.0f } };
+	orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+}
+
 FrameStateBuffer::FrameStateBuffer() {
 	num_valid_states = 0;
 }

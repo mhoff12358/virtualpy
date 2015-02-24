@@ -11,9 +11,10 @@
 #include <time.h>
 
 struct PositionState {
-	std::array<float, 3> location = { { 0.0f, 0.0f, 0.0f } };
-	std::array<float, 3> scale = { { 1.0f, 1.0f, 1.0f } };
-	std::array<float, 4> orientation = { { 0.0f, 0.0f, 0.0f, 1.0f} }; // quaternion in the form x, y, z, w
+	PositionState();
+	std::array<float, 3> location;
+	std::array<float, 3> scale;
+	std::array<float, 4> orientation; // quaternion in the form x, y, z, w
 };
 
 struct EntityState {

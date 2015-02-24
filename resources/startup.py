@@ -1,15 +1,16 @@
 import time
 import sys
 import math
-sys.path.append('C:\\Users\\mfhoffm2\\Source\\Repos\\virtualpy\\Debug')
+virtualpyloc = sys.argv[1]
+sys.path.append(virtualpyloc+'Debug')
 
 import virtualpy
 
 
 virtualpy.set_color(1, .5, 0)
 virtualpy.push_state()
-virtualpy.set_resources_location('C:\\Users\\mfhoffm2\\Source\\Repos\\virtualpy\\resources\\')
-virtualpy.spawn_thread('directx_oculus')
+virtualpy.set_resources_location(virtualpyloc+'resources\\')
+virtualpy.spawn_thread('directx')
 
 virtualpy.begin_model(1)
 
