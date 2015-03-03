@@ -71,6 +71,7 @@ void DirectxLoop::BeginWithPrep(std::mutex* preparation_mutex, std::condition_va
 				break;
 			}
 			else if (msg.message == WM_KEYDOWN) {
+				input_handler.HandleKeydown(msg.wParam);
 			}
 		}
 

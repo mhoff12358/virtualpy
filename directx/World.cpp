@@ -1,6 +1,6 @@
 #include "World.h"
 
-World::World(ViewState* vs) : view_state(vs), texture(true, false), triangle_gen(TEXTUREVERTEX::vertex_size), ground_model_gen(COLORVERTEX::vertex_size) {
+World::World(ViewState* vs) : view_state(vs), texture(true, false) {
 };
 
 void World::Initialize(InputHandler* ih, DXResourcePool* dxrp) {

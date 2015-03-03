@@ -34,8 +34,6 @@ virtualpy.color_vertex( 1,  1, 0, 1, 1, 1, 1)
 whitesqmod = virtualpy.end_model()
 whitesq = virtualpy.create_modeled_entity(whitesqmod)
 
-
-
 groundtex = virtualpy.load_texture("ground.png")
 ceilingtex = virtualpy.load_texture("ceiling.png")
 
@@ -54,20 +52,20 @@ i = 0
 camera_location = [0, 0, 0]
 
 while True:
-	key_state = virtualpy.get_keyboard_state()
+	(keys_at_state, keys_since_state) = virtualpy.get_keyboard_state()
 	
-	if key_state[ord('W')]:
+	if keys_since_state[ord('W')]:
 		camera_location[2] -= 0.25
-	if key_state[ord('S')]:
+	if keys_since_state[ord('S')]:
 		camera_location[2] += 0.25
-	if key_state[ord('A')]:
+	if keys_since_state[ord('A')]:
 		camera_location[0] -= 0.25
-	if key_state[ord('D')]:
+	if keys_since_state[ord('D')]:
 		camera_location[0] += 0.25
 	
 	virtualpy.set_camera_location(camera_location)
 
-	if key_state[ord('F')]:
+	if keys_since_state[ord('F')]:
 		virtualpy.show_model(redsq, (i*5, 3, -4), (1, 1, 1), (1, 0, 0, 0))
 	else:
 		virtualpy.show_model(redsq, (i*5, 0, -4), (1, 1, 1), (1, 0, 0, 0))

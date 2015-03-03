@@ -7,10 +7,18 @@ void InputHandler::Initialize(FrameStateInterpolater* fsi, IOStateBuffer* iosb) 
 
 FrameState InputHandler::dud_frame_state;
 
+void InputHandler::HandleKeydown(unsigned int key_code) {
+	OutputFormatted("Key code: %u", key_code);
+	keyboard_down_waiting[key_code] = 1;
+	//if (keydown_callback.target != NULL) {
+	//	keydown_callback(key_code);
+	//}
+}
+
 void InputHandler::UpdateStates(int frame_index) {
 	GetKeyboardState(keyboard_state.data());
 
-	io_state_buffer->WriteState({ keyboard_state });
+	io_state_buffer->WriteState(keyboard_state);
 	active_frame_state = frame_state_interpolater->InterpolateCurrentState();
 
 	if (IsOculusActive()) {

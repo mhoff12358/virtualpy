@@ -90,7 +90,7 @@ PyObject* BeginModel(PyObject* self, PyObject* args) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	resource_pool->BeginNewModel(VERTEX_SIZE_LOOKUP[vertex_id] * sizeof(float)); // Currently assume color vertices
+	resource_pool->BeginNewModel(vertex_id);
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -240,14 +240,28 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 	return Py_None;
 }
 
-PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
-	IOState latest_state = io_state_buffer.ReadState();
+PyObject* GetKeysAtState(const IOState& io_state) {
 	PyObject* keyboard_list = PyList_New(256);
 	for (int i = 0; i < 256; ++i) {
 		// Set the value to 0 or 1 based on the highest order bit of the BYTE
-		PyList_SetItem(keyboard_list, i, Py_BuildValue("B", latest_state.keyboard[i] / 128));
+		PyList_SetItem(keyboard_list, i, Py_BuildValue("B", io_state.keyboard_at_request[i] / 128));
 	}
 	return keyboard_list;
+}
+
+PyObject* GetKeysSinceState(const IOState& io_state) {
+	PyObject* keyboard_list = PyList_New(256);
+	for (int i = 0; i < 256; ++i) {
+		PyList_SetItem(keyboard_list, i, Py_BuildValue("B", io_state.keyboard_since_request[i] / 128));
+	}
+	return keyboard_list;
+}
+
+PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
+	IOState latest_state = io_state_buffer.ReadState();
+	PyObject* keys_at_state = GetKeysAtState(latest_state);
+	PyObject* keys_since_state = GetKeysSinceState(latest_state);
+	return PyTuple_Pack(2, keys_at_state, keys_since_state);
 }
 
 PyMethodDef virtualpy_methods[] = {

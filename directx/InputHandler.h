@@ -2,6 +2,7 @@
 #define __INPUT_HANDLER_H_INCLUDED__
 
 #include <array>
+#include <functional>
 
 #include "Windows.h"
 
@@ -12,11 +13,15 @@
 
 class InputHandler {
 public:
-	InputHandler() : head_pose_center({0.0f, 0.0f, 0.0f}) {}
+	InputHandler(std::function<void(unsigned int)> kd_call, std::function<void(unsigned int)> ku_call) :
+		head_pose_center({ 0.0f, 0.0f, 0.0f }), keydown_callback(kd_call), keyup_callback(ku_call) {}
+	InputHandler() : head_pose_center({0.0f, 0.0f, 0.0f}), keydown_callback(), keyup_callback() {}
 
 	void Initialize(FrameStateInterpolater* fsi, IOStateBuffer* iosb);
 
 	void UpdateStates(int frame_index);
+
+	void HandleKeydown(unsigned int key_code);
 
 	bool GetKeyPressed(char key) const;
 	FrameState GetFrameState() const;
@@ -43,6 +48,9 @@ private:
 
 	// State outputting variables
 	IOStateBuffer* io_state_buffer;
+	std::array<BYTE, 256> keyboard_down_waiting;
+	std::function<void(unsigned int)> keydown_callback;
+	std::function<void(unsigned int)> keyup_callback;
 
 	// Information gathering variables
 	Oculus* oculus = NULL;

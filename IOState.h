@@ -9,7 +9,11 @@
 #include <utility>
 
 struct IOState {
-	std::array<BYTE, 256> keyboard;
+	std::array<BYTE, 256> keyboard_at_request;
+	std::array<BYTE, 256> keyboard_since_request;
+
+	void ClearSince();
+	void UpdateWithNewState(std::array<BYTE, 256> src_state);
 };
 
 class IOStateBuffer {
@@ -17,7 +21,7 @@ public:
 	IOStateBuffer();
 
 	IOState ReadState();
-	void WriteState(IOState new_state);
+	void WriteState(std::array<BYTE, 256> new_state);
 
 private:
 	std::pair<std::mutex, IOState>* GetPrimaryState();

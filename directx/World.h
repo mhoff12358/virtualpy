@@ -42,7 +42,7 @@ private:
 	std::array<float, 4> player_orientation;
 
 	// Temp stuff to be rendered, should be phased out.
-	ModelGenerator triangle_gen;
+	TypedModelGenerator<TEXTUREVERTEX> triangle_gen;
 	Model triangle;
 	Texture texture;
 	int shader_number;
@@ -51,7 +51,7 @@ private:
 	TexturedDrawHandler test_square_draw_handler;
 	Entity test_square;
 
-	ModelGenerator ground_model_gen;
+	TypedModelGenerator<COLORVERTEX> ground_model_gen;
 	Model ground_model;
 	int ground_shader_number;
 	std::vector<std::pair<ConstantBuffer*, int>> ground_transformations;

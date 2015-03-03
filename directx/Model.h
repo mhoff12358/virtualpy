@@ -34,6 +34,7 @@ private:
 class ModelGenerator {
 public:
 	ModelGenerator(int v_size);
+	virtual ~ModelGenerator() {};
 
 	void AddVertex(void* new_vertex);
 	int GetVertexSize();
@@ -48,6 +49,13 @@ private:
 	void InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceContext* device_context);
 };
 
+template <typename T>
+class TypedModelGenerator : public ModelGenerator {
+public:
+	TypedModelGenerator() : ModelGenerator(sizeof(T)) {}
+	~TypedModelGenerator() {}
 
+	void AddTypedVertex(T* new_vertex) { ModelGenerator::AddVertex((void*)new_vertex); }
+};
 
 #endif

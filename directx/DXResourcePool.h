@@ -21,7 +21,7 @@ public:
 
 	void Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con);
 
-	virtual void BeginNewModel(int vertex_size);
+	virtual void BeginNewModel(unsigned int vertex_type);
 	virtual void AddModelVertex(void* new_vertex);
 	virtual int FinishModel();
 
@@ -40,7 +40,8 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* device_context;
 
-	ModelGenerator active_model_generator;
+	ModelGenerator* active_model_generator;
+	unsigned int active_vertex_type;
 
 	std::vector<Entity*> entities;
 	std::vector<Model*> models;

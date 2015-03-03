@@ -1,7 +1,7 @@
 #include "DXResourcePool.h"
 
 
-DXResourcePool::DXResourcePool() : active_model_generator(0)
+DXResourcePool::DXResourcePool() : active_model_generator(NULL)
 {
 }
 
@@ -16,23 +16,47 @@ void DXResourcePool::Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con)
 	device_context = dev_con;
 }
 
-void DXResourcePool::BeginNewModel(int vertex_size) {
-	ModelGenerator new_generator(vertex_size);
-	active_model_generator = new_generator;
+void DXResourcePool::BeginNewModel(unsigned int vertex_type) {
+	active_vertex_type = vertex_type;
+	if (active_vertex_type == TEXTUREVERTEX_ID) {
+		active_model_generator = new TypedModelGenerator<TEXTUREVERTEX>();
+	} else if (active_vertex_type == COLORVERTEX_ID) {
+		active_model_generator = new TypedModelGenerator<COLORVERTEX>();
+	}
 }
 
 void DXResourcePool::AddModelVertex(void* new_vertex) {
-	active_model_generator.AddVertex(new_vertex);
+	if (active_vertex_type == TEXTUREVERTEX_ID) {
+		auto cast_model_generator = dynamic_cast<TypedModelGenerator<TEXTUREVERTEX>*>(active_model_generator);
+		if (cast_model_generator != NULL) {
+			cast_model_generator->AddVertex(new_vertex);
+		} else {
+			printf("Attempting to add the wrong type of vertex\n");
+		}
+	} else if (active_vertex_type == COLORVERTEX_ID) {
+		auto cast_model_generator = dynamic_cast<TypedModelGenerator<COLORVERTEX>*>(active_model_generator);
+		if (cast_model_generator != NULL) {
+			cast_model_generator->AddVertex(new_vertex);
+		}
+		else {
+			printf("Attempting to add the wrong type of vertex\n");
+		}
+	}
 }
 
 int DXResourcePool::FinishModel() {
-	Model* new_model = new Model;
-	*new_model = active_model_generator.DumpModel(device, device_context);
-	models.push_back(new_model);
+	if (active_model_generator != NULL) {
+		Model* new_model = new Model;
+		*new_model = active_model_generator->DumpModel(device, device_context);
+		models.push_back(new_model);
 
-	ModelGenerator inactive_generator(0);
-	active_model_generator = inactive_generator;
-	return models.size() - 1;
+		delete active_model_generator;
+		active_model_generator = NULL;
+		return models.size() - 1;
+	} else {
+		printf("Attempting to finish a model that doesn't exist\n");
+		return -1;
+	}
 }
 
 int DXResourcePool::LoadTexture(std::string file_name) {
