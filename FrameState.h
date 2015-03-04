@@ -73,17 +73,41 @@ protected:
 	FrameStateBuffer* frame_state_buffer;
 };
 
-class SecondFractionNoPredictInterpolater : public FrameStateInterpolater {
+class ConstantDelayInterpolater : public FrameStateInterpolater {
 public:
-	SecondFractionNoPredictInterpolater(FrameStateBuffer* fsb, float num_seconds);
-
-private:
-	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time);
+	ConstantDelayInterpolater(FrameStateBuffer* fsb, float num_seconds);
 
 	// Predicted time between frames. If the latest frame happened at time T,
 	// the latest two frames will interpolate to have it be current at
 	// T+frame_timing_prediction.
 	LARGE_INTEGER frame_timing_prediction;
+};
+
+class ConstantDelayPreemptingNoPredictInterpolater : public ConstantDelayInterpolater {
+public:
+	ConstantDelayPreemptingNoPredictInterpolater(FrameStateBuffer* fsb, float num_seconds) :
+		ConstantDelayInterpolater(fsb, num_seconds) {}
+
+private:
+	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time);
+};
+
+class ConstantDelayNoPreemptingNoPredictInterpolater : public ConstantDelayInterpolater {
+public:
+	ConstantDelayNoPreemptingNoPredictInterpolater(FrameStateBuffer* fsb, float num_seconds) :
+		ConstantDelayInterpolater(fsb, num_seconds) {}
+
+private:
+	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time);
+};
+
+class ConstantDelayNoPreemeptingExtrapolateInterpolater : public ConstantDelayInterpolater {
+public:
+	ConstantDelayNoPreemeptingExtrapolateInterpolater(FrameStateBuffer* fsb, float num_seconds) :
+		ConstantDelayInterpolater(fsb, num_seconds) {}
+
+private:
+	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time);
 };
 
 template<std::size_t SIZE>

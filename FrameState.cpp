@@ -109,13 +109,13 @@ FrameState FrameStateInterpolater::InterpolateCurrentState() {
 	return interpolated_state;
 }
 
-SecondFractionNoPredictInterpolater::SecondFractionNoPredictInterpolater(FrameStateBuffer* fsb, float num_seconds)
+ConstantDelayInterpolater::ConstantDelayInterpolater(FrameStateBuffer* fsb, float num_seconds)
 	: FrameStateInterpolater(fsb) {
 	QueryPerformanceFrequency(&frame_timing_prediction);
 	frame_timing_prediction.QuadPart = frame_timing_prediction.QuadPart * num_seconds;
 }
 
-FrameState SecondFractionNoPredictInterpolater::InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) {
+FrameState ConstantDelayPreemptingNoPredictInterpolater::InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) {
 	//printf("FSNP: ");
 	if (num_available_states >= 2) {
 		//printf("n states\n");
@@ -153,6 +153,107 @@ FrameState SecondFractionNoPredictInterpolater::InterpolateStateFromBuffer(int n
 		*number_states_unused = num_available_states - 1;
 		return frame_state_buffer->GetFirstState()->second;
 	} else {
+		//printf("no states\n");
+		*number_states_unused = num_available_states - 0;
+		return{ { { 0.0f, 0.0f, 0.0f } }, {} };
+	}
+}
+
+FrameState ConstantDelayNoPreemptingNoPredictInterpolater::InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) {
+	//printf("FSNP: ");
+	if (num_available_states >= 2) {
+		//printf("n states\n");
+		// The goal is to find the first frame whose display time has not yet
+		// passed. Then interpolate from the previous frame's display time to
+		// that frame at that time.
+
+		// If no frame has a display time in the future, just display the last frame
+
+		// There should always be an old frame whose display time has passed
+		auto future_frame = frame_state_buffer->GetFirstState();
+		std::list<std::pair<LARGE_INTEGER, FrameState>>::iterator past_frame;
+		bool found_future_frame = false;
+		
+		*number_states_unused = -1;
+		for (int i = 0; i < num_available_states - 1; i++) {
+			*number_states_unused += 1;
+			past_frame = future_frame;
+			future_frame++;
+			long long future_frame_display_time = future_frame->first.QuadPart + frame_timing_prediction.QuadPart;
+			if (future_frame_display_time >= interpolate_time) {
+				found_future_frame = true;
+				break;
+			}
+		}
+		// If found_future_frame is false, just display the future_frame as it is
+		// the latest past frame
+		
+		// Otherwise future_frame and past_frame are adjacent frames with display
+		// times stradling the current interpolation time
+		if (!found_future_frame) {
+			*number_states_unused = num_available_states - 1;
+			return future_frame->second;
+		} else {
+			long long time_into_frame = interpolate_time - (past_frame->first.QuadPart+frame_timing_prediction.QuadPart);
+			long long time_between_frames = future_frame->first.QuadPart - past_frame->first.QuadPart;
+			printf("%u %u\n", time_into_frame, time_between_frames);
+			return InterpolateBetweenFrameStates(past_frame->second, future_frame->second, ((float)time_into_frame) / time_between_frames);
+		}
+	}
+	else if (num_available_states == 1) {
+		//printf("one state\n");
+		*number_states_unused = num_available_states - 1;
+		return frame_state_buffer->GetFirstState()->second;
+	}
+	else {
+		//printf("no states\n");
+		*number_states_unused = num_available_states - 0;
+		return{ { { 0.0f, 0.0f, 0.0f } }, {} };
+	}
+}
+
+FrameState ConstantDelayNoPreemeptingExtrapolateInterpolater::InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) {
+	//printf("FSNP: ");
+	if (num_available_states >= 2) {
+		//printf("n states\n");
+		// The goal is to find the first frame whose display time has not yet
+		// passed. Then interpolate from the previous frame's display time to
+		// that frame at that time.
+
+		// If no frame has a display time in the future, just display the last frame
+
+		// There should always be an old frame whose display time has passed
+		auto future_frame = frame_state_buffer->GetFirstState();
+		std::list<std::pair<LARGE_INTEGER, FrameState>>::iterator past_frame;
+		bool found_future_frame = false;
+
+		*number_states_unused = -1;
+		for (int i = 0; i < num_available_states - 1; i++) {
+			*number_states_unused += 1;
+			past_frame = future_frame;
+			future_frame++;
+			long long future_frame_display_time = future_frame->first.QuadPart + frame_timing_prediction.QuadPart;
+			if (future_frame_display_time >= interpolate_time) {
+				found_future_frame = true;
+				break;
+			}
+		}
+		// If found_future_frame is false, just display the future_frame as it is
+		// the latest past frame
+
+		// Otherwise future_frame and past_frame are adjacent frames with display
+		// times stradling the current interpolation time
+		long long time_into_frame = interpolate_time - (past_frame->first.QuadPart + frame_timing_prediction.QuadPart);
+		long long time_between_frames = future_frame->first.QuadPart - past_frame->first.QuadPart;
+		printf("%u %u\n", time_into_frame, time_between_frames);
+		return InterpolateBetweenFrameStates(past_frame->second, future_frame->second, ((float)time_into_frame) / time_between_frames);
+	}
+	else if (num_available_states == 1) {
+		//printf("one state\n");
+		*number_states_unused = num_available_states - 1;
+		return frame_state_buffer->GetFirstState()->second;
+	}
+	else {
 		//printf("no states\n");
 		*number_states_unused = num_available_states - 0;
 		return{ { { 0.0f, 0.0f, 0.0f } }, {} };

@@ -14,7 +14,7 @@
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
-SecondFractionNoPredictInterpolater state_interpolater(&state_buffer, 0.5);
+ConstantDelayNoPreemptingNoPredictInterpolater state_interpolater(&state_buffer, 2);
 ResourcePool* resource_pool;
 FrameState current_state;
 std::string resources_location(".");

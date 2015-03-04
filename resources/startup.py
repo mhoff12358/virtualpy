@@ -75,4 +75,7 @@ while True:
 	virtualpy.show_model(ceilsq, (0, -.5, 0), (10, 1, 10), (0, 0, 0, 1))
 	virtualpy.push_state()
 	i = 1-i
-	time.sleep(0.5)
+	if keys_since_state[ord('G')]:
+		time.sleep(5)
+	else:
+		time.sleep(0.5)
