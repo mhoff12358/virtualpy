@@ -5,9 +5,24 @@
 
 #include "D3D11.h"
 
+#include "Logging.h"
+
 enum VERTEXID {
 	TEXTUREVERTEX_ID = 0,
 	COLORVERTEX_ID = 1
+};
+
+class Vertex {
+public:
+	Vertex(int number_of_floats);
+	Vertex(int number_of_floats, float* all_data);
+
+	void AddVertexBlock(float* new_block, int size);
+
+	float* GetData();
+private:
+	std::vector<float> data;
+	int num_floats;
 };
 
 struct TEXTUREVERTEX {

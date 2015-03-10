@@ -191,17 +191,24 @@ FrameState ConstantDelayNoPreemptingNoPredictInterpolater::InterpolateStateFromB
 		// Otherwise future_frame and past_frame are adjacent frames with display
 		// times stradling the current interpolation time
 		if (!found_future_frame) {
+			frame_state_buffer->GetFirstState()->first.QuadPart = max(
+				interpolate_time - frame_timing_prediction.QuadPart,
+				frame_state_buffer->GetFirstState()->first.QuadPart);
 			*number_states_unused = num_available_states - 1;
 			return future_frame->second;
 		} else {
 			long long time_into_frame = interpolate_time - (past_frame->first.QuadPart+frame_timing_prediction.QuadPart);
 			long long time_between_frames = future_frame->first.QuadPart - past_frame->first.QuadPart;
-			printf("%u %u\n", time_into_frame, time_between_frames);
 			return InterpolateBetweenFrameStates(past_frame->second, future_frame->second, ((float)time_into_frame) / time_between_frames);
 		}
 	}
 	else if (num_available_states == 1) {
-		//printf("one state\n");
+		// If a frame is being displayed by itself after it was intended to be
+		// displayed then update its intended display time to new frames will
+		// still smoothly interpolate
+		frame_state_buffer->GetFirstState()->first.QuadPart = max(
+			interpolate_time - frame_timing_prediction.QuadPart,
+			frame_state_buffer->GetFirstState()->first.QuadPart);
 		*number_states_unused = num_available_states - 1;
 		return frame_state_buffer->GetFirstState()->second;
 	}
@@ -245,7 +252,6 @@ FrameState ConstantDelayNoPreemeptingExtrapolateInterpolater::InterpolateStateFr
 		// times stradling the current interpolation time
 		long long time_into_frame = interpolate_time - (past_frame->first.QuadPart + frame_timing_prediction.QuadPart);
 		long long time_between_frames = future_frame->first.QuadPart - past_frame->first.QuadPart;
-		printf("%u %u\n", time_into_frame, time_between_frames);
 		return InterpolateBetweenFrameStates(past_frame->second, future_frame->second, ((float)time_into_frame) / time_between_frames);
 	}
 	else if (num_available_states == 1) {

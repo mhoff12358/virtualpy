@@ -14,7 +14,7 @@
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
-ConstantDelayNoPreemptingNoPredictInterpolater state_interpolater(&state_buffer, 2);
+ConstantDelayNoPreemeptingExtrapolateInterpolater state_interpolater(&state_buffer, 0.5);
 ResourcePool* resource_pool;
 FrameState current_state;
 std::string resources_location(".");
@@ -298,6 +298,16 @@ struct PyModuleDef virtualpymodule = {
 PyMODINIT_FUNC
 PyInit_virtualpy(void)
 {
-	return PyModule_Create(&virtualpy::virtualpymodule);
+	PyObject* unfinished_module = PyModule_Create(&virtualpy::virtualpymodule);
+	PyObject* unfinished_module_dict = PyModule_GetDict(unfinished_module);
+
+	PyObject* classes_module = PyImport_ImportModule("virtualpy_classes");
+	PyObject* classes_module_dict = PyModule_GetDict(classes_module);
+	
+	PyObject* class_A = PyDict_GetItemString(classes_module_dict, "A");
+	PyDict_SetItemString(unfinished_module_dict, "A", class_A);
+	
+
+	return unfinished_module;
 }
 
