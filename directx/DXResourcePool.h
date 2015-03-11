@@ -1,4 +1,6 @@
 #pragma once
+#include "Python.h"
+
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dx10.h>
@@ -11,6 +13,7 @@
 
 #include "Model.h"
 #include "Entity.h"
+#include "Vertices.h"
 
 class DXResourcePool :
 	public ResourcePool
@@ -21,8 +24,10 @@ public:
 
 	void Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con);
 
-	virtual void BeginNewModel(unsigned int vertex_type);
-	virtual void AddModelVertex(void* new_vertex);
+	virtual void BeginNewModel(PyObject* vertex_type);
+	virtual void BeginNewModel(VertexType vertex_type);
+	virtual void AddModelVertex(PyObject* new_vertex);
+	virtual void AddModelVertex(Vertex new_vertex);
 	virtual int FinishModel();
 
 	virtual int LoadTexture(std::string file_name);

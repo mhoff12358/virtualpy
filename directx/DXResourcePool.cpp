@@ -16,13 +16,13 @@ void DXResourcePool::Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con)
 	device_context = dev_con;
 }
 
-void DXResourcePool::BeginNewModel(unsigned int vertex_type) {
-	active_vertex_type = vertex_type;
-	if (active_vertex_type == TEXTUREVERTEX_ID) {
-		active_model_generator = new TypedModelGenerator<TEXTUREVERTEX>();
-	} else if (active_vertex_type == COLORVERTEX_ID) {
-		active_model_generator = new TypedModelGenerator<COLORVERTEX>();
-	}
+void DXResourcePool::BeginNewModel(PyObject* vertex_type) {
+	VertexType formatted_vertex_type;
+	BeginNewModel(formatted_vertex_type);
+}
+
+void DXResourcePool::BeginNewModel(VertexType vertex_type) {
+	
 }
 
 void DXResourcePool::AddModelVertex(void* new_vertex) {

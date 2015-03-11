@@ -85,12 +85,12 @@ PyObject* SetColor(PyObject* self, PyObject* args) {
 }
 
 PyObject* BeginModel(PyObject* self, PyObject* args) {
-	unsigned int vertex_id;
-	if (!PyArg_ParseTuple(args, "I", &vertex_id)) {
+	PyObject* vertex_type;
+	if (!PyArg_ParseTuple(args, "O", &vertex_type)) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	resource_pool->BeginNewModel(vertex_id);
+	resource_pool->BeginNewModel(vertex_type);
 	Py_INCREF(Py_None);
 	return Py_None;
 }

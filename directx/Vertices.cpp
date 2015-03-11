@@ -1,33 +1,31 @@
 #include "Vertices.h"
 
-Vertex::Vertex(int number_of_floats) {
-	num_floats = number_of_floats;
-	data.resize(num_floats);
-}
-
-Vertex::Vertex(int number_of_floats, float* all_data) {
-	num_floats = number_of_floats;
-	data.resize(num_floats);
-
-	memcpy(data.data(), all_data, sizeof(float)*num_floats);
-}
-
-void Vertex::AddVertexBlock(float* new_block, int size) {
-	int current_size = data.size();
-	if (size + current_size <= num_floats) {
-		data.resize(size + current_size);
-		memcpy(data.data() + current_size, new_block, size);
-	} else {
-		OutputFormatted("Error attempting to add too much data to a vertex");
+VertexType::VertexType(D3D11_INPUT_ELEMENT_DESC* v_type, int size_of_type) {
+	for (int i = 0; i < size_of_type; i++) {
+		vertex_type.push_back(v_type[i]);
 	}
 }
 
-float* Vertex::GetData() {
-	if (data.size() != num_floats) {
-		OutputFormatted("Error attempting to get a vertex with the wrong amount of data");
-		return NULL;
+VertexType::VertexType(std::vector<D3D11_INPUT_ELEMENT_DESC> v_type) : vertex_type(v_type) {
+
+}
+
+int VertexType::GetVertexSize() {
+	int total_size = 0;
+	for (const D3D11_INPUT_ELEMENT_DESC& ied : vertex_type) {
+		if (ied.Format == DXGI_FORMAT_R32G32B32A32_FLOAT) {
+			total_size += 4 * sizeof(float);
+		} else if (ied.Format == DXGI_FORMAT_R32G32B32_FLOAT) {
+			total_size += 3 * sizeof(float);
+		} else if (ied.Format == DXGI_FORMAT_R32G32_FLOAT) {
+			total_size += 2 * sizeof(float);
+		} else if (ied.Format == DXGI_FORMAT_R32_FLOAT) {
+			total_size += 1 * sizeof(float);
+		} else {
+			OutputFormatted("Invalid Input Element Description in vertex type");
+		}
 	}
-	return data.data();
+	return total_size;
 }
 
 D3D11_INPUT_ELEMENT_DESC TEXTUREVERTEX::input_element_desc[2] =
