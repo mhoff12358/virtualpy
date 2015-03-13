@@ -51,4 +51,9 @@ private:
 	std::vector<Entity*> entities;
 	std::vector<Model*> models;
 	std::vector<Texture*> textures;
+
+	DXGI_FORMAT PyRawTypeToDXGIFormat(PyObject* raw_type);
+	char* PyMetaTypeToSemantic(PyObject* meta_type);
+	VertexType PyVertexTypeToVertexType(PyObject* vertex_type);
+	Vertex PyVertexToVertex(PyObject* vertex);
 };

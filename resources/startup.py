@@ -12,9 +12,10 @@ virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
 virtualpy.spawn_thread('directx')
 
-virtualpy.begin_model(1)
+color_vertex_type = VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
+virtualpy.begin_model(color_vertex_type)
 
-virtualpy.color_vertex( 1,  1, 0, 1, 0, 0, 1)
+virtualpy.add_vertex(location=(1,  1, 0), color=(1, 0, 0, 1))
 virtualpy.color_vertex(-1,  1, 0, 1, 0, 0, 1)
 virtualpy.color_vertex( 1, -1, 0, 1, 0, 0, 1)
 virtualpy.color_vertex(-1, -1, 0, 1, 0, 0, 1)

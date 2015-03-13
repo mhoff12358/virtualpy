@@ -32,7 +32,7 @@ private:
 
 class Vertex {
 public:
-	Vertex(VertexType v_type, float* all_data);
+	Vertex(VertexType v_type, std::vector<float> in_data);
 
 	float* GetData();
 	VertexType GetVertexType();
@@ -40,6 +40,8 @@ private:
 	std::vector<float> data;
 	VertexType vertex_type;
 };
+
+extern VertexType common_vertex_types[];
 
 struct TEXTUREVERTEX {
 	float x, y, z;

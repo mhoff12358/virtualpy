@@ -1,5 +1,12 @@
 #include "Vertices.h"
 
+VertexType common_vertex_types[1] = {
+	VertexType(std::vector<D3D11_INPUT_ELEMENT_DESC>({
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		})),
+};
+
 VertexType::VertexType(D3D11_INPUT_ELEMENT_DESC* v_type, int size_of_type) {
 	for (int i = 0; i < size_of_type; i++) {
 		vertex_type.push_back(v_type[i]);
@@ -26,6 +33,19 @@ int VertexType::GetVertexSize() {
 		}
 	}
 	return total_size;
+}
+
+Vertex::Vertex(VertexType v_type, std::vector<float> in_data) :
+	vertex_type(v_type), data(in_data) {
+
+}
+
+float* Vertex::GetData() {
+	return data.data();
+}
+
+VertexType Vertex::GetVertexType() {
+	return vertex_type;
 }
 
 D3D11_INPUT_ELEMENT_DESC TEXTUREVERTEX::input_element_desc[2] =

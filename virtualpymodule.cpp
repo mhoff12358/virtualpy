@@ -95,7 +95,7 @@ PyObject* BeginModel(PyObject* self, PyObject* args) {
 	return Py_None;
 }
 
-PyObject* ColorVertex(PyObject* self, PyObject* args) {
+/*PyObject* ColorVertex(PyObject* self, PyObject* args) {
 	float vertex_data[7];
 	if (!PyArg_ParseTuple(args, "fffffff", vertex_data, vertex_data + 1, vertex_data + 2, vertex_data + 3, vertex_data + 4, vertex_data + 5, vertex_data + 6)) {
 		return NULL;
@@ -113,6 +113,14 @@ PyObject* TextureVertex(PyObject* self, PyObject* args) {
 	resource_pool->AddModelVertex((void*)vertex_data);
 	Py_INCREF(Py_None);
 	return Py_None;
+}*/
+
+PyObject* AddVertex(PyObject* self, PyObject* args) {
+	PyObject* vertex;
+	if (!PyArg_ParseTuple(args, "O", &vertex)) {
+		return NULL;
+	}
+	resource_pool->AddModelVertex(vertex);
 }
 
 PyObject* EndModel(PyObject* self, PyObject* args) {
@@ -269,8 +277,9 @@ PyMethodDef virtualpy_methods[] = {
 	{ "spawn_thread", SpawnThread, METH_VARARGS, "spawn_thread() doc string" },
 	{ "set_color", SetColor, METH_VARARGS, "set_color() doc string" },
 	{ "begin_model", BeginModel, METH_VARARGS, "begin_model() doc string" },
-	{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
-	{ "texture_vertex", TextureVertex, METH_VARARGS, "texture_vertex() doc string" },
+	//{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
+	//{ "texture_vertex", TextureVertex, METH_VARARGS, "texture_vertex() doc string" },
+	{ "add_vertex", AddVertex, METH_VARARGS, "add_vertex() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
 	{ "load_texture", LoadTexture, METH_VARARGS, "load_texture() doc string" },
 	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
@@ -303,6 +312,15 @@ PyInit_virtualpy(void)
 
 	PyObject* classes_module = PyImport_ImportModule("virtualpy_classes");
 	PyObject* classes_module_dict = PyModule_GetDict(classes_module);
+
+	PyObject* classes_module_items = PyDict_Items(classes_module_dict);
+	Py_ssize_t num_module_items = PyList_Size(classes_module_items);
+
+	for (Py_ssize_t i = 0; i < num_module_items; i++) {
+		PyObject* current_item = PyList_GetItem(classes_module_items, i);
+
+	}
+	Py_DecRef(classes_module_items);
 	
 	PyObject* class_A = PyDict_GetItemString(classes_module_dict, "A");
 	PyDict_SetItemString(unfinished_module_dict, "A", class_A);
