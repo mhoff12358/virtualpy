@@ -1,3 +1,4 @@
+import math
 
 class RawType(object):
     def __init__(self, num_floats):
@@ -72,3 +73,37 @@ class Vertex(object):
     def __init__(self, vertex_type, data_list):
         self.vertex_type = vertex_type
         self.data_list = data_list
+
+class Quaternion(object):
+	def __init__(self, vector):
+		#self.vector should be in the form (x, y, z, w)
+		if len(vector) != 4:
+			raise ValueError("Wrong size of the vector being passed into Quaternion constructor")
+		self.vector = tuple(vector)
+		
+	def x(self):
+		return self.vector[0]
+
+	def y(self):
+		return self.vector[1]
+
+	def z(self):
+		return self.vector[2]
+
+	def w(self):
+		return self.vector[3]
+
+	def __mul__(self, other):
+		if isinstance(other, Quaternion):
+			return Quaternion((self.w()*other.w()-self.x()*other.x()-self.y()*other.y()-self.z()*other.z(),
+				self.w()*other.x()+self.x()*other.w()+self.y()*other.z()-self.z()*other.y(),
+				self.w()*other.y()-self.x()*other.z()+self.y()*other.w()+self.z()*other.x(),
+				self.w()*other.z()+self.x()*other.y()-self.y()*other.x()+self.z()*other.w()))
+		else:
+			return Quaternion(tuple(other*x for x in self.vector))
+
+	def __add__(self, other):
+		return Quaternion(tuple(self.vector[i]+other.vector[i] for i in range(4)))
+
+	def __rmul__(self, other):
+		return Quaternion(tuple(other*x for x in self.vector))

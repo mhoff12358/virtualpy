@@ -19,8 +19,10 @@ public:
 
 	virtual int LoadTexture(std::string file_name) = 0;
 
-	virtual int CreateModeledEntity(int model_id) = 0;
-	virtual int CreateTexturedEntity(int model_id, int texture_id) = 0;
+	virtual int LoadShader(std::string file_name, PyObject* vertex_type) = 0;
+
+	virtual int CreateModeledEntity(int model_id, int shader_id) = 0;
+	virtual int CreateTexturedEntity(int model_id, int shader_id, int texture_id) = 0;
 
 	virtual int GetNumberOfEntities() = 0;
 

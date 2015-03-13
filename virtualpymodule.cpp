@@ -158,26 +158,44 @@ PyObject* LoadTexture(PyObject* self, PyObject* args) {
 	return Py_BuildValue("i", tex_id);
 }
 
+PyObject* LoadShader(PyObject* self, PyObject* args) {
+	char* file_name_cstr;
+	PyObject* vertex_type;
+	if (!PyArg_ParseTuple(args, "sO", &file_name_cstr, &vertex_type)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	std::string file_name(file_name_cstr);
+	int shad_id = resource_pool->LoadShader(resources_location + file_name, vertex_type);
+	if (shad_id < 0) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	return Py_BuildValue("i", shad_id);
+}
+
 PyObject* CreateModeledEntity(PyObject* self, PyObject* args) {
 	unsigned int model_id;
-	if (!PyArg_ParseTuple(args, "I", &model_id)) {
+	unsigned int shader_id;
+	if (!PyArg_ParseTuple(args, "II", &model_id, &shader_id)) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
 
-	int entity_id = resource_pool->CreateModeledEntity(model_id);
+	int entity_id = resource_pool->CreateModeledEntity(model_id, shader_id);
 	return Py_BuildValue("i", entity_id);
 }
 
 PyObject* CreateTexturedEntity(PyObject* self, PyObject* args) {
 	unsigned int model_id;
+	unsigned int shader_id;
 	unsigned int texture_id;
-	if (!PyArg_ParseTuple(args, "II", &model_id, &texture_id)) {
+	if (!PyArg_ParseTuple(args, "III", &model_id, &shader_id, &texture_id)) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
 
-	int entity_id = resource_pool->CreateTexturedEntity(model_id, texture_id);
+	int entity_id = resource_pool->CreateTexturedEntity(model_id, shader_id, texture_id);
 	return Py_BuildValue("i", entity_id);
 }
 
@@ -186,13 +204,12 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 
 	//static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
 	static char *kwlist[] = { "entity_id", "position", "scale", "rotation", NULL };
-	float scale[3];
 	PyObject* location_tuple;
 	PyObject* scale_tuple;
-	PyObject* orientation_tuple;
+	PyObject* orientation_quaternion;
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|OOO", kwlist,
-		&entity_id, &location_tuple, &scale_tuple, &orientation_tuple)) {
+		&entity_id, &location_tuple, &scale_tuple, &orientation_quaternion)) {
 		//new_entity_state.location.data(), new_entity_state.location.data() + 1, new_entity_state.location.data() + 2,
 		//scale, scale+1, scale+2,
 		//new_entity_state.orientation.data(), new_entity_state.orientation.data() + 1, new_entity_state.orientation.data() + 2, new_entity_state.orientation.data() + 3)) {
@@ -226,7 +243,11 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 			return NULL;
 		}
 	}
-	if (orientation_tuple != Py_None) {
+	if (orientation_quaternion != Py_None) {
+		PyObject* orientation_tuple = PyObject_GetAttrString(orientation_quaternion, "vector");
+		if (orientation_tuple == NULL) {
+			return NULL;
+		}
 		if (!PyArg_ParseTuple(orientation_tuple, "ffff",
 			current_state.entities[entity_id].position.orientation.data(),
 			current_state.entities[entity_id].position.orientation.data() + 1,
@@ -293,6 +314,7 @@ PyMethodDef virtualpy_methods[] = {
 	{ "add_vertex", (PyCFunction)AddVertex, METH_VARARGS | METH_KEYWORDS, "add_vertex() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
 	{ "load_texture", LoadTexture, METH_VARARGS, "load_texture() doc string" },
+	{ "load_shader", LoadShader, METH_VARARGS, "load_shader() doc string" },
 	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
 	{ "create_textured_entity", CreateTexturedEntity, METH_VARARGS, "create_textured_entity() doc string" },
 	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
@@ -341,6 +363,7 @@ PyInit_virtualpy(void)
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "MetaType");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "VertexType");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Vertex");
+	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Quaternion");
 	
 
 	return unfinished_module;
