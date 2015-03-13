@@ -31,9 +31,11 @@ public:
 	virtual int FinishModel();
 
 	virtual int LoadTexture(std::string file_name);
+	virtual int LoadShader(std::string file_name, PyObject* vertex_type);
+	virtual int LoadShader(std::string file_name, VertexType vertex_type);
 
-	virtual int CreateModeledEntity(int model_id);
-	virtual int CreateTexturedEntity(int model_id, int texture_id);
+	virtual int CreateModeledEntity(int model_id, int shader_id);
+	virtual int CreateTexturedEntity(int model_id, int shader_id, int texture_id);
 
 	virtual int GetNumberOfEntities();
 
@@ -51,6 +53,7 @@ private:
 	std::vector<Entity*> entities;
 	std::vector<Model*> models;
 	std::vector<Texture*> textures;
+	std::vector<ShaderPipeline*> shaders;
 
 	DXGI_FORMAT PyRawTypeToDXGIFormat(PyObject* raw_type);
 	char* PyMetaTypeToSemantic(PyObject* meta_type);

@@ -30,7 +30,7 @@ public:
 	void Cleanup();
 
 	void Prepare();
-	void PrepareShader(int shader_number);
+	void PrepareShader(ShaderPipeline* shader);
 	void PrepareConstantBuffer(ConstantBuffer* constant_buffer, int buffer_slot);
 
 	void Clear(D3DXCOLOR color);
@@ -44,8 +44,6 @@ private:
 	ID3D11RenderTargetView* render_target_view;
 	ID3D11DepthStencilView* depth_stencil_view;
 	D3D11_VIEWPORT viewport;
-
-	std::vector<ShaderPipeline> shaders;
 };
 
 #endif

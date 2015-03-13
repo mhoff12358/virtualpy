@@ -11,8 +11,6 @@
 #include "RenderMode.h"
 #include "Texture.h"
 #include "Vertices.h"
-#include "Ground.h"
-#include "ModeledEntity.h"
 #include "DrawHandler.h"
 #include "EntityFactory.h"
 #include "DXResourcePool.h"

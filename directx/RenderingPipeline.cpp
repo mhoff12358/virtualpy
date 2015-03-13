@@ -48,8 +48,8 @@ void ToScreenRenderingPipeline::Initialize(ViewState* vs, World* world, InputHan
 
 	render_to_back_buffer.Initialize(view_state->device_interface, view_state->device_context, back_buffer.GetRenderTargetView(), depth_buffer_view);
 	render_to_back_buffer.SetViewport(view_state->window_details.screen_size, { 0.0f, 1.0f });
-	render_to_back_buffer.AddShader(resource_location + "texture_shaders.hlsl", TEXTUREVERTEX::input_element_desc, TEXTUREVERTEX::input_element_desc_size);
-	render_to_back_buffer.AddShader(resource_location + "shaders.hlsl", COLORVERTEX::input_element_desc, COLORVERTEX::input_element_desc_size);
+	//render_to_back_buffer.AddShader(resource_location + "texture_shaders.hlsl", TEXTUREVERTEX::input_element_desc, TEXTUREVERTEX::input_element_desc_size);
+	//render_to_back_buffer.AddShader(resource_location + "shaders.hlsl", COLORVERTEX::input_element_desc, COLORVERTEX::input_element_desc_size);
 
 	// Prepare camera and its transformation matrix buffer
 	player_camera.vertical_fov = 120.0f / 180.0f*3.1415f;
@@ -94,8 +94,8 @@ void ToOculusRenderingPipeline::Initialize(ViewState* vs, World* world, InputHan
 	render_texture.Initialize(view_state->device_interface, view_state->device_context, OculusHelper::ConvertSizeiToArray(oculus->render_target_viewport.Size));
 
 	render_to_texture.Initialize(view_state->device_interface, view_state->device_context, render_texture.GetRenderTargetView(), depth_buffer_view);
-	render_to_texture.AddShader(resource_location + "texture_shaders.hlsl", TEXTUREVERTEX::input_element_desc, TEXTUREVERTEX::input_element_desc_size);
-	render_to_texture.AddShader(resource_location + "shaders.hlsl", COLORVERTEX::input_element_desc, COLORVERTEX::input_element_desc_size);
+	//render_to_texture.AddShader(resource_location + "texture_shaders.hlsl", TEXTUREVERTEX::input_element_desc, TEXTUREVERTEX::input_element_desc_size);
+	//render_to_texture.AddShader(resource_location + "shaders.hlsl", COLORVERTEX::input_element_desc, COLORVERTEX::input_element_desc_size);
 
 	oculus->ConfigureBackBufferRendering(view_state, &back_buffer);
 

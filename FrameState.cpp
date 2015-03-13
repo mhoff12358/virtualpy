@@ -85,16 +85,22 @@ PositionState FrameStateInterpolater::InterpolateBetweenPositionStates(PositionS
 	PositionState new_state;
 	new_state.location = InterpolateBetweenArrays(state_0.location, state_1.location, weight);
 	new_state.scale = InterpolateBetweenArrays(state_0.scale, state_1.scale, weight);
-	float subtended_angle = 0.0f;
+	float dot = 0.0f;
 	for (int i = 0; i < 4; i++) {
-		subtended_angle += state_0.orientation[i] * state_1.orientation[i];
+		dot += state_0.orientation[i] * state_1.orientation[i];
 	}
-	subtended_angle = acos(subtended_angle);
-	if (subtended_angle == 0.0f) {
+	float theta = weight*acos(dot);
+	if (theta == 0.0f) {
 		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, 1 - weight, weight);
 	}
 	else {
-		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, sin((1 - weight)*subtended_angle) / sin(subtended_angle), sin(weight*subtended_angle) / sin(subtended_angle));
+		std::array<float, 4> new_quat = {
+			state_1.orientation[0] - state_0.orientation[0] * dot,
+			state_1.orientation[1] - state_0.orientation[1] * dot,
+			state_1.orientation[2] - state_0.orientation[2] * dot,
+			state_1.orientation[3] - state_0.orientation[3] * dot
+		};
+		new_state.orientation = ScaleBetweenArrays(state_0.orientation, new_quat, cos(theta), sin(theta));
 	}
 	return new_state;
 }

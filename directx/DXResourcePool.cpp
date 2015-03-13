@@ -73,12 +73,20 @@ int DXResourcePool::LoadTexture(std::string file_name) {
 	return textures.size() - 1;
 }
 
-int DXResourcePool::CreateModeledEntity(int model_id) {
-	int* shader_number = new int;
+int DXResourcePool::LoadShader(std::string file_name, PyObject* vertex_type) {
+	return LoadShader(file_name, PyVertexTypeToVertexType(vertex_type));
+}
+
+int DXResourcePool::LoadShader(std::string file_name, VertexType vertex_type) {
+	ShaderPipeline* new_shader = new ShaderPipeline;
+	new_shader->Initialize(device, device_context, file_name, vertex_type.GetVertexType(), vertex_type.GetSizeVertexType());
+	shaders.push_back(new_shader);
+	return shaders.size() - 1;
+}
+
+int DXResourcePool::CreateModeledEntity(int model_id, int shader_id) {
 	std::vector<std::pair<ConstantBuffer*, int>> transformations;
 	ConstantBuffer* model_transformation = new ConstantBuffer;
-
-	*shader_number = 1;
 
 	model_transformation->Initialize(device, device_context);
 	XMStoreFloat4x4(&(model_transformation->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
@@ -86,7 +94,7 @@ int DXResourcePool::CreateModeledEntity(int model_id) {
 	transformations.push_back(std::make_pair(model_transformation, 1));
 	
 	ModeledDrawHandler* draw_handler = new ModeledDrawHandler;
-	draw_handler->Initialize(shader_number, transformations, models[model_id]);
+	draw_handler->Initialize(shaders[shader_id], transformations, models[model_id]);
 	
 	Entity* new_entity = new Entity;
 	new_entity->Initialize((DrawHandler*)draw_handler);
@@ -96,12 +104,9 @@ int DXResourcePool::CreateModeledEntity(int model_id) {
 	return entities.size() - 1;
 }
 
-int DXResourcePool::CreateTexturedEntity(int model_id, int texture_id) {
-	int* shader_number = new int;
+int DXResourcePool::CreateTexturedEntity(int model_id, int shader_id, int texture_id) {
 	std::vector<std::pair<ConstantBuffer*, int>> transformations;
 	ConstantBuffer* model_transformation = new ConstantBuffer;
-
-	*shader_number = 0;
 
 	model_transformation->Initialize(device, device_context);
 	XMStoreFloat4x4(&(model_transformation->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
@@ -109,7 +114,7 @@ int DXResourcePool::CreateTexturedEntity(int model_id, int texture_id) {
 	transformations.push_back(std::make_pair(model_transformation, 1));
 
 	TexturedDrawHandler* draw_handler = new TexturedDrawHandler;
-	draw_handler->Initialize(shader_number, transformations, models[model_id], textures[texture_id], 0, 0);
+	draw_handler->Initialize(shaders[shader_id], transformations, models[model_id], textures[texture_id], 0, 0);
 
 	Entity* new_entity = new Entity;
 	new_entity->Initialize(draw_handler);

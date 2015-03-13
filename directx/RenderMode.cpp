@@ -38,11 +38,6 @@ void RenderMode::SetViewport(int xoff, int yoff, int width, int height, float mi
 	viewport.MaxDepth = max_depth;
 }
 
-void RenderMode::AddShader(std::string file_name, D3D11_INPUT_ELEMENT_DESC ied[], int ied_size) {
-	shaders.emplace_back();
-	shaders.back().Initialize(device, device_context, file_name, ied, ied_size);
-}
-
 void RenderMode::Cleanup() {
 }
 
@@ -52,11 +47,11 @@ void RenderMode::Prepare() {
 	device_context->RSSetViewports(1, &viewport);
 }
 
-void RenderMode::PrepareShader(int shader_number) {
-	device_context->VSSetShader(shaders[shader_number].vertex_shader, 0, 0);
-	device_context->PSSetShader(shaders[shader_number].pixel_shader, 0, 0);
+void RenderMode::PrepareShader(ShaderPipeline* shader) {
+	device_context->VSSetShader(shader->vertex_shader, 0, 0);
+	device_context->PSSetShader(shader->pixel_shader, 0, 0);
 
-	device_context->IASetInputLayout(shaders[shader_number].input_layout);
+	device_context->IASetInputLayout(shader->input_layout);
 }
 
 void RenderMode::PrepareConstantBuffer(ConstantBuffer* constant_buffer, int buffer_slot) {

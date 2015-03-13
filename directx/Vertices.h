@@ -17,8 +17,8 @@ public:
 	VertexType(D3D11_INPUT_ELEMENT_DESC* v_type, int size_of_type);
 	VertexType(std::vector<D3D11_INPUT_ELEMENT_DESC> v_type);
 
-	//D3D11_INPUT_ELEMENT_DESC* GetVertexType();
-	//int GetSizeVertexType();
+	D3D11_INPUT_ELEMENT_DESC* GetVertexType();
+	int GetSizeVertexType();
 
 	// Returns the size of the vertex's data in bytes
 	int GetVertexSize();

@@ -17,6 +17,14 @@ VertexType::VertexType(std::vector<D3D11_INPUT_ELEMENT_DESC> v_type) : vertex_ty
 
 }
 
+D3D11_INPUT_ELEMENT_DESC* VertexType::GetVertexType() {
+	return vertex_type.data();
+}
+
+int VertexType::GetSizeVertexType() {
+	return vertex_type.size();
+}
+
 int VertexType::GetVertexSize() {
 	int total_size = 0;
 	for (const D3D11_INPUT_ELEMENT_DESC& ied : vertex_type) {

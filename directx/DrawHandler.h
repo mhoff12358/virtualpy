@@ -14,20 +14,21 @@ public:
 
 class ModeledDrawHandler : public DrawHandler {
 public:
-	void Initialize(int* shano, std::vector<std::pair<ConstantBuffer*, int>> consts, Model* mod);
+	void Initialize(ShaderPipeline* shad, std::vector<std::pair<ConstantBuffer*, int>> consts, Model* mod);
 
 	virtual void Draw(RenderMode& render_mode) override;
+	virtual ShaderPipeline* GetShader();
 	virtual std::vector<std::pair<ConstantBuffer*, int>>& GetConstantBuffers();
 
 protected:
-	int* shader_number;
+	ShaderPipeline* shader;
 	std::vector<std::pair<ConstantBuffer*, int>> constant_buffers;
 	Model* model;
 };
 
 class TexturedDrawHandler : public ModeledDrawHandler {
 public:
-	void Initialize(int* shano, std::vector<std::pair<ConstantBuffer*, int>> consts, Model* mod, Texture* tex, int texno, int samno);
+	void Initialize(ShaderPipeline* shad, std::vector<std::pair<ConstantBuffer*, int>> consts, Model* mod, Texture* tex, int texno, int samno);
 
 	virtual void Draw(RenderMode& render_mode) override;
 
