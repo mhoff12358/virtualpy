@@ -39,14 +39,9 @@ void World::UpdateLogic(int time_delta) {
 }
 
 void World::Draw(RenderMode& render_mode) {
-	//render_mode.PrepareConstantBuffer(&camera_transformation, 0);
-	//test_square.Draw(render_mode);
-	//ground_entity.Draw(render_mode);
 	for (int& entity_id_to_draw : entities_to_display) {
 		resource_pool->GetEntity(entity_id_to_draw)->Draw(render_mode);
 	}
-	//loaded_entity->Draw(render_mode);
-	//left_wall_entity->Draw(render_mode);
 }
 
 std::array<float, 3> World::GetPlayerLocation() {

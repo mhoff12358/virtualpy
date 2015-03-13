@@ -4,6 +4,8 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "PyHelper.h"
+
 #include "FrameState.h"
 #include "IOState.h"
 #include "ResourcePool.h"
@@ -11,6 +13,10 @@
 #include "directx/DirectxLoop.h"
 #include "directx/DXResourcePool.h"
 #include "directx/Vertices.h"
+
+namespace vpdb {
+	PyObject* pydebug_fn;
+}
 
 namespace virtualpy {
 FrameStateBuffer state_buffer;
@@ -85,12 +91,16 @@ PyObject* SetColor(PyObject* self, PyObject* args) {
 }
 
 PyObject* BeginModel(PyObject* self, PyObject* args) {
+	assert(!PyErr_Occurred());
 	PyObject* vertex_type;
 	if (!PyArg_ParseTuple(args, "O", &vertex_type)) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
+
+	assert(!PyErr_Occurred());
 	resource_pool->BeginNewModel(vertex_type);
+	if (PyErr_Occurred()) return NULL;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -115,12 +125,13 @@ PyObject* TextureVertex(PyObject* self, PyObject* args) {
 	return Py_None;
 }*/
 
-PyObject* AddVertex(PyObject* self, PyObject* args) {
-	PyObject* vertex;
-	if (!PyArg_ParseTuple(args, "O", &vertex)) {
+PyObject* AddVertex(PyObject* self, PyObject* args, PyObject* kwargs) {
+	resource_pool->AddModelVertexFromArgs(args, kwargs);
+	if (PyErr_Occurred()) {
 		return NULL;
 	}
-	resource_pool->AddModelVertex(vertex);
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 PyObject* EndModel(PyObject* self, PyObject* args) {
@@ -279,7 +290,7 @@ PyMethodDef virtualpy_methods[] = {
 	{ "begin_model", BeginModel, METH_VARARGS, "begin_model() doc string" },
 	//{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
 	//{ "texture_vertex", TextureVertex, METH_VARARGS, "texture_vertex() doc string" },
-	{ "add_vertex", AddVertex, METH_VARARGS, "add_vertex() doc string" },
+	{ "add_vertex", (PyCFunction)AddVertex, METH_VARARGS | METH_KEYWORDS, "add_vertex() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
 	{ "load_texture", LoadTexture, METH_VARARGS, "load_texture() doc string" },
 	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
@@ -304,11 +315,18 @@ struct PyModuleDef virtualpymodule = {
 };
 }
 
+void MergeModuleDictionaryElement(PyObject* dest_mod, PyObject* src_mod, const char* elem_name) {
+	PyDict_SetItemString(dest_mod, elem_name, PyDict_GetItemString(src_mod, elem_name));
+}
+
 PyMODINIT_FUNC
 PyInit_virtualpy(void)
 {
 	PyObject* unfinished_module = PyModule_Create(&virtualpy::virtualpymodule);
 	PyObject* unfinished_module_dict = PyModule_GetDict(unfinished_module);
+
+	PyObject* helper_module = PyImport_ImportModule("virtualpy_helpers");
+	PyObject* helper_module_dict = PyModule_GetDict(helper_module);
 
 	PyObject* classes_module = PyImport_ImportModule("virtualpy_classes");
 	PyObject* classes_module_dict = PyModule_GetDict(classes_module);
@@ -316,14 +334,13 @@ PyInit_virtualpy(void)
 	PyObject* classes_module_items = PyDict_Items(classes_module_dict);
 	Py_ssize_t num_module_items = PyList_Size(classes_module_items);
 
-	for (Py_ssize_t i = 0; i < num_module_items; i++) {
-		PyObject* current_item = PyList_GetItem(classes_module_items, i);
 
-	}
-	Py_DecRef(classes_module_items);
-	
-	PyObject* class_A = PyDict_GetItemString(classes_module_dict, "A");
-	PyDict_SetItemString(unfinished_module_dict, "A", class_A);
+	vpdb::pydebug_fn = PyDict_GetItemString(helper_module_dict, "debugObj");
+
+	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "RawType");
+	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "MetaType");
+	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "VertexType");
+	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Vertex");
 	
 
 	return unfinished_module;

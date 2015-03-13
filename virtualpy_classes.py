@@ -1,8 +1,4 @@
 
-class A(object):
-	def __init__(self):
-		self.a = 5
-
 class RawType(object):
     def __init__(self, num_floats):
         if not num_floats in [1, 2, 3, 4]:
@@ -15,13 +11,13 @@ class RawType(object):
 
 class MetaType(object):
     valid_meta_type_names = [\
-        "POSITION", "TEXCOORD"\
+        "POSITION", "TEXCOORD", "COLOR"\
         ]
 
     def __init__(self, meta_type_name):
-        if not isinstance(meta_type_name, string):
+        if not isinstance(meta_type_name, str):
             raise TypeError("Creating MetaType with non-string name")
-        if not meta_type_name in valid_meta_type_names:
+        if not meta_type_name in MetaType.valid_meta_type_names:
             raise ValueError("Creating MetaType with invalid semantic name")
         self.type_name = meta_type_name
 
@@ -41,9 +37,9 @@ class VertexType(object):
                 (meta, raw) = args[i]
             elif len(args[i]) == 3:
                 (name, meta, raw) = args[i]
-                if not isinstance(name, string):
+                if not isinstance(name, str):
                     raise TypeError("Vertex type initialization tuple had a non-string name")
-                self.name_lookup[len(self.type_def)] = name
+                self.name_reverse_lookup[len(self.type_def)] = name
             else:
                 raise ValueError("Invalid number of elements in a vertex type object's initialization tuple")
             if not isinstance(meta, MetaType):
@@ -58,9 +54,9 @@ class VertexType(object):
 
     def createVertex(self, *args, **kwargs):
         # Merges the args and kwargs into one data list based on the existing
-        # name_lookup
+        # name_reverse_lookup
         if len(kwargs)+len(args) != len(self.type_def):
-            raise ValueError("Wrong number of elements passed into a createVertex")
+            raise ValueError("Wrong number of elements passed into a createVertex, expected " + str(len(self.type_def)) + " and got " + str(len(kwargs)+len(args)))
         data_list = []
         for i in range(len(args)):
             self.type_def[i][1].validateData(args[i])

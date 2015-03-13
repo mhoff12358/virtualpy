@@ -139,22 +139,25 @@ VertexType DXResourcePool::PyVertexTypeToVertexType(PyObject* vertex_type) {
 	std::vector<D3D11_INPUT_ELEMENT_DESC> vertex_element_descriptors;
 
 	PyObject* type_list = PyObject_GetAttrString(vertex_type, "type_def");
-	Py_ssize_t number_of_elements;
+	Py_ssize_t number_of_elements = PySequence_Length(type_list);
 	unsigned long existing_size = 0;
 	for (Py_ssize_t i = 0; i < number_of_elements; i++) {
 		PyObject* element_pair = PyList_GetItem(type_list, i);
 		PyObject* meta_type = PyTuple_GetItem(element_pair, 0);
-		PyObject* raw_type = PyTuple_GetItem(element_pair, 0);
+		PyObject* raw_type = PyTuple_GetItem(element_pair, 1);
 
+		char* semantic = PyMetaTypeToSemantic(meta_type);
+		DXGI_FORMAT dxgi_format = PyRawTypeToDXGIFormat(raw_type);
 		D3D11_INPUT_ELEMENT_DESC new_element_desc = {
-			PyMetaTypeToSemantic(meta_type),
+			semantic,
 			0,
-			PyRawTypeToDXGIFormat(raw_type),
+			dxgi_format,
 			0,
 			existing_size,
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0
 		};
+		vertex_element_descriptors.push_back(new_element_desc);
 
 		existing_size += PyLong_AsUnsignedLong(PyObject_GetAttrString(raw_type, "num_floats"))*sizeof(float);
 	}
@@ -192,9 +195,12 @@ DXGI_FORMAT DXResourcePool::PyRawTypeToDXGIFormat(PyObject* raw_type) {
 		return DXGI_FORMAT_R32G32B32A32_FLOAT;
 	}
 	OutputFormatted("Error parsing raw type with unknown DXGIFormat");
+
 	return DXGI_FORMAT_UNKNOWN;
 }
 
 char* DXResourcePool::PyMetaTypeToSemantic(PyObject* meta_type) {
-	return PyBytes_AsString(PyObject_GetAttrString(meta_type, "type_name"));
+	PyObject* semantic_string = PyObject_GetAttrString(meta_type, "type_name");
+	char* retval = PyUnicode_AsUTF8(semantic_string);
+	return retval;
 }
