@@ -16,24 +16,26 @@ void RenderMode::SetViewport(D3D11_VIEWPORT view) {
 	viewport = view;
 }
 
-void RenderMode::SetViewport(std::array<int, 2> size) {
-	SetViewport(size[0], size[1]);
+void RenderMode::SetViewport(std::array<int, 2> size, std::array<float, 2> depth_range) {
+	SetViewport(size[0], size[1], depth_range[0], depth_range[1]);
 }
 
-void RenderMode::SetViewport(std::array<int, 2> offset, std::array<int, 2> size) {
-	SetViewport(offset[0], offset[1], size[0], size[1]);
+void RenderMode::SetViewport(std::array<int, 2> offset, std::array<int, 2> size, std::array<float, 2> depth_range) {
+	SetViewport(offset[0], offset[1], size[0], size[1], depth_range[0], depth_range[1]);
 }
 
-void RenderMode::SetViewport(int width, int height) {
-	SetViewport(0, 0, width, height);
+void RenderMode::SetViewport(int width, int height, float min_depth, float max_depth) {
+	SetViewport(0, 0, width, height, min_depth, max_depth);
 }
 
-void RenderMode::SetViewport(int xoff, int yoff, int width, int height) {
+void RenderMode::SetViewport(int xoff, int yoff, int width, int height, float min_depth, float max_depth) {
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
 	viewport.TopLeftX = xoff; viewport.TopLeftY = yoff;
 	viewport.Width = (float)width;
 	viewport.Height = (float)height;
+	viewport.MinDepth = min_depth;
+	viewport.MaxDepth = max_depth;
 }
 
 void RenderMode::AddShader(std::string file_name, D3D11_INPUT_ELEMENT_DESC ied[], int ied_size) {

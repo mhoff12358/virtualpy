@@ -65,7 +65,7 @@ void ViewState::InitializeD3D(std::array<int, 2> back_buffer_size) {
 	scd.BufferDesc.Height = back_buffer_size[1];
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	scd.OutputWindow = window_handler;
-	scd.SampleDesc.Count = 1;
+	scd.SampleDesc = { 1, 0 };
 	scd.Windowed = TRUE;
 	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 

@@ -21,12 +21,12 @@ void RenderingPipeline::InitializeDepthBuffer(std::array<int, 2> depth_buffer_si
 	depth_stencil_desc.StencilWriteMask = 0xFF;
 
 	depth_stencil_desc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depth_stencil_desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_stencil_desc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
 	depth_stencil_desc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depth_stencil_desc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	depth_stencil_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depth_stencil_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_stencil_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
 	depth_stencil_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depth_stencil_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
@@ -38,7 +38,7 @@ void RenderingPipeline::InitializeDepthBuffer(std::array<int, 2> depth_buffer_si
 	depth_stencil_view_desc.Flags = 0;
 	depth_stencil_view_desc.Texture2D.MipSlice = 0;
 
-	view_state->device_interface->CreateDepthStencilView(depth_buffer.GetTexture(), &depth_stencil_view_desc, &depth_buffer_view);
+	view_state->device_interface->CreateDepthStencilView(depth_buffer.GetTexture(), NULL, &depth_buffer_view);
 }
 
 void ToScreenRenderingPipeline::Initialize(ViewState* vs, World* world, InputHandler* ih, std::string rl) {
@@ -47,7 +47,7 @@ void ToScreenRenderingPipeline::Initialize(ViewState* vs, World* world, InputHan
 	InitializeDepthBuffer(view_state->window_details.screen_size);
 
 	render_to_back_buffer.Initialize(view_state->device_interface, view_state->device_context, back_buffer.GetRenderTargetView(), depth_buffer_view);
-	render_to_back_buffer.SetViewport(view_state->window_details.screen_size);
+	render_to_back_buffer.SetViewport(view_state->window_details.screen_size, { 0.0f, 1.0f });
 	render_to_back_buffer.AddShader(resource_location + "texture_shaders.hlsl", TEXTUREVERTEX::input_element_desc, TEXTUREVERTEX::input_element_desc_size);
 	render_to_back_buffer.AddShader(resource_location + "shaders.hlsl", COLORVERTEX::input_element_desc, COLORVERTEX::input_element_desc_size);
 
@@ -73,12 +73,11 @@ void ToScreenRenderingPipeline::Render() {
 
 	FrameState frame_state = input_handler->GetFrameState();
 	render_to_back_buffer.Clear(D3DXCOLOR(frame_state.color[0], frame_state.color[1], frame_state.color[2], 1.0f));
-	view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 1);
+	view_state->device_context->ClearDepthStencilView(depth_buffer_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//view_state->device_context->OMSetDepthStencilState(depth_buffer_state, 1);
 	render_to_back_buffer.Prepare();
 	render_to_back_buffer.PrepareConstantBuffer(&player_camera_transformation, 0);
-	view_state->device_context->OMSetDepthStencilState(depth_buffer_state, 1);
 	game_world->Draw(render_to_back_buffer);
-
 
 	view_state->swap_chain->Present(0, 0);
 }
@@ -127,7 +126,7 @@ void ToOculusRenderingPipeline::Render() {
 
 		std::array<int, 2> viewport_position = { oculus->eye_viewports[i].Pos.x, oculus->eye_viewports[i].Pos.y };
 		std::array<int, 2> viewport_size = { oculus->eye_viewports[i].Size.w, oculus->eye_viewports[i].Size.h };
-		render_to_texture.SetViewport(viewport_position, viewport_size);
+		render_to_texture.SetViewport(viewport_position, viewport_size, { 0.0f, 1.0f });
 		render_to_texture.Prepare();
 		render_to_texture.PrepareConstantBuffer(&player_camera_transformation, 0);
 		view_state->device_context->OMSetDepthStencilState(depth_buffer_state, 1);
