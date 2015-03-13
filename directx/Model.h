@@ -33,29 +33,19 @@ private:
 
 class ModelGenerator {
 public:
-	ModelGenerator(int v_size);
+	ModelGenerator(VertexType v_type);
 	virtual ~ModelGenerator() {};
 
-	void AddVertex(void* new_vertex);
-	int GetVertexSize();
+	void AddVertex(Vertex new_vertex);
 
 	Model DumpModel(ID3D11Device* device, ID3D11DeviceContext* device_context);
 
 private:
-	std::vector<char> vertices;
+	std::vector<Vertex> vertices;
 	ID3D11Buffer* vertex_buffer;
-	int vertex_size;
+	VertexType vertex_type;
 	
 	void InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceContext* device_context);
-};
-
-template <typename T>
-class TypedModelGenerator : public ModelGenerator {
-public:
-	TypedModelGenerator() : ModelGenerator(sizeof(T)) {}
-	~TypedModelGenerator() {}
-
-	void AddTypedVertex(T* new_vertex) { ModelGenerator::AddVertex((void*)new_vertex); }
 };
 
 #endif

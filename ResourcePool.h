@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PYthon.h"
 #include <string>
 
 class ResourcePool
@@ -10,8 +11,9 @@ public:
 
 	void Initialize();
 
-	virtual void BeginNewModel(unsigned int vertex_type) = 0;
-	virtual void AddModelVertex(void* new_vertex) = 0;
+	virtual void BeginNewModel(PyObject* vertex_type) = 0;
+	virtual void AddModelVertex(PyObject* new_vertex) = 0;
+	virtual void AddModelVertexFromArgs(PyObject* vertex_args);
 	virtual int FinishModel() = 0;
 
 	virtual int LoadTexture(std::string file_name) = 0;
@@ -21,7 +23,7 @@ public:
 
 	virtual int GetNumberOfEntities() = 0;
 
-private:
-
+protected:
+	PyObject* current_model_vertex_type;
 };
 

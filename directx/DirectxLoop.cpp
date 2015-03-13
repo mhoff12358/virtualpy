@@ -19,7 +19,7 @@ void DirectxLoop::Begin() {
 void DirectxLoop::BeginWithPrep(std::mutex* preparation_mutex, std::condition_variable* preparation_cv) {
 	std::unique_lock<std::mutex> preparation_lock(*preparation_mutex);
 	ViewState view_state;
-	ModelGenerator texture_rendering_model_gen(TEXTUREVERTEX::vertex_size);
+	ModelGenerator texture_rendering_model_gen(common_vertex_types[0]);
 	Model texture_rendering_model;
 	PerspectiveCamera player_camera;
 	InputHandler input_handler;

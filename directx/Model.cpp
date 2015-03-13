@@ -9,18 +9,16 @@ ID3D11Buffer* Model::GetVertexBuffer() const {
 	return vertex_buffer;
 }
 
-ModelGenerator::ModelGenerator(int v_size) : vertex_size(v_size) {
+ModelGenerator::ModelGenerator(VertexType v_type) : vertex_type(v_type) {
 
 }
 
-void ModelGenerator::AddVertex(void* new_vertex) {
-	int original_size = vertices.size();
-	vertices.resize(original_size + vertex_size);
-	memcpy(vertices.data() + original_size, new_vertex, vertex_size);
-}
-
-int ModelGenerator::GetVertexSize() {
-	return vertex_size;
+void ModelGenerator::AddVertex(Vertex new_vertex) {
+	//if (new_vertex.GetVertexType() != vertex_type) {
+	//	OutputFormatted("Attempting to add a vertex of the wrong type");
+	//	return;
+	//}
+	vertices.push_back(new_vertex);
 }
 
 void ModelGenerator::InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceContext* device_context) {
@@ -33,7 +31,12 @@ void ModelGenerator::InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceCo
 	buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	D3D11_SUBRESOURCE_DATA vertices_data;
-	vertices_data.pSysMem = vertices.data();
+	int vertex_data_size = vertex_type.GetVertexSize();
+	char* vertices_raw_data = new char[vertex_data_size*vertices.size()];
+	for (int i = 0; i < vertices.size(); i++) {
+		memcpy((void*)(vertices_raw_data + i*vertex_data_size), (void*)vertices[i].GetData(), vertex_data_size);
+	}
+	vertices_data.pSysMem = (void*)vertices_raw_data;
 
 	device->CreateBuffer(&buffer_desc, &vertices_data, &vertex_buffer);
 
@@ -45,6 +48,6 @@ void ModelGenerator::InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceCo
 
 Model ModelGenerator::DumpModel(ID3D11Device* device, ID3D11DeviceContext* device_context) {
 	InitializeVertexBuffer(device, device_context);
-	Model model(vertex_buffer, vertex_size, 0, vertices.size()/vertex_size);
+	Model model(vertex_buffer, vertex_type.GetVertexSize(), 0, vertices.size());
 	return model;
 }

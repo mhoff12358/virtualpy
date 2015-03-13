@@ -16,32 +16,25 @@ void DXResourcePool::Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con)
 	device_context = dev_con;
 }
 
-void DXResourcePool::BeginNewModel(unsigned int vertex_type) {
-	active_vertex_type = vertex_type;
-	if (active_vertex_type == TEXTUREVERTEX_ID) {
-		active_model_generator = new TypedModelGenerator<TEXTUREVERTEX>();
-	} else if (active_vertex_type == COLORVERTEX_ID) {
-		active_model_generator = new TypedModelGenerator<COLORVERTEX>();
-	}
+void DXResourcePool::BeginNewModel(PyObject* vertex_type) {
+	current_model_vertex_type = vertex_type;
+	BeginNewModel(PyVertexTypeToVertexType(vertex_type));
 }
 
-void DXResourcePool::AddModelVertex(void* new_vertex) {
-	if (active_vertex_type == TEXTUREVERTEX_ID) {
-		auto cast_model_generator = dynamic_cast<TypedModelGenerator<TEXTUREVERTEX>*>(active_model_generator);
-		if (cast_model_generator != NULL) {
-			cast_model_generator->AddVertex(new_vertex);
-		} else {
-			printf("Attempting to add the wrong type of vertex\n");
-		}
-	} else if (active_vertex_type == COLORVERTEX_ID) {
-		auto cast_model_generator = dynamic_cast<TypedModelGenerator<COLORVERTEX>*>(active_model_generator);
-		if (cast_model_generator != NULL) {
-			cast_model_generator->AddVertex(new_vertex);
-		}
-		else {
-			printf("Attempting to add the wrong type of vertex\n");
-		}
+void DXResourcePool::BeginNewModel(VertexType vertex_type) {
+	active_model_generator = new ModelGenerator(vertex_type);
+}
+
+void DXResourcePool::AddModelVertex(PyObject* new_vertex) {
+	AddModelVertex(PyVertexToVertex(new_vertex));
+}
+
+void DXResourcePool::AddModelVertex(Vertex new_vertex) {
+	if (active_model_generator == NULL) {
+		OutputFormatted("Error attempting to add a vertex to a non-existant model generator");
+		return;
 	}
+	active_model_generator->AddVertex(new_vertex);
 }
 
 int DXResourcePool::FinishModel() {
@@ -140,4 +133,68 @@ Model* DXResourcePool::GetModel(int model_index) {
 
 Texture* DXResourcePool::GetTexture(int texture_index) {
 	return textures[texture_index];
+}
+
+VertexType DXResourcePool::PyVertexTypeToVertexType(PyObject* vertex_type) {
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vertex_element_descriptors;
+
+	PyObject* type_list = PyObject_GetAttrString(vertex_type, "type_def");
+	Py_ssize_t number_of_elements;
+	unsigned long existing_size = 0;
+	for (Py_ssize_t i = 0; i < number_of_elements; i++) {
+		PyObject* element_pair = PyList_GetItem(type_list, i);
+		PyObject* meta_type = PyTuple_GetItem(element_pair, 0);
+		PyObject* raw_type = PyTuple_GetItem(element_pair, 0);
+
+		D3D11_INPUT_ELEMENT_DESC new_element_desc = {
+			PyMetaTypeToSemantic(meta_type),
+			0,
+			PyRawTypeToDXGIFormat(raw_type),
+			0,
+			existing_size,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0
+		};
+
+		existing_size += PyLong_AsUnsignedLong(PyObject_GetAttrString(raw_type, "num_floats"))*sizeof(float);
+	}
+
+	return VertexType(vertex_element_descriptors);
+}
+
+
+Vertex DXResourcePool::PyVertexToVertex(PyObject* vertex) {
+	VertexType vertex_type = PyVertexTypeToVertexType(PyObject_GetAttrString(vertex, "vertex_type"));
+	PyObject* data_list = PyObject_GetAttrString(vertex, "data_list");
+	std::vector<float> data_vec;
+	
+	Py_ssize_t number_data_elements = PyList_Size(data_list);
+	for (Py_ssize_t i = 0; i < number_data_elements; i++) {
+		PyObject* data_block_tuple = PyList_GetItem(data_list, i);
+		Py_ssize_t size_data_block = PyTuple_Size(data_block_tuple);
+		for (Py_ssize_t j = 0; j < size_data_block; j++) {
+			data_vec.push_back(PyFloat_AsDouble(PyTuple_GetItem(data_block_tuple, j)));
+		}
+	}
+
+	return Vertex(vertex_type, data_vec);
+}
+
+DXGI_FORMAT DXResourcePool::PyRawTypeToDXGIFormat(PyObject* raw_type) {
+	long number_of_floats = PyLong_AsLong(PyObject_GetAttrString(raw_type, "num_floats"));
+	if (number_of_floats == 1) {
+		return DXGI_FORMAT_R32_FLOAT;
+	} else if (number_of_floats == 2) {
+		return DXGI_FORMAT_R32G32_FLOAT;
+	} else if (number_of_floats == 3) {
+		return DXGI_FORMAT_R32G32B32_FLOAT;
+	} else if (number_of_floats == 4) {
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	}
+	OutputFormatted("Error parsing raw type with unknown DXGIFormat");
+	return DXGI_FORMAT_UNKNOWN;
+}
+
+char* DXResourcePool::PyMetaTypeToSemantic(PyObject* meta_type) {
+	return PyBytes_AsString(PyObject_GetAttrString(meta_type, "type_name"));
 }

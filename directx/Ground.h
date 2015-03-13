@@ -13,7 +13,7 @@ class Ground {
 public:
 	Ground(ViewState* vs) : view_state(vs), terrain_generator(std::vector < LayerValues > {{
 			{2.0f, 1.0f / 8.0f, 0}}}),
-		terrain_map(&terrain_generator, &terrain_writer), terrain_model_gen(COLORVERTEX::vertex_size) {};
+		terrain_map(&terrain_generator, &terrain_writer) {};
 
 	void SetRenderArea(std::array<int, 2> area_min, std::array<int, 2> area_max);
 
@@ -28,7 +28,7 @@ private:
 	TerrainWriter terrain_writer;
 	TerrainMap terrain_map;
 
-	ModelGenerator terrain_model_gen;
+	//ModelGenerator terrain_model_gen;
 	Model terrain_model;
 };
 

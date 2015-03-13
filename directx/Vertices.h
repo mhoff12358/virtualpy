@@ -12,18 +12,36 @@ enum VERTEXID {
 	COLORVERTEX_ID = 1
 };
 
+class VertexType {
+public:
+	VertexType(D3D11_INPUT_ELEMENT_DESC* v_type, int size_of_type);
+	VertexType(std::vector<D3D11_INPUT_ELEMENT_DESC> v_type);
+
+	//D3D11_INPUT_ELEMENT_DESC* GetVertexType();
+	//int GetSizeVertexType();
+
+	// Returns the size of the vertex's data in bytes
+	int GetVertexSize();
+
+	//bool operator==(const VertexType& that) const;
+	//bool operator!=(const VertexType& that) const;
+
+private:
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vertex_type;
+};
+
 class Vertex {
 public:
-	Vertex(int number_of_floats);
-	Vertex(int number_of_floats, float* all_data);
-
-	void AddVertexBlock(float* new_block, int size);
+	Vertex(VertexType v_type, std::vector<float> in_data);
 
 	float* GetData();
+	VertexType GetVertexType();
 private:
 	std::vector<float> data;
-	int num_floats;
+	VertexType vertex_type;
 };
+
+extern VertexType common_vertex_types[];
 
 struct TEXTUREVERTEX {
 	float x, y, z;
