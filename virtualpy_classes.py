@@ -12,7 +12,7 @@ class RawType(object):
 
 class MetaType(object):
     valid_meta_type_names = [\
-        "POSITION", "TEXCOORD", "COLOR"\
+        "POSITION", "TEXCOORD", "COLOR", "NORMAL"\
         ]
 
     def __init__(self, meta_type_name):
@@ -76,7 +76,7 @@ class Vertex(object):
 
 class Quaternion(object):
 	def __init__(self, vector):
-		#self.vector should be in the form (x, y, z, w)
+		#self.vector should be in the form (x, y, z, w) aka (i, j, k, real)
 		if len(vector) != 4:
 			raise ValueError("Wrong size of the vector being passed into Quaternion constructor")
 		self.vector = tuple(vector)
@@ -95,15 +95,16 @@ class Quaternion(object):
 
 	def __mul__(self, other):
 		if isinstance(other, Quaternion):
-			return Quaternion((self.w()*other.w()-self.x()*other.x()-self.y()*other.y()-self.z()*other.z(),
+			return Quaternion((
 				self.w()*other.x()+self.x()*other.w()+self.y()*other.z()-self.z()*other.y(),
 				self.w()*other.y()-self.x()*other.z()+self.y()*other.w()+self.z()*other.x(),
-				self.w()*other.z()+self.x()*other.y()-self.y()*other.x()+self.z()*other.w()))
+				self.w()*other.z()+self.x()*other.y()-self.y()*other.x()+self.z()*other.w(),
+				self.w()*other.w()-self.x()*other.x()-self.y()*other.y()-self.z()*other.z()))
 		else:
-			return Quaternion(tuple(other*x for x in self.vector))
+			return Quaternion(tuple(other*val for val in self.vector))
 
 	def __add__(self, other):
 		return Quaternion(tuple(self.vector[i]+other.vector[i] for i in range(4)))
 
 	def __rmul__(self, other):
-		return Quaternion(tuple(other*x for x in self.vector))
+		return Quaternion(tuple(other*val for val in self.vector))

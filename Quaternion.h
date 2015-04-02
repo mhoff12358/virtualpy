@@ -8,7 +8,10 @@ public:
 	Quaternion(float xval, float yval, float zval, float wval);
 	std::array<float, 4> GetArray() const;
 
+	float dot(const Quaternion& other) const;
+
 	Quaternion operator*(const Quaternion& other) const;
+	Quaternion operator*(const float other) const;
 	Quaternion ToPower(const float& other) const;
 
 	float x, y, z, w;
