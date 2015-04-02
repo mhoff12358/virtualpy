@@ -253,6 +253,12 @@
     <FxCompile Include="resources\texture_shaders.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="resources\texture_normals.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\color_normals.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\ground.png">

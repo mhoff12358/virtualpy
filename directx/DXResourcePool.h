@@ -15,6 +15,8 @@
 #include "Entity.h"
 #include "Vertices.h"
 
+#define FIRST_PRIVATE_BUFFER 2
+
 class DXResourcePool :
 	public ResourcePool
 {

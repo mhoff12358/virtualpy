@@ -91,7 +91,7 @@ int DXResourcePool::CreateModeledEntity(int model_id, int shader_id) {
 	model_transformation->Initialize(device, device_context);
 	XMStoreFloat4x4(&(model_transformation->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
 	model_transformation->CreateBuffer();
-	transformations.push_back(std::make_pair(model_transformation, 1));
+	transformations.push_back(std::make_pair(model_transformation, FIRST_PRIVATE_BUFFER));
 	
 	ModeledDrawHandler* draw_handler = new ModeledDrawHandler;
 	draw_handler->Initialize(shaders[shader_id], transformations, models[model_id]);

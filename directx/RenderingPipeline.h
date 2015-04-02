@@ -48,6 +48,7 @@ private:
 	RenderMode render_to_back_buffer;
 	PerspectiveCamera player_camera;
 	ConstantBuffer player_camera_transformation;
+	ConstantBuffer player_camera_transformation_inv_trans;
 };
 
 class ToOculusRenderingPipeline : public RenderingPipeline {
@@ -66,4 +67,5 @@ public:
 
 	PerspectiveCamera player_camera;
 	ConstantBuffer player_camera_transformation;
+	ConstantBuffer player_camera_transformation_inv_trans;
 };

@@ -31,6 +31,6 @@ VOut VShader(float4 position : POSITION, float2 tex_coord : TEXCOORD)
 
 float4 PShader(float4 position : SV_POSITION, float2 tex_coords : TEXCOORD) : SV_TARGET
 {
-	//return model_skin.Sample(skin_sampler, tex_coords);
-	return float4(tex_coords.x, tex_coords.y, 0.0f, 1.0f);
+	return model_skin.Sample(skin_sampler, tex_coords);
+	//return float4(tex_coords.x, tex_coords.y, 0.0f, 1.0f);
 }
