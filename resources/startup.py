@@ -11,7 +11,7 @@ import pdb
 virtualpy.set_color(1, .5, 0)
 virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
-virtualpy.spawn_thread('directx')
+virtualpy.spawn_thread('directx_oculus')
 
 color_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
 texture_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("texture", "TEXCOORD", 2))
@@ -23,10 +23,10 @@ color_norm_shader = virtualpy.load_shader("color_normals.hlsl", color_vertex_typ
 
 virtualpy.begin_model(color_vertex_type_with_normal)
 
-virtualpy.add_vertex(location=(1,  1, 0), normal=(1, 0, 0), color=(1, 0, 0, 1))
-virtualpy.add_vertex(location=(-1,  1, 0), normal=(1, 0, 0), color=(0, 1, 0, 1))
-virtualpy.add_vertex(location=( 1, -1, 0), normal=(1, 0, 0), color=(0, 0, 1, 1))
-virtualpy.add_vertex(location=(-1, -1, 0), normal=(1, 0, 0), color=(1, 1, 1, 1))
+virtualpy.add_vertex(location=(1,  1, 0), normal=(0, 0, 1), color=(0.5, 0, 0, 1))
+virtualpy.add_vertex(location=(-1,  1, 0), normal=(0, 0, 1), color=(0, 0.5, 0, 1))
+virtualpy.add_vertex(location=( 1, -1, 0), normal=(0, 0, 1), color=(0, 0, 0.5, 1))
+virtualpy.add_vertex(location=(-1, -1, 0), normal=(0, 0, 1), color=(0.5, 0.5, 0.5, 1))
 
 redsqmod = virtualpy.end_model()
 redsq = virtualpy.create_modeled_entity(redsqmod, color_norm_shader)

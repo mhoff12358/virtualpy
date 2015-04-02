@@ -32,7 +32,6 @@ private:
 	ViewState* view_state;
 	InputHandler* input_handler;
 	DXResourcePool* resource_pool;
-	ConstantBuffer camera_transformation;
 
 	std::vector<int> entities_to_display;
 

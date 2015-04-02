@@ -85,13 +85,13 @@ int DXResourcePool::LoadShader(std::string file_name, VertexType vertex_type) {
 }
 
 void DXResourcePool::AddModelTransformations(std::vector<std::pair<ConstantBuffer*, int>>& transformations) {
-	ConstantBuffer* model_transformation = new ConstantBuffer;
-	ConstantBuffer* model_transformation_inv_trans = new ConstantBuffer;
+	ConstantBuffer* model_transformation = new ConstantBufferTyped<TransformationMatrixData>;
+	ConstantBuffer* model_transformation_inv_trans = new ConstantBufferTyped<TransformationMatrixData>;
 
 	model_transformation->Initialize(device, device_context);
 	model_transformation_inv_trans->Initialize(device, device_context);
-	XMStoreFloat4x4(&(model_transformation->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
-	XMStoreFloat4x4(&(model_transformation_inv_trans->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
+	XMStoreFloat4x4(&(dynamic_cast<ConstantBufferTyped<TransformationMatrixData>*>(model_transformation)->GetBufferDataRef().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
+	XMStoreFloat4x4(&(dynamic_cast<ConstantBufferTyped<TransformationMatrixData>*>(model_transformation_inv_trans)->GetBufferDataRef().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
 	model_transformation->CreateBuffer();
 	model_transformation_inv_trans->CreateBuffer();
 	transformations.push_back(std::make_pair(model_transformation, FIRST_PRIVATE_BUFFER));

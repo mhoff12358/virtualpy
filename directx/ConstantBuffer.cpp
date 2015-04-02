@@ -12,7 +12,7 @@ void ConstantBuffer::CreateBuffer() {
 	// Description of the buffer being created
 	// Must be set to a constant buffer
 	D3D11_BUFFER_DESC const_buff_desc;
-	const_buff_desc.ByteWidth = sizeof(ConstantBufferData);
+	const_buff_desc.ByteWidth = GetBufferDataSize();
 	const_buff_desc.Usage = D3D11_USAGE_DYNAMIC;
 	const_buff_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	const_buff_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -21,7 +21,7 @@ void ConstantBuffer::CreateBuffer() {
 
 	// Create the subresource data that carries the buffer data
 	D3D11_SUBRESOURCE_DATA sub_data;
-	sub_data.pSysMem = &buffer_data;
+	sub_data.pSysMem = GetBufferData();
 	sub_data.SysMemPitch = 0;
 	sub_data.SysMemSlicePitch = 0;
 
@@ -34,14 +34,10 @@ void ConstantBuffer::PushBuffer() {
 
 	// Disables GPU access to the data
 	device_context->Map(const_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, &buffer_data, sizeof(buffer_data));
+	memcpy(mappedResource.pData, GetBufferData(), GetBufferDataSize());
 	device_context->Unmap(const_buffer, 0);
 }
 
 void ConstantBuffer::ActivateBuffer(int buffer_register) {
 	device_context->VSSetConstantBuffers(buffer_register, 1, &const_buffer);
-}
-
-ConstantBufferData& ConstantBuffer::GetBufferData() {
-	return buffer_data;
 }

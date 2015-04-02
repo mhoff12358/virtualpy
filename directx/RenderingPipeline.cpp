@@ -68,10 +68,10 @@ void ToScreenRenderingPipeline::Render() {
 	player_camera.orientaiton = game_world->GetPlayerOrientation();
 	player_camera.InvalidateAllMatrices();
 
-	XMStoreFloat4x4(&(player_camera_transformation.GetBufferData().transformation),
+	XMStoreFloat4x4(&(player_camera_transformation.GetBufferDataRef().transformation),
 		player_camera.GetViewProjectionMatrix()
 		);
-	XMStoreFloat4x4(&(player_camera_transformation_inv_trans.GetBufferData().transformation),
+	XMStoreFloat4x4(&(player_camera_transformation_inv_trans.GetBufferDataRef().transformation),
 		XMMatrixTranspose(XMMatrixInverse(NULL, player_camera.GetViewProjectionMatrix()))
 		);
 	player_camera_transformation.PushBuffer();
@@ -128,10 +128,10 @@ void ToOculusRenderingPipeline::Render() {
 			input_handler->GetHeadOffset() + input_handler->GetEyeOffset(i));
 		player_camera.orientaiton = game_world->GetPlayerOrientation();
 		player_camera.InvalidateAllMatrices();
-		XMStoreFloat4x4(&(player_camera_transformation.GetBufferData().transformation),
+		XMStoreFloat4x4(&(player_camera_transformation.GetBufferDataRef().transformation),
 			player_camera.GetViewProjectionMatrix()
 			);
-		XMStoreFloat4x4(&(player_camera_transformation_inv_trans.GetBufferData().transformation),
+		XMStoreFloat4x4(&(player_camera_transformation_inv_trans.GetBufferDataRef().transformation),
 			XMMatrixTranspose(XMMatrixInverse(NULL, player_camera.GetViewProjectionMatrix()))
 			);
 		player_camera_transformation.PushBuffer();

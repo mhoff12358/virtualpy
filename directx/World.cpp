@@ -33,10 +33,10 @@ void World::UpdateLogic(int time_delta) {
 				DirectX::XMMatrixRotationQuaternion(DirectX::XMVectorSet(entity_state.position.orientation[0], entity_state.position.orientation[1], entity_state.position.orientation[2], entity_state.position.orientation[3]))*
 				DirectX::XMMatrixTranslation(entity_state.position.location[0], entity_state.position.location[1], entity_state.position.location[2]);
 			DirectX::XMStoreFloat4x4(
-				&model_matrix_buffer->GetBufferData().transformation,
+				&dynamic_cast<ConstantBufferTyped<TransformationMatrixData>*>(model_matrix_buffer)->GetBufferDataRef().transformation,
 				model_matrix);
 			DirectX::XMStoreFloat4x4(
-				&model_matrix_inv_trans_buffer->GetBufferData().transformation,
+				&dynamic_cast<ConstantBufferTyped<TransformationMatrixData>*>(model_matrix_inv_trans_buffer)->GetBufferDataRef().transformation,
 				DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(NULL, model_matrix)));
 			model_matrix_buffer->PushBuffer();
 			model_matrix_inv_trans_buffer->PushBuffer();

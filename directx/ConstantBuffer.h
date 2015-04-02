@@ -11,8 +11,13 @@
 
 #include "DirectXMath.h"
 
-struct ConstantBufferData {
+struct TransformationMatrixData {
 	DirectX::XMFLOAT4X4 transformation;
+};
+
+struct TransformationMatrixAndInvTransData {
+	DirectX::XMFLOAT4X4 transformation;
+	DirectX::XMFLOAT4X4 transformation_inv_trans;
 };
 
 class ConstantBuffer {
@@ -25,14 +30,40 @@ public:
 
 	void ActivateBuffer(int buffer_register);
 
-	ConstantBufferData& GetBufferData();
+	virtual void* GetBufferData() = 0;
+	virtual unsigned int GetBufferDataSize() = 0;
 
-private:
+protected:
 	ID3D11Device* device_interface;
 	ID3D11DeviceContext* device_context;
 
-	ConstantBufferData buffer_data;
 	ID3D11Buffer* const_buffer;
 };
+
+template <typename ConstantBufferData>
+class ConstantBufferTyped : public ConstantBuffer {
+public:
+	void* GetBufferData();
+	unsigned int GetBufferDataSize();
+	ConstantBufferData& GetBufferDataRef();
+
+private:
+	ConstantBufferData buffer_data;
+};
+
+template <typename ConstantBufferData>
+ConstantBufferData& ConstantBufferTyped<ConstantBufferData>::GetBufferDataRef() {
+	return buffer_data;
+}
+
+template <typename ConstantBufferData>
+unsigned int ConstantBufferTyped<ConstantBufferData>::GetBufferDataSize() {
+	return sizeof(ConstantBufferData);
+}
+
+template <typename ConstantBufferData>
+void* ConstantBufferTyped<ConstantBufferData>::GetBufferData() {
+	return (void*)&buffer_data;
+}
 
 #endif
