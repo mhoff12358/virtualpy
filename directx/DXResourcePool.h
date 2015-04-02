@@ -61,4 +61,6 @@ private:
 	char* PyMetaTypeToSemantic(PyObject* meta_type);
 	VertexType PyVertexTypeToVertexType(PyObject* vertex_type);
 	Vertex PyVertexToVertex(PyObject* vertex);
+
+	void AddModelTransformations(std::vector<std::pair<ConstantBuffer*, int>>& transformations);
 };

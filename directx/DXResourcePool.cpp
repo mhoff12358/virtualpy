@@ -84,14 +84,23 @@ int DXResourcePool::LoadShader(std::string file_name, VertexType vertex_type) {
 	return shaders.size() - 1;
 }
 
-int DXResourcePool::CreateModeledEntity(int model_id, int shader_id) {
-	std::vector<std::pair<ConstantBuffer*, int>> transformations;
+void DXResourcePool::AddModelTransformations(std::vector<std::pair<ConstantBuffer*, int>>& transformations) {
 	ConstantBuffer* model_transformation = new ConstantBuffer;
+	ConstantBuffer* model_transformation_inv_trans = new ConstantBuffer;
 
 	model_transformation->Initialize(device, device_context);
+	model_transformation_inv_trans->Initialize(device, device_context);
 	XMStoreFloat4x4(&(model_transformation->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
+	XMStoreFloat4x4(&(model_transformation_inv_trans->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
 	model_transformation->CreateBuffer();
+	model_transformation_inv_trans->CreateBuffer();
 	transformations.push_back(std::make_pair(model_transformation, FIRST_PRIVATE_BUFFER));
+	transformations.push_back(std::make_pair(model_transformation_inv_trans, FIRST_PRIVATE_BUFFER + 1));
+}
+
+int DXResourcePool::CreateModeledEntity(int model_id, int shader_id) {
+	std::vector<std::pair<ConstantBuffer*, int>> transformations;
+	AddModelTransformations(transformations);
 	
 	ModeledDrawHandler* draw_handler = new ModeledDrawHandler;
 	draw_handler->Initialize(shaders[shader_id], transformations, models[model_id]);
@@ -106,12 +115,7 @@ int DXResourcePool::CreateModeledEntity(int model_id, int shader_id) {
 
 int DXResourcePool::CreateTexturedEntity(int model_id, int shader_id, int texture_id) {
 	std::vector<std::pair<ConstantBuffer*, int>> transformations;
-	ConstantBuffer* model_transformation = new ConstantBuffer;
-
-	model_transformation->Initialize(device, device_context);
-	XMStoreFloat4x4(&(model_transformation->GetBufferData().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
-	model_transformation->CreateBuffer();
-	transformations.push_back(std::make_pair(model_transformation, 1));
+	AddModelTransformations(transformations);
 
 	TexturedDrawHandler* draw_handler = new TexturedDrawHandler;
 	draw_handler->Initialize(shaders[shader_id], transformations, models[model_id], textures[texture_id], 0, 0);

@@ -11,7 +11,7 @@ import pdb
 virtualpy.set_color(1, .5, 0)
 virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
-virtualpy.spawn_thread('directx_oculus')
+virtualpy.spawn_thread('directx')
 
 color_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
 texture_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("texture", "TEXCOORD", 2))
@@ -76,6 +76,10 @@ while True:
 		camera_location[0] -= 0.25
 	if keys_since_state[ord('D')]:
 		camera_location[0] += 0.25
+	if keys_since_state[ord('Q')]:
+		camera_location[1] -= 0.25
+	if keys_since_state[ord('E')]:
+		camera_location[1] += 0.25
 	
 	virtualpy.set_camera_location(camera_location)
 
