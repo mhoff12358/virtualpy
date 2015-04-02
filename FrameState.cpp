@@ -85,23 +85,11 @@ PositionState FrameStateInterpolater::InterpolateBetweenPositionStates(PositionS
 	PositionState new_state;
 	new_state.location = InterpolateBetweenArrays(state_0.location, state_1.location, weight);
 	new_state.scale = InterpolateBetweenArrays(state_0.scale, state_1.scale, weight);
-	float dot = 0.0f;
-	for (int i = 0; i < 4; i++) {
-		dot += state_0.orientation[i] * state_1.orientation[i];
-	}
-	float theta = weight*acos(dot);
-	if (theta == 0.0f) {
-		new_state.orientation = ScaleBetweenArrays(state_0.orientation, state_1.orientation, 1 - weight, weight);
-	}
-	else {
-		std::array<float, 4> new_quat = {
-			state_1.orientation[0] - state_0.orientation[0] * dot,
-			state_1.orientation[1] - state_0.orientation[1] * dot,
-			state_1.orientation[2] - state_0.orientation[2] * dot,
-			state_1.orientation[3] - state_0.orientation[3] * dot
-		};
-		new_state.orientation = ScaleBetweenArrays(state_0.orientation, new_quat, cos(theta), sin(theta));
-	}
+	new_state.orientation = Quaternion::Slerp(Quaternion(state_0.orientation), Quaternion(state_1.orientation), weight).GetArray();
+	printf("%f %f %f %f\n\t%f %f %f %f\n\t%f %f %f %f\n",
+		new_state.orientation[0], new_state.orientation[1], new_state.orientation[2], new_state.orientation[3],
+		state_0.orientation[0], state_0.orientation[1], state_0.orientation[2], state_0.orientation[3],
+		state_1.orientation[0], state_1.orientation[1], state_1.orientation[2], state_1.orientation[3]);
 	return new_state;
 }
 

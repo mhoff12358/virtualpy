@@ -2,6 +2,8 @@
 
 #include <Windows.h>
 
+#include "Quaternion.h"
+
 #include <chrono>
 #include <array>
 #include <vector>

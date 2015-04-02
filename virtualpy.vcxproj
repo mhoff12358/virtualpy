@@ -277,9 +277,9 @@
       </Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>copy virtualpy_classes.py Debug\</Command>
-      <Inputs>virtualpy_classes.py</Inputs>
-      <Outputs>virtualpy_classes.py</Outputs>
+      <Command>copy virtualpy_classes.py Debug\ &amp; copy virtualpy_helpers.py Debug\</Command>
+      <Inputs>virtualpy_classes.py virtualpy_helpers.py</Inputs>
+      <Outputs>virtualpy_classes.py virtualpy_helpers.py</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -298,7 +298,6 @@
     <ClCompile Include="directx\InputHandler.cpp" />
     <ClCompile Include="directx\Logging.cpp" />
     <ClCompile Include="directx\Model.cpp" />
-    <ClCompile Include="directx\ModeledEntity.cpp" />
     <ClCompile Include="directx\my_math.cpp" />
     <ClCompile Include="directx\Oculus.cpp" />
     <ClCompile Include="directx\OrthoCamera.cpp" />
@@ -318,6 +317,7 @@
     <ClCompile Include="FrameState.cpp" />
     <ClCompile Include="IOState.cpp" />
     <ClCompile Include="MainLoop.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="ResourcePool.cpp" />
     <ClCompile Include="virtualpymodule.cpp" />
     <ClCompile Include="WindowsMainLoop.cpp" />
@@ -335,7 +335,6 @@
     <ClInclude Include="directx\InputHandler.h" />
     <ClInclude Include="directx\Logging.h" />
     <ClInclude Include="directx\Model.h" />
-    <ClInclude Include="directx\ModeledEntity.h" />
     <ClInclude Include="directx\my_math.h" />
     <ClInclude Include="directx\Oculus.h" />
     <ClInclude Include="directx\OrthoCamera.h" />
@@ -355,6 +354,8 @@
     <ClInclude Include="FrameState.h" />
     <ClInclude Include="IOState.h" />
     <ClInclude Include="MainLoop.h" />
+    <ClInclude Include="PyHelper.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="ResourcePool.h" />
     <ClInclude Include="WindowsMainLoop.h" />
   </ItemGroup>
@@ -396,6 +397,7 @@
   <ItemGroup>
     <None Include="resources\startup.py" />
     <None Include="virtualpy_classes.py" />
+    <None Include="virtualpy_helpers.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

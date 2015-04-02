@@ -75,9 +75,6 @@
     <ClCompile Include="directx\Model.cpp">
       <Filter>Directx\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="directx\ModeledEntity.cpp">
-      <Filter>Directx\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="directx\my_math.cpp">
       <Filter>Directx\Source Files</Filter>
     </ClCompile>
@@ -135,6 +132,9 @@
     <ClCompile Include="IOState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Directx\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameState.h">
@@ -177,9 +177,6 @@
       <Filter>Directx\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="directx\Model.h">
-      <Filter>Directx\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="directx\ModeledEntity.h">
       <Filter>Directx\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="directx\my_math.h">
@@ -239,6 +236,12 @@
     <ClInclude Include="IOState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PyHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Directx\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\shaders.hlsl">
@@ -261,6 +264,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="virtualpy_classes.py">
+      <Filter>Python Files</Filter>
+    </None>
+    <None Include="virtualpy_helpers.py">
       <Filter>Python Files</Filter>
     </None>
   </ItemGroup>

@@ -11,7 +11,7 @@ import pdb
 virtualpy.set_color(1, .5, 0)
 virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
-virtualpy.spawn_thread('directx_oculus')
+virtualpy.spawn_thread('directx')
 
 color_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
 texture_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("texture", "TEXCOORD", 2))
@@ -76,7 +76,7 @@ while True:
 		redsqheight = 3
 
 	if i%2 == 0:
-		virtualpy.show_model(redsq, (0, redsqheight, -5), (1, 1, 1), virtualpy.Quaternion((0, 1/math.sqrt(2), 0, -1/math.sqrt(2)))*virtualpy.Quaternion((1, 0, 0, 0)))
+		virtualpy.show_model(redsq, (5, redsqheight, -5), (1, 1, 1), virtualpy.Quaternion((0, 1/math.sqrt(2), 0, -1/math.sqrt(2)))*virtualpy.Quaternion((1, 0, 0, 0)))
 	elif i%2 == 1:
 		virtualpy.show_model(redsq, (0, redsqheight, -5), (1, 1, 1), virtualpy.Quaternion((1, 0, 0, 0)))
 
