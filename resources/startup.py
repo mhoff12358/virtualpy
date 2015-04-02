@@ -15,21 +15,21 @@ virtualpy.spawn_thread('directx')
 
 color_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
 texture_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("texture", "TEXCOORD", 2))
-texture_vertex_type_with_normal = virtualpy.VertexType(("location", "POSITION", 3), ("normal", "NORMAL", 3), ("texture", "TEXCOORD", 2))
+color_vertex_type_with_normal = virtualpy.VertexType(("location", "POSITION", 3), ("normal", "NORMAL", 3), ("color", "COLOR", 4))
 
 color_shader = virtualpy.load_shader("shaders.hlsl", color_vertex_type)
 texture_shader = virtualpy.load_shader("texture_shaders.hlsl", texture_vertex_type)
-texture_norm_shader = virtualpy.load_shader("texture_normals.hlsl", texture_vertex_type_with_normal)
+color_norm_shader = virtualpy.load_shader("color_normals.hlsl", color_vertex_type_with_normal)
 
-virtualpy.begin_model(color_vertex_type)
+virtualpy.begin_model(color_vertex_type_with_normal)
 
-virtualpy.add_vertex(location=(1,  1, 0), color=(1, 0, 0, 1))
-virtualpy.add_vertex(location=(-1,  1, 0), color=(0, 1, 0, 1))
-virtualpy.add_vertex(location=( 1, -1, 0), color=(0, 0, 1, 1))
-virtualpy.add_vertex(location=(-1, -1, 0), color=(1, 1, 1, 1))
+virtualpy.add_vertex(location=(1,  1, 0), normal=(1, 0, 0), color=(1, 0, 0, 1))
+virtualpy.add_vertex(location=(-1,  1, 0), normal=(1, 0, 0), color=(0, 1, 0, 1))
+virtualpy.add_vertex(location=( 1, -1, 0), normal=(1, 0, 0), color=(0, 0, 1, 1))
+virtualpy.add_vertex(location=(-1, -1, 0), normal=(1, 0, 0), color=(1, 1, 1, 1))
 
 redsqmod = virtualpy.end_model()
-redsq = virtualpy.create_modeled_entity(redsqmod, color_shader)
+redsq = virtualpy.create_modeled_entity(redsqmod, color_norm_shader)
 
 virtualpy.begin_model(color_vertex_type)
 
