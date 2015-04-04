@@ -85,17 +85,17 @@ int DXResourcePool::LoadShader(std::string file_name, VertexType vertex_type) {
 }
 
 void DXResourcePool::AddModelTransformations(std::vector<std::pair<ConstantBuffer*, int>>& transformations) {
-	ConstantBuffer* model_transformation = new ConstantBufferTyped<TransformationMatrixData>;
-	ConstantBuffer* model_transformation_inv_trans = new ConstantBufferTyped<TransformationMatrixData>;
+	ConstantBufferTyped<TransformationMatrixAndInvTransData>* model_transformation = new ConstantBufferTyped<TransformationMatrixAndInvTransData>;
+	//ConstantBufferTyped<TransformationMatrixData>* model_transformation_inv_trans = new ConstantBufferTyped<TransformationMatrixData>;
 
 	model_transformation->Initialize(device, device_context);
-	model_transformation_inv_trans->Initialize(device, device_context);
-	XMStoreFloat4x4(&(dynamic_cast<ConstantBufferTyped<TransformationMatrixData>*>(model_transformation)->GetBufferDataRef().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
-	XMStoreFloat4x4(&(dynamic_cast<ConstantBufferTyped<TransformationMatrixData>*>(model_transformation_inv_trans)->GetBufferDataRef().transformation), DirectX::XMMatrixTranslation(0, 0, 0));
+	//model_transformation_inv_trans->Initialize(device, device_context);
+	model_transformation->SetBothTransformations(DirectX::XMMatrixTranslation(0, 0, 0));
+	//model_transformation_inv_trans->SetTransformation(DirectX::XMMatrixTranslation(0, 0, 0));
 	model_transformation->CreateBuffer();
-	model_transformation_inv_trans->CreateBuffer();
-	transformations.push_back(std::make_pair(model_transformation, FIRST_PRIVATE_BUFFER));
-	transformations.push_back(std::make_pair(model_transformation_inv_trans, FIRST_PRIVATE_BUFFER + 1));
+	//model_transformation_inv_trans->CreateBuffer();
+	transformations.push_back(std::make_pair(dynamic_cast<ConstantBuffer*>(model_transformation), FIRST_PRIVATE_BUFFER));
+	//transformations.push_back(std::make_pair(dynamic_cast<ConstantBuffer*>(model_transformation_inv_trans), FIRST_PRIVATE_BUFFER + 1));
 }
 
 int DXResourcePool::CreateModeledEntity(int model_id, int shader_id) {

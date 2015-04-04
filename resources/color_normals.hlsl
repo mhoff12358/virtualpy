@@ -18,12 +18,9 @@ cbuffer shared_matrices : register(b1)
 cbuffer personal_matrices : register(b2)
 {
 	matrix <float, 4, 4> model;
-};
-
-cbuffer personal_matrices_inv_trans : register(b3)
-{
 	matrix <float, 4, 4> model_inv_trans;
 };
+
 
 VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float4 color : COLOR)
 {

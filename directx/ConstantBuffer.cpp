@@ -42,7 +42,20 @@ void ConstantBuffer::ActivateBuffer(int buffer_register) {
 	device_context->VSSetConstantBuffers(buffer_register, 1, &const_buffer);
 }
 
-
-void ConstantBufferTyped<TransformationMatrixData>::setTransformation(DirectX::XMMATRIX new_trasnformation) {
+void ConstantBufferTyped<TransformationMatrixData>::SetTransformation(DirectX::XMMATRIX new_trasnformation) {
 	DirectX::XMStoreFloat4x4(&buffer_data.transformation, new_trasnformation);
+}
+
+void ConstantBufferTyped<TransformationMatrixAndInvTransData>::SetBothTransformations(DirectX::XMMATRIX new_trasnformation) {
+	DirectX::XMStoreFloat4x4(&buffer_data.transformation, new_trasnformation);
+	DirectX::XMStoreFloat4x4(&buffer_data.transformation_inv_trans,
+		DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(NULL, new_trasnformation)));
+}
+
+void ConstantBufferTyped<TransformationMatrixAndInvTransData>::SetTransformation(DirectX::XMMATRIX new_trasnformation) {
+	DirectX::XMStoreFloat4x4(&buffer_data.transformation, new_trasnformation);
+}
+
+void ConstantBufferTyped<TransformationMatrixAndInvTransData>::SetTransformationInvTrans(DirectX::XMMATRIX new_transformation_inv_trans) {
+	DirectX::XMStoreFloat4x4(&buffer_data.transformation_inv_trans, new_transformation_inv_trans);
 }

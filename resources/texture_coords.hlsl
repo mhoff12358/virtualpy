@@ -15,6 +15,7 @@ cbuffer shared_matrices : register(b0)
 cbuffer personal_matrices : register(b2)
 {
 	matrix <float, 4, 4> model;
+	matrix <float, 4, 4> model_inv_trans;
 };
 
 VOut VShader(float4 position : POSITION, float2 tex_coord : TEXCOORD)
