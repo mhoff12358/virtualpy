@@ -27,17 +27,13 @@ void World::UpdateLogic(int time_delta) {
 		if (entity_state.display_state == 1) {
 			Entity* entity_to_update = resource_pool->GetEntity(entity_state.entity_id);
 			entities_to_display.push_back(entity_state.entity_id);
-			ConstantBufferTyped<TransformationMatrixAndInvTransData>* model_matrix_buffer = dynamic_cast<ConstantBufferTyped<TransformationMatrixAndInvTransData>*>(((ModeledDrawHandler*)entity_to_update->GetDrawHandler())->GetConstantBuffers()[0].first);
-			//ConstantBuffer* model_matrix_inv_trans_buffer = ((ModeledDrawHandler*)entity_to_update->GetDrawHandler())->GetConstantBuffers()[1].first;
+			ConstantBufferTyped<TransformationMatrixAndInvTransData>* model_matrix_buffer =
+				dynamic_cast<ConstantBufferTyped<TransformationMatrixAndInvTransData>*>(((ModeledDrawHandler*)entity_to_update->GetDrawHandler())->GetConstantBuffers()[0].first);
 			DirectX::XMMATRIX model_matrix = DirectX::XMMatrixScaling(entity_state.position.scale[0], entity_state.position.scale[1], entity_state.position.scale[2])*
 				DirectX::XMMatrixRotationQuaternion(DirectX::XMVectorSet(entity_state.position.orientation[0], entity_state.position.orientation[1], entity_state.position.orientation[2], entity_state.position.orientation[3]))*
 				DirectX::XMMatrixTranslation(entity_state.position.location[0], entity_state.position.location[1], entity_state.position.location[2]);
 			model_matrix_buffer->SetBothTransformations(model_matrix);
-			//DirectX::XMStoreFloat4x4(
-			//	&dynamic_cast<ConstantBufferTyped<TransformationMatrixData>*>(model_matrix_inv_trans_buffer)->GetBufferDataRef().transformation,
-			//	DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(NULL, model_matrix)));
 			model_matrix_buffer->PushBuffer();
-			//model_matrix_inv_trans_buffer->PushBuffer();
 		}
 	}
 }
