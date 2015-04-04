@@ -41,3 +41,8 @@ void ConstantBuffer::PushBuffer() {
 void ConstantBuffer::ActivateBuffer(int buffer_register) {
 	device_context->VSSetConstantBuffers(buffer_register, 1, &const_buffer);
 }
+
+
+void ConstantBufferTyped<TransformationMatrixData>::setTransformation(DirectX::XMMATRIX new_trasnformation) {
+	DirectX::XMStoreFloat4x4(&buffer_data.transformation, new_trasnformation);
+}

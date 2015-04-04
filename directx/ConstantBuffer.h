@@ -41,29 +41,42 @@ protected:
 };
 
 template <typename ConstantBufferData>
-class ConstantBufferTyped : public ConstantBuffer {
+class ConstantBufferTypedTemp : public ConstantBuffer {
 public:
 	void* GetBufferData();
 	unsigned int GetBufferDataSize();
 	ConstantBufferData& GetBufferDataRef();
 
-private:
+protected:
 	ConstantBufferData buffer_data;
 };
 
 template <typename ConstantBufferData>
-ConstantBufferData& ConstantBufferTyped<ConstantBufferData>::GetBufferDataRef() {
+ConstantBufferData& ConstantBufferTypedTemp<ConstantBufferData>::GetBufferDataRef() {
 	return buffer_data;
 }
 
 template <typename ConstantBufferData>
-unsigned int ConstantBufferTyped<ConstantBufferData>::GetBufferDataSize() {
+unsigned int ConstantBufferTypedTemp<ConstantBufferData>::GetBufferDataSize() {
 	return sizeof(ConstantBufferData);
 }
 
 template <typename ConstantBufferData>
-void* ConstantBufferTyped<ConstantBufferData>::GetBufferData() {
+void* ConstantBufferTypedTemp<ConstantBufferData>::GetBufferData() {
 	return (void*)&buffer_data;
 }
+
+template <typename ConstantBufferData>
+class ConstantBufferTyped : public ConstantBufferTypedTemp < ConstantBufferData > {
+
+};
+
+template <>
+class ConstantBufferTyped < TransformationMatrixData > : public ConstantBufferTypedTemp<TransformationMatrixData> {
+public:
+	void setTransformation(DirectX::XMMATRIX new_transformation);
+};
+
+//template<>
 
 #endif
