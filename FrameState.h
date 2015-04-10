@@ -7,6 +7,7 @@
 #include <chrono>
 #include <array>
 #include <vector>
+#include <unordered_map>
 #include <mutex>
 #include <atomic>
 #include <list>
@@ -20,14 +21,26 @@ struct PositionState {
 };
 
 struct EntityState {
+	EntityState();
 	int entity_id;
-	int display_state; // If 0, don't draw, if 1, draw
+	int render_bundle_id; // id of the render bundle to draw with. Use -1 to not draw
 	PositionState position;
 };
 
+struct ConstantBufferState {
+	std::array<float, 4> data;
+};
+
+struct RenderBundleState {
+	std::vector<ConstantBufferState> constant_buffers;
+};
+
 struct FrameState {
+	FrameState();
+	FrameState(std::array<float, 3> col);
 	std::array<float, 3> color;
 	std::vector<EntityState> entities;
+	std::unordered_map<int, RenderBundleState> render_bundles;
 
 	PositionState camera_position;
 
@@ -63,6 +76,8 @@ protected:
 	// above 1 extrapolates beyond state_1 linearly
 	FrameState InterpolateBetweenFrameStates(FrameState state_0, FrameState state_1, float weight);
 	EntityState InterpolateBetweenEntityStates(EntityState state_0, EntityState state_1, float weight);
+	RenderBundleState InterpolateBetweenRenderBundleStates(RenderBundleState state_0, RenderBundleState state_1, float weight);
+	ConstantBufferState InterpolateBetweenConstantBufferStates(ConstantBufferState state_0, ConstantBufferState state_1, float weight);
 	PositionState InterpolateBetweenPositionStates(PositionState state_0, PositionState state_1, float weight);
 
 	template<std::size_t SIZE>

@@ -23,6 +23,8 @@ FrameStateBuffer state_buffer;
 ConstantDelayNoPreemeptingExtrapolateInterpolater state_interpolater(&state_buffer, 0.5);
 ResourcePool* resource_pool;
 FrameState current_state;
+int current_render_bundle = 0;
+int new_render_bundle_id = 1;
 std::string resources_location(".");
 
 IOStateBuffer io_state_buffer;
@@ -199,23 +201,7 @@ PyObject* CreateTexturedEntity(PyObject* self, PyObject* args) {
 	return Py_BuildValue("i", entity_id);
 }
 
-PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
-	int entity_id = -1;
-
-	//static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
-	static char *kwlist[] = { "entity_id", "position", "scale", "rotation", NULL };
-	PyObject* location_tuple;
-	PyObject* scale_tuple;
-	PyObject* orientation_quaternion;
-
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|OOO", kwlist,
-		&entity_id, &location_tuple, &scale_tuple, &orientation_quaternion)) {
-		//new_entity_state.location.data(), new_entity_state.location.data() + 1, new_entity_state.location.data() + 2,
-		//scale, scale+1, scale+2,
-		//new_entity_state.orientation.data(), new_entity_state.orientation.data() + 1, new_entity_state.orientation.data() + 2, new_entity_state.orientation.data() + 3)) {
-		return NULL;
-	}
-	
+PyObject* AddModelToFrameState(int render_bundle_id, int entity_id, PyObject* location_tuple, PyObject* scale_tuple, PyObject* orientation_quaternion) {
 	// Ensures that there is an entity state for the current entity
 	if (current_state.entities.size() <= entity_id) {
 		current_state.entities.resize(entity_id + 1);
@@ -225,7 +211,7 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 		current_state.entities[entity_id].position.orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
 	}
 
-	current_state.entities[entity_id].display_state = 1;
+	current_state.entities[entity_id].render_bundle_id = render_bundle_id;
 
 	if (location_tuple != Py_None) {
 		if (!PyArg_ParseTuple(location_tuple, "fff",
@@ -256,9 +242,60 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 			return NULL;
 		}
 	}
-	
+
 	Py_INCREF(Py_None);
 	return Py_None;
+}
+
+PyObject* ShowModelWithRenderBundle(PyObject* self, PyObject* args, PyObject* kwargs) {
+	int entity_id = -1;
+	int render_bundle_id = -2;
+
+	static char *kwlist[] = { "render_bundle_id", "entity_id", "position", "scale", "rotation", NULL };
+	PyObject* location_tuple;
+	PyObject* scale_tuple;
+	PyObject* orientation_quaternion;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ii|OOO", kwlist,
+		&render_bundle_id, &entity_id, &location_tuple, &scale_tuple, &orientation_quaternion)) {
+		//new_entity_state.location.data(), new_entity_state.location.data() + 1, new_entity_state.location.data() + 2,
+		//scale, scale+1, scale+2,
+		//new_entity_state.orientation.data(), new_entity_state.orientation.data() + 1, new_entity_state.orientation.data() + 2, new_entity_state.orientation.data() + 3)) {
+		return NULL;
+	}
+
+	return AddModelToFrameState(render_bundle_id, entity_id, location_tuple, scale_tuple, orientation_quaternion);
+}
+
+PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
+	int entity_id = -1;
+
+	//static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
+	static char *kwlist[] = { "entity_id", "position", "scale", "rotation", NULL };
+	PyObject* location_tuple;
+	PyObject* scale_tuple;
+	PyObject* orientation_quaternion;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|OOO", kwlist,
+		&entity_id, &location_tuple, &scale_tuple, &orientation_quaternion)) {
+		//new_entity_state.location.data(), new_entity_state.location.data() + 1, new_entity_state.location.data() + 2,
+		//scale, scale+1, scale+2,
+		//new_entity_state.orientation.data(), new_entity_state.orientation.data() + 1, new_entity_state.orientation.data() + 2, new_entity_state.orientation.data() + 3)) {
+		return NULL;
+	}
+
+	return AddModelToFrameState(virtualpy::current_render_bundle, entity_id, location_tuple, scale_tuple, orientation_quaternion);
+}
+
+PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
+	// Should somehow parse the args as a list of 4-tuples of floats.
+
+	RenderBundleState new_render_bundle;
+	current_state.render_bundles.insert(std::make_pair(new_render_bundle_id, new_render_bundle));
+	PyObject* returned_id = Py_BuildValue("i", new_render_bundle_id);
+	new_render_bundle_id++;
+
+	return returned_id;
 }
 
 PyObject* SetCameraLocation(PyObject* self, PyObject* args) {
@@ -276,6 +313,7 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 	FrameState new_state;
 	new_state.color = current_state.color;
 	current_state = new_state;
+	current_render_bundle = 0;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -304,6 +342,18 @@ PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
 	return PyTuple_Pack(2, keys_at_state, keys_since_state);
 }
 
+PyObject* SetActiveRenderBundle(PyObject* self, PyObject* args) {
+	int new_render_bundle = 0;
+	if (PySequence_Length(args) != 0) {
+		if (!PyArg_ParseTuple(args, "i", &new_render_bundle)) {
+			return NULL;
+		}	
+	}
+	current_render_bundle = new_render_bundle;
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
 PyMethodDef virtualpy_methods[] = {
 	{ "set_resources_location", SetResourcesLocation, METH_VARARGS, "set_resources_location() doc string" },
 	{ "spawn_thread", SpawnThread, METH_VARARGS, "spawn_thread() doc string" },
@@ -317,7 +367,10 @@ PyMethodDef virtualpy_methods[] = {
 	{ "load_shader", LoadShader, METH_VARARGS, "load_shader() doc string" },
 	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
 	{ "create_textured_entity", CreateTexturedEntity, METH_VARARGS, "create_textured_entity() doc string" },
+	{ "create_render_bundle", CreateRenderBundle, METH_VARARGS, "create_render_bundle() doc string" },
+	{ "set_active_render_bundle", SetActiveRenderBundle, METH_VARARGS, "set_active_render_bundle() doc string" },
 	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
+	{ "show_model_with_render_bundle", (PyCFunction)ShowModelWithRenderBundle, METH_VARARGS | METH_KEYWORDS, "show_model_with_render_bundle() doc string" },
 	{ "set_camera_location", SetCameraLocation, METH_VARARGS, "set_camera_location() doc string" },
 	{ "push_state", PushState, METH_VARARGS, "push_state() doc string" },
 	{ "get_keyboard_state", GetKeyboardState, METH_VARARGS, "get_keyboard_state() doc string" },

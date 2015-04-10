@@ -63,6 +63,10 @@ theta = 0
 prev_time = time.perf_counter()
 curr_time = prev_time
 
+rb1 = virtualpy.create_render_bundle()
+rb2 = virtualpy.create_render_bundle()
+rb3 = virtualpy.create_render_bundle()
+
 while True:
 	time_diff = curr_time - prev_time
 
@@ -91,10 +95,11 @@ while True:
 
 	virtualpy.show_model(redsq, (-5*math.sin(theta), redsqheight, -5*math.cos(theta)), (1, 1, 1), virtualpy.Quaternion((0, math.sin(theta/2), 0, math.cos(theta/2)))*virtualpy.Quaternion((1, 0, 0, 0)))
 	
-	virtualpy.show_model(whitesq, position=(-1, 0, -8), scale=(1, 3, 1), rotation=virtualpy.Quaternion((0, 0, 0, 1)))
-	virtualpy.show_model(rightwhitesq, position=(11, 0, -8), scale=(1, 3, 1), rotation=virtualpy.Quaternion((0, 0, 0, 1)))
 	virtualpy.show_model(texsq, (0, -1, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))
+	virtualpy.set_active_render_bundle(rb1);
 	virtualpy.show_model(ceilsq, (0, -.5, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))
+	virtualpy.show_model(whitesq, position=(-1, 0, -8), scale=(1, 3, 1), rotation=virtualpy.Quaternion((0, 0, 0, 1)))
+	virtualpy.show_model_with_render_bundle(rb2, rightwhitesq, position=(11, 0, -8), scale=(1, 3, 1), rotation=virtualpy.Quaternion((0, 0, 0, 1)))
 	virtualpy.push_state()
 	i = 1-i
 	if keys_since_state[ord('G')]:

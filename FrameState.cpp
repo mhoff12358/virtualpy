@@ -6,6 +6,17 @@ PositionState::PositionState() {
 	orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
 }
 
+EntityState::EntityState() : entity_id(-1), render_bundle_id(-1), position() {
+}
+
+FrameState::FrameState() : color({ { 0.0f, 0.0f, 0.0f } }), entities(), camera_position() {
+
+}
+
+FrameState::FrameState(std::array<float, 3> col) : color(col), entities(), camera_position() {
+
+}
+
 FrameStateBuffer::FrameStateBuffer() {
 	num_valid_states = 0;
 }
@@ -70,14 +81,44 @@ FrameState FrameStateInterpolater::InterpolateBetweenFrameStates(FrameState stat
 			new_state.entities.push_back(InterpolateBetweenEntityStates(*state_0_entity, state_1_entity, weight));
 		}
 	}
+	for (auto render_bundle_iter : state_1.render_bundles) {
+		auto prev_iter = state_0.render_bundles.find(render_bundle_iter.first);
+		if (prev_iter == state_0.render_bundles.end()) {
+			new_state.render_bundles.insert(render_bundle_iter);
+		} else {
+			new_state.render_bundles.insert(std::make_pair(
+				render_bundle_iter.first, 
+				InterpolateBetweenRenderBundleStates(prev_iter->second, render_bundle_iter.second, weight)));
+		}
+	}
 	return new_state;
 }
 
 EntityState FrameStateInterpolater::InterpolateBetweenEntityStates(EntityState state_0, EntityState state_1, float weight) {
 	EntityState new_state;
 	new_state.entity_id = state_1.entity_id;
-	new_state.display_state = state_1.display_state;
+	new_state.render_bundle_id= state_1.render_bundle_id;
 	new_state.position = InterpolateBetweenPositionStates(state_0.position, state_1.position, weight);
+	return new_state;
+}
+
+RenderBundleState FrameStateInterpolater::InterpolateBetweenRenderBundleStates(RenderBundleState state_0, RenderBundleState state_1, float weight) {
+	if (state_0.constant_buffers.size() != state_1.constant_buffers.size()) {
+		printf("ERROR: TRYING TO MERGE RENDER BUFFERS WITH DIFFERENT NUMBERS OF VALUES\n");
+		return RenderBundleState();
+	}
+	
+	RenderBundleState new_state;
+	new_state.constant_buffers.resize(state_0.constant_buffers.size());
+	for (int i = 0; i < new_state.constant_buffers.size(); i++) {
+		new_state.constant_buffers[i] = InterpolateBetweenConstantBufferStates(state_0.constant_buffers[i], state_1.constant_buffers[i], weight);
+	}
+	return new_state;
+}
+
+ConstantBufferState FrameStateInterpolater::InterpolateBetweenConstantBufferStates(ConstantBufferState state_0, ConstantBufferState state_1, float weight) {
+	ConstantBufferState new_state;
+	new_state.data = InterpolateBetweenArrays(state_0.data, state_1.data, weight);
 	return new_state;
 }
 
@@ -149,7 +190,7 @@ FrameState ConstantDelayPreemptingNoPredictInterpolater::InterpolateStateFromBuf
 	} else {
 		//printf("no states\n");
 		*number_states_unused = num_available_states - 0;
-		return{ { { 0.0f, 0.0f, 0.0f } }, {} };
+		return FrameState({ { 0.0f, 0.0f, 0.0f } });
 	}
 }
 
@@ -209,7 +250,7 @@ FrameState ConstantDelayNoPreemptingNoPredictInterpolater::InterpolateStateFromB
 	else {
 		//printf("no states\n");
 		*number_states_unused = num_available_states - 0;
-		return{ { { 0.0f, 0.0f, 0.0f } }, {} };
+		return FrameState({ { 0.0f, 0.0f, 0.0f } });
 	}
 }
 
@@ -256,6 +297,6 @@ FrameState ConstantDelayNoPreemeptingExtrapolateInterpolater::InterpolateStateFr
 	else {
 		//printf("no states\n");
 		*number_states_unused = num_available_states - 0;
-		return{ { { 0.0f, 0.0f, 0.0f } }, {} };
+		return FrameState({ { 0.0f, 0.0f, 0.0f } });
 	}
 }

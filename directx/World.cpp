@@ -24,7 +24,7 @@ void World::UpdateLogic(int time_delta) {
 	entities_to_display.clear();
 	for (int i = 0; i < current_frame_state.entities.size(); i++) {
 		EntityState& entity_state = current_frame_state.entities[i];
-		if (entity_state.display_state == 1) {
+		if (entity_state.render_bundle_id == 0) {
 			Entity* entity_to_update = resource_pool->GetEntity(entity_state.entity_id);
 			entities_to_display.push_back(entity_state.entity_id);
 			ConstantBufferTyped<TransformationMatrixAndInvTransData>* model_matrix_buffer =
@@ -34,6 +34,15 @@ void World::UpdateLogic(int time_delta) {
 				DirectX::XMMatrixTranslation(entity_state.position.location[0], entity_state.position.location[1], entity_state.position.location[2]);
 			model_matrix_buffer->SetBothTransformations(model_matrix);
 			model_matrix_buffer->PushBuffer();
+		} else if (entity_state.render_bundle_id > 0) {
+			// Should prepare the appropriate constant buffers
+			
+			// This is how the appropriate render bundle state will be gotten,
+			// except that its not actually necessary as all the information
+			// from it is used during the update
+			// RenderBundleState render_bundle = current_frame_state.render_bundles.at(entity_state.render_bundle_id);
+			
+			//resource_pool->GetRenderBundle(entity_state.render_bundle_id);
 		}
 	}
 }
