@@ -21,6 +21,18 @@ void World::UpdateLogic(int time_delta) {
 
 	player_location = current_frame_state.camera_position.location;
 
+	// Update the constant buffers in all the render bundles
+	for (auto render_bundle_state : current_frame_state.render_bundles) {
+		auto dx_buffers = resource_pool->GetRenderBundle(render_bundle_state.first)->GetBuffersForEdit();
+		for (int i = 0; i < dx_buffers.size(); i++) {
+			DirectX::XMFLOAT4 new_val(render_bundle_state.second.constant_buffers[i].data.data());
+			auto cb = dynamic_cast<ConstantBufferTyped<DirectX::XMFLOAT4>*>(dx_buffers[i]);
+			cb->GetBufferDataRef() = new_val;
+			cb->PushBuffer();
+		}
+	}
+
+	// Update which entities to display, as well as their positions
 	entities_to_display.clear();
 	for (int i = 0; i < current_frame_state.entities.size(); i++) {
 		EntityState& entity_state = current_frame_state.entities[i];
