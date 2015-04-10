@@ -8,10 +8,13 @@ import virtualpy
 
 import pdb
 
+#from model_loader import load_model
+import model_loader
+
 virtualpy.set_color(1, .5, 0)
 virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
-virtualpy.spawn_thread('directx')
+virtualpy.spawn_thread('directx_oculus')
 
 color_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
 texture_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("texture", "TEXCOORD", 2))
@@ -27,6 +30,8 @@ virtualpy.add_vertex(location=(1,  1, 0), normal=(0, 0, 1), color=(0.5, 0, 0, 1)
 virtualpy.add_vertex(location=(-1,  1, 0), normal=(0, 0, 1), color=(0, 0.5, 0, 1))
 virtualpy.add_vertex(location=( 1, -1, 0), normal=(0, 0, 1), color=(0, 0, 0.5, 1))
 virtualpy.add_vertex(location=(-1, -1, 0), normal=(0, 0, 1), color=(0.5, 0.5, 0.5, 1))
+virtualpy.add_vertex(location=( 1, -1, 0), normal=(0, 0, 1), color=(0, 0, 0.5, 1))
+virtualpy.add_vertex(location=(-1,  1, 0), normal=(0, 0, 1), color=(0, 0.5, 0, 1))
 
 redsqmod = virtualpy.end_model()
 redsq = virtualpy.create_modeled_entity(redsqmod, color_norm_shader)
@@ -37,6 +42,8 @@ virtualpy.add_vertex(location=(-1, -1, 0), color=(1, 1, 1, 1))
 virtualpy.add_vertex(location=(-1,  1, 0), color=(1, 1, 1, 1))
 virtualpy.add_vertex(location=( 1, -1, 0), color=(1, 1, 1, 1))
 virtualpy.add_vertex(location=( 1,  1, 0), color=(1, 1, 1, 1))
+virtualpy.add_vertex(location=( 1, -1, 0), color=(1, 1, 1, 1))
+virtualpy.add_vertex(location=(-1,  1, 0), color=(1, 1, 1, 1))
 
 whitesqmod = virtualpy.end_model()
 whitesq = virtualpy.create_modeled_entity(whitesqmod, color_shader)
@@ -50,10 +57,15 @@ virtualpy.add_vertex(location=(-1, 0, 1), texture=(0, 0))
 virtualpy.add_vertex(location=(-1, 0, -1), texture=(0, 1))
 virtualpy.add_vertex(location=( 1, 0, 1), texture=(1, 0))
 virtualpy.add_vertex(location=( 1, 0, -1), texture=(1, 1))
+virtualpy.add_vertex(location=( 1, 0, 1), texture=(1, 0))
+virtualpy.add_vertex(location=(-1, 0, -1), texture=(0, 1))
 texsqmod = virtualpy.end_model()
 
 texsq = virtualpy.create_textured_entity(texsqmod, texture_shader, groundtex)
 ceilsq = virtualpy.create_textured_entity(texsqmod, texture_shader, ceilingtex)
+
+# load model
+entity = model_loader.load_model(virtualpyloc + "resources\\" + "wt_teapot.obj.txt", color_vertex_type, color_shader)
 
 i = 0
 
@@ -95,11 +107,14 @@ while True:
 
 	virtualpy.show_model(redsq, (-5*math.sin(theta), redsqheight, -5*math.cos(theta)), (1, 1, 1), virtualpy.Quaternion((0, math.sin(theta/2), 0, math.cos(theta/2)))*virtualpy.Quaternion((1, 0, 0, 0)))
 	
+	virtualpy.show_model(entity, position=(0, 0, -3), scale=(1, 1, 1), rotation=virtualpy.Quaternion((math.sin(theta/2), 0, 0, math.cos(theta/2))))
+
 	virtualpy.show_model(texsq, (0, -1, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))
 	virtualpy.set_active_render_bundle(rb1);
 	virtualpy.show_model(ceilsq, (0, -.5, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))
 	virtualpy.show_model(whitesq, position=(-1, 0, -8), scale=(1, 3, 1), rotation=virtualpy.Quaternion((0, 0, 0, 1)))
 	virtualpy.show_model_with_render_bundle(rb2, rightwhitesq, position=(11, 0, -8), scale=(1, 3, 1), rotation=virtualpy.Quaternion((0, 0, 0, 1)))
+
 	virtualpy.push_state()
 	i = 1-i
 	if keys_since_state[ord('G')]:
