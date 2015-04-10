@@ -128,6 +128,11 @@ int DXResourcePool::CreateTexturedEntity(int model_id, int shader_id, int textur
 	return entities.size() - 1;
 }
 
+void DXResourcePool::CreateRenderBundle(int render_bundle_id, int num_constant_buffers) {
+	RenderBundle* new_render_bundle = new RenderBundle(device, device_context, num_constant_buffers);
+	render_bundles.insert(std::make_pair(render_bundle_id, new_render_bundle));
+}
+
 int DXResourcePool::GetNumberOfEntities() {
 	return entities.size();
 }
@@ -142,6 +147,10 @@ Model* DXResourcePool::GetModel(int model_index) {
 
 Texture* DXResourcePool::GetTexture(int texture_index) {
 	return textures[texture_index];
+}
+
+RenderBundle* DXResourcePool::GetRenderBundle(int render_bundle_id) {
+	return render_bundles.at(render_bundle_id);
 }
 
 VertexType DXResourcePool::PyVertexTypeToVertexType(PyObject* vertex_type) {

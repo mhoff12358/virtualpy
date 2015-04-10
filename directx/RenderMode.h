@@ -25,7 +25,6 @@ public:
 	void SetViewport(std::array<int, 2> size, std::array<float, 2> depth_range);
 	void SetViewport(int xoff, int yoff, int width, int height, float min_depth, float max_depth);
 	void SetViewport(int width, int height, float min_depth, float max_depth);
-	void AddShader(std::string file_name, D3D11_INPUT_ELEMENT_DESC ied[], int ied_size);
 
 	void Cleanup();
 

@@ -9,11 +9,14 @@
 #pragma comment (lib, "d3dx11.lib")
 #pragma comment (lib, "d3dx10.lib")
 
+#include <unordered_map>
+
 #include "../ResourcePool.h"
 
 #include "Model.h"
 #include "Entity.h"
 #include "Vertices.h"
+#include "RenderBundle.h"
 
 #define FIRST_PRIVATE_BUFFER 2
 
@@ -39,11 +42,15 @@ public:
 	virtual int CreateModeledEntity(int model_id, int shader_id);
 	virtual int CreateTexturedEntity(int model_id, int shader_id, int texture_id);
 
+	virtual void CreateRenderBundle(int render_bundle_id, int num_constant_buffers);
+
 	virtual int GetNumberOfEntities();
 
 	Entity* GetEntity(int entity_index);
 	Model* GetModel(int model_index);
 	Texture* GetTexture(int texture_index);
+
+	RenderBundle* GetRenderBundle(int render_bundle_id);
 
 private:
 	ID3D11Device* device;
@@ -56,6 +63,8 @@ private:
 	std::vector<Model*> models;
 	std::vector<Texture*> textures;
 	std::vector<ShaderPipeline*> shaders;
+
+	std::unordered_map<int, RenderBundle*> render_bundles;
 
 	DXGI_FORMAT PyRawTypeToDXGIFormat(PyObject* raw_type);
 	char* PyMetaTypeToSemantic(PyObject* meta_type);
