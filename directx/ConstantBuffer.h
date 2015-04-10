@@ -74,15 +74,15 @@ class ConstantBufferTyped : public ConstantBufferTypedTemp < ConstantBufferData 
 template <>
 class ConstantBufferTyped<TransformationMatrixData> : public ConstantBufferTypedTemp<TransformationMatrixData> {
 public:
-	void SetTransformation(DirectX::XMMATRIX new_transformation);
+	void XM_CALLCONV SetTransformation(DirectX::FXMMATRIX new_transformation);
 };
 
 template <>
 class ConstantBufferTyped<TransformationMatrixAndInvTransData> : public ConstantBufferTypedTemp<TransformationMatrixAndInvTransData>{
 public:
-	void SetBothTransformations(DirectX::XMMATRIX new_transformation);
-	void SetTransformation(DirectX::XMMATRIX new_transformation);
-	void SetTransformationInvTrans(DirectX::XMMATRIX new_transformation_inv_trans);
+	void XM_CALLCONV SetBothTransformations(DirectX::FXMMATRIX new_transformation);
+	void XM_CALLCONV SetTransformation(DirectX::FXMMATRIX new_transformation);
+	void XM_CALLCONV SetTransformationInvTrans(DirectX::FXMMATRIX new_transformation_inv_trans);
 };
 
 #endif
