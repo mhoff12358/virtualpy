@@ -291,7 +291,10 @@ PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
 	// Should somehow parse the args as a list of 4-tuples of floats.
 
 	RenderBundleState new_render_bundle;
+	new_render_bundle.constant_buffers.resize(1);
+	new_render_bundle.constant_buffers.at(0).data = { { 0, 0.25, 0.5, 1.0 } };
 	current_state.render_bundles.insert(std::make_pair(new_render_bundle_id, new_render_bundle));
+	resource_pool->CreateRenderBundle(new_render_bundle_id, 1);
 	PyObject* returned_id = Py_BuildValue("i", new_render_bundle_id);
 	new_render_bundle_id++;
 
