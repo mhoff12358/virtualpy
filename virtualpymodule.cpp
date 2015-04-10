@@ -205,11 +205,11 @@ PyObject* AddModelToFrameState(int render_bundle_id, int entity_id, PyObject* lo
 	// Ensures that there is an entity state for the current entity
 	if (current_state.entities.size() <= entity_id) {
 		current_state.entities.resize(entity_id + 1);
+	}
 		current_state.entities[entity_id].entity_id = entity_id;
 		current_state.entities[entity_id].position.location = { { 0.0f, 0.0f, 0.0f } };
 		current_state.entities[entity_id].position.scale = { { 1.0f, 1.0f, 1.0f } };
 		current_state.entities[entity_id].position.orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-	}
 
 	current_state.entities[entity_id].render_bundle_id = render_bundle_id;
 
