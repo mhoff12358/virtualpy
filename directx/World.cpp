@@ -36,9 +36,9 @@ void World::UpdateLogic(int time_delta) {
 	entities_to_display.clear();
 	for (int i = 0; i < current_frame_state.entities.size(); i++) {
 		EntityState& entity_state = current_frame_state.entities[i];
-		if (entity_state.render_bundle_id == 0) {
+		if (entity_state.render_bundle_id != -1) {
+			// Update the entity's information
 			Entity* entity_to_update = resource_pool->GetEntity(entity_state.entity_id);
-			entities_to_display.push_back(entity_state.entity_id);
 			ConstantBufferTyped<TransformationMatrixAndInvTransData>* model_matrix_buffer =
 				dynamic_cast<ConstantBufferTyped<TransformationMatrixAndInvTransData>*>(((ModeledDrawHandler*)entity_to_update->GetDrawHandler())->GetConstantBuffers()[0].first);
 			DirectX::XMMATRIX model_matrix = DirectX::XMMatrixScaling(entity_state.position.scale[0], entity_state.position.scale[1], entity_state.position.scale[2])*
@@ -46,22 +46,26 @@ void World::UpdateLogic(int time_delta) {
 				DirectX::XMMatrixTranslation(entity_state.position.location[0], entity_state.position.location[1], entity_state.position.location[2]);
 			model_matrix_buffer->SetBothTransformations(model_matrix);
 			model_matrix_buffer->PushBuffer();
-		} else if (entity_state.render_bundle_id > 0) {
-			// Should prepare the appropriate constant buffers
-			
-			// This is how the appropriate render bundle state will be gotten,
-			// except that its not actually necessary as all the information
-			// from it is used during the update
-			// RenderBundleState render_bundle = current_frame_state.render_bundles.at(entity_state.render_bundle_id);
-			
-			//resource_pool->GetRenderBundle(entity_state.render_bundle_id);
+			// Flag the entity to be displayed
+			entities_to_display.insert(std::make_pair(entity_state.render_bundle_id, entity_state.entity_id));
 		}
 	}
 }
 
 void World::Draw(RenderMode& render_mode) {
-	for (int& entity_id_to_draw : entities_to_display) {
-		resource_pool->GetEntity(entity_id_to_draw)->Draw(render_mode);
+	// 0 is the first current, as 0 is the special ID that maps to no bundle so it is "always active"
+	int current_render_bundle_id = 0;
+	for (std::pair<const int,int>& render_bundle_entity_id_pair : entities_to_display) {
+		if (render_bundle_entity_id_pair.first != current_render_bundle_id) {
+			// If we are drawing entities with a new render bundle id, prepare
+			// that render bundle and update the currently active bundle id
+			current_render_bundle_id = render_bundle_entity_id_pair.first;
+			const std::vector<ConstantBuffer*>& buffers = resource_pool->GetRenderBundle(current_render_bundle_id)->GetBuffersForReference();
+			for (int i = 0; i < buffers.size(); i++) {
+				render_mode.PrepareConstantBuffer(buffers[i], PER_BATCH_CONSTANT_BUFFER_REGISTER + i);
+			}
+		}
+		resource_pool->GetEntity(render_bundle_entity_id_pair.second)->Draw(render_mode);
 	}
 }
 

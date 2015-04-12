@@ -29,7 +29,7 @@ std::string resources_location(".");
 
 IOStateBuffer io_state_buffer;
 
-#define PY_ERR_CHK if (PyErr_Occurred()) return NULL;
+#define PY_ERR_CHK if (PyErr_Occurred()) return NULL
 
 void NewThread() {
 	//MainLoop* main_loop = new PrintColor(&state_interpolater);
@@ -46,7 +46,7 @@ PyObject* SetResourcesLocation(PyObject* self, PyObject* args) {
 	resources_location.clear();
 	resources_location.insert(0, res_loc_text);
 
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -83,7 +83,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		preparation_cv.wait(preparation_lock);
 	}
 	
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -92,7 +92,7 @@ PyObject* SetColor(PyObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "fff", current_state.color.data(), current_state.color.data() + 1, current_state.color.data() + 2)) {
 		return NULL;
 	}
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -111,7 +111,7 @@ PyObject* BeginModel(PyObject* self, PyObject* args) {
 	} else {
 		resource_pool->BeginNewModel(vertex_type, primitive_type);
 	}
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -141,7 +141,7 @@ PyObject* AddVertex(PyObject* self, PyObject* args, PyObject* kwargs) {
 	if (PyErr_Occurred()) {
 		return NULL;
 	}
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -152,7 +152,7 @@ PyObject* EndModel(PyObject* self, PyObject* args) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	return Py_BuildValue("i", entity_id);
 }
 
@@ -168,7 +168,7 @@ PyObject* LoadTexture(PyObject* self, PyObject* args) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	return Py_BuildValue("i", tex_id);
 }
 
@@ -185,7 +185,7 @@ PyObject* LoadShader(PyObject* self, PyObject* args) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	return Py_BuildValue("i", shad_id);
 }
 
@@ -198,7 +198,7 @@ PyObject* CreateModeledEntity(PyObject* self, PyObject* args) {
 	}
 
 	int entity_id = resource_pool->CreateModeledEntity(model_id, shader_id);
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	return Py_BuildValue("i", entity_id);
 }
 
@@ -212,7 +212,7 @@ PyObject* CreateTexturedEntity(PyObject* self, PyObject* args) {
 	}
 
 	int entity_id = resource_pool->CreateTexturedEntity(model_id, shader_id, texture_id);
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	return Py_BuildValue("i", entity_id);
 }
 
@@ -258,7 +258,7 @@ PyObject* AddModelToFrameState(int render_bundle_id, int entity_id, PyObject* lo
 		}
 	}
 
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -304,18 +304,49 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 }
 
 PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
-	// Should somehow parse the args as a list of 4-tuples of floats.
+	// Parse the args as a number of constant buffers
 
-	RenderBundleState new_render_bundle;
-	new_render_bundle.constant_buffers.resize(1);
-	new_render_bundle.constant_buffers.at(0).data = { { 0, 0.25, 0.5, 1.0 } };
+	RenderBundleState new_render_bundle(1);
+	new_render_bundle.constant_buffers.at(0).data = { { 1, 0.25, 0.5, 1.0 } };
 	current_state.render_bundles.insert(std::make_pair(new_render_bundle_id, new_render_bundle));
 	resource_pool->CreateRenderBundle(new_render_bundle_id, 1);
 	PyObject* returned_id = Py_BuildValue("i", new_render_bundle_id);
 	new_render_bundle_id++;
 
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	return returned_id;
+}
+
+PyObject* UpdateRenderBundle(PyObject* self, PyObject* args) {
+	// Parse the args as a series of float 4-tuples
+	int render_bundle_id;
+	PyObject* values;
+	if (!PyArg_ParseTuple(args, "iO", &render_bundle_id, &values)) {
+		return NULL;
+	}
+	RenderBundleState& rbs = current_state.render_bundles.at(render_bundle_id);
+	if (rbs.constant_buffers.size() != PySequence_Size(values)) {
+		char err_txt[100];
+		snprintf(err_txt, 100, "Trying to set the wrong number of values in an update to a render bundle, expected %i, found %i", rbs.constant_buffers.size(), PySequence_Size(values));
+		PyErr_SetString(PyExc_ValueError, err_txt);
+		return NULL;
+	}
+	
+	PyObject* iter = PyObject_GetIter(values);
+	PyObject* item;
+	int i = 0;
+	while (item = PyIter_Next(iter)) {
+		float* constant_buffer_data_ptr = rbs.constant_buffers.at(i).data.data();
+		if (!PyArg_ParseTuple(item, "ffff", constant_buffer_data_ptr, constant_buffer_data_ptr + 1, constant_buffer_data_ptr + 2, constant_buffer_data_ptr + 3)) {
+			return NULL;
+		}
+		// Always release the reference to my item
+		Py_DECREF(item);
+	}
+	PY_ERR_CHK;
+	
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 PyObject* SetCameraLocation(PyObject* self, PyObject* args) {
@@ -325,7 +356,7 @@ PyObject* SetCameraLocation(PyObject* self, PyObject* args) {
 	}
 	current_state.camera_position.location = location;
 
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -337,7 +368,7 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 	current_state = new_state;
 	current_render_bundle = 0;
 
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -363,7 +394,7 @@ PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
 	IOState latest_state = io_state_buffer.ReadState();
 	PyObject* keys_at_state = GetKeysAtState(latest_state);
 	PyObject* keys_since_state = GetKeysSinceState(latest_state);
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	return PyTuple_Pack(2, keys_at_state, keys_since_state);
 }
 
@@ -375,7 +406,7 @@ PyObject* SetActiveRenderBundle(PyObject* self, PyObject* args) {
 		}	
 	}
 	current_render_bundle = new_render_bundle;
-	PY_ERR_CHK
+	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -394,6 +425,7 @@ PyMethodDef virtualpy_methods[] = {
 	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
 	{ "create_textured_entity", CreateTexturedEntity, METH_VARARGS, "create_textured_entity() doc string" },
 	{ "create_render_bundle", CreateRenderBundle, METH_VARARGS, "create_render_bundle() doc string" },
+	{ "update_render_bundle", UpdateRenderBundle, METH_VARARGS, "update_render_bundle() doc string" },
 	{ "set_active_render_bundle", SetActiveRenderBundle, METH_VARARGS, "set_active_render_bundle() doc string" },
 	{ "show_model", (PyCFunction)ShowModel, METH_VARARGS | METH_KEYWORDS, "show_model() doc string" },
 	{ "show_model_with_render_bundle", (PyCFunction)ShowModelWithRenderBundle, METH_VARARGS | METH_KEYWORDS, "show_model_with_render_bundle() doc string" },

@@ -18,7 +18,10 @@
 #include "Vertices.h"
 #include "RenderBundle.h"
 
-#define FIRST_PRIVATE_BUFFER 2
+#define PER_FRAME_CONSTANT_BUFFER_REGISTER 0
+#define PER_MODEL_CONSTANT_BUFFER_REGISTER 1
+// Per batch constant buffers can use registers 2+
+#define PER_BATCH_CONSTANT_BUFFER_REGISTER 2
 
 class DXResourcePool :
 	public ResourcePool

@@ -32,6 +32,8 @@ struct ConstantBufferState {
 };
 
 struct RenderBundleState {
+	RenderBundleState();
+	RenderBundleState(int num_const_buff);
 	std::vector<ConstantBufferState> constant_buffers;
 };
 

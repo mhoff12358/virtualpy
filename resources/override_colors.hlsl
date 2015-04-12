@@ -15,13 +15,18 @@ cbuffer personal_matrices : register(b1)
 	matrix <float, 4, 4> model_inv_trans;
 };
 
+cbuffer per_batch : register(b2)
+{
+	float4 new_color;
+};
+
 VOut VShader(float4 position : POSITION, float4 color : COLOR)
 {
     VOut output;
 
 	output.position = mul(model, position);
 	output.position = mul(view_projection, output.position);
-	output.color = color;
+	output.color = new_color;
 
     return output;
 }

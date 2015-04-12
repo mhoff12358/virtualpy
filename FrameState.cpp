@@ -9,6 +9,14 @@ PositionState::PositionState() {
 EntityState::EntityState() : entity_id(-1), render_bundle_id(-1), position() {
 }
 
+RenderBundleState::RenderBundleState() {
+
+}
+
+RenderBundleState::RenderBundleState(int num_const_buff) {
+	constant_buffers.resize(num_const_buff);
+}
+
 FrameState::FrameState() : color({ { 0.0f, 0.0f, 0.0f } }), entities(), camera_position() {
 
 }

@@ -2,6 +2,7 @@
 #define __WORLD_H_INCLUDED__
 
 #include <array>
+#include <map>
 
 #include "PerspectiveCamera.h"
 #include "InputHandler.h"
@@ -33,7 +34,8 @@ private:
 	InputHandler* input_handler;
 	DXResourcePool* resource_pool;
 
-	std::vector<int> entities_to_display;
+	//std::vector<int> entities_to_display;
+	std::multimap<int, int> entities_to_display;
 
 	std::array<float, 3> player_location;
 	std::array<float, 4> player_orientation;

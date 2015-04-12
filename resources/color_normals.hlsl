@@ -10,12 +10,7 @@ cbuffer shared_matrices : register(b0)
 	matrix <float, 4, 4> view_projection;
 };
 
-cbuffer shared_matrices : register(b1)
-{
-	matrix <float, 4, 4> view_projection_inv_trans;
-};
-
-cbuffer personal_matrices : register(b2)
+cbuffer personal_matrices : register(b1)
 {
 	matrix <float, 4, 4> model;
 	matrix <float, 4, 4> model_inv_trans;
