@@ -18,11 +18,16 @@ void DXResourcePool::Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con)
 
 void DXResourcePool::BeginNewModel(PyObject* vertex_type) {
 	current_model_vertex_type = vertex_type;
-	BeginNewModel(PyVertexTypeToVertexType(vertex_type));
+	BeginNewModel(PyVertexTypeToVertexType(vertex_type), D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 }
 
-void DXResourcePool::BeginNewModel(VertexType vertex_type) {
-	active_model_generator = new ModelGenerator(vertex_type);
+void DXResourcePool::BeginNewModel(PyObject* vertex_type, PyObject* primitive_type) {
+	current_model_vertex_type = vertex_type;
+	BeginNewModel(PyVertexTypeToVertexType(vertex_type), PyPrimitiveTypeToD3DPrimitiveTopology(primitive_type));
+}
+
+void DXResourcePool::BeginNewModel(VertexType vertex_type, D3D_PRIMITIVE_TOPOLOGY primitive_type) {
+	active_model_generator = new ModelGenerator(vertex_type, primitive_type);
 }
 
 void DXResourcePool::AddModelVertex(PyObject* new_vertex) {
@@ -221,4 +226,9 @@ char* DXResourcePool::PyMetaTypeToSemantic(PyObject* meta_type) {
 	PyObject* semantic_string = PyObject_GetAttrString(meta_type, "type_name");
 	char* retval = PyUnicode_AsUTF8(semantic_string);
 	return retval;
+}
+
+D3D_PRIMITIVE_TOPOLOGY DXResourcePool::PyPrimitiveTypeToD3DPrimitiveTopology(PyObject* primitive_type) {
+	PyObject* py_enum_value = PyObject_GetAttrString(primitive_type, "value");
+	return (D3D_PRIMITIVE_TOPOLOGY)PyLong_AsUnsignedLong(py_enum_value);
 }

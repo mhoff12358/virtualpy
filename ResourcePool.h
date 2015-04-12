@@ -13,6 +13,7 @@ public:
 	void Initialize();
 
 	virtual void BeginNewModel(PyObject* vertex_type) = 0;
+	virtual void BeginNewModel(PyObject* vertex_type, PyObject* primitive_type) = 0;
 	virtual void AddModelVertex(PyObject* new_vertex) = 0;
 	virtual void AddModelVertexFromArgs(PyObject* vertex_args, PyObject* vertex_kwargs);
 	virtual int FinishModel() = 0;

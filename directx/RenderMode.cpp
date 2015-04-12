@@ -66,7 +66,7 @@ void RenderMode::RenderModel(const Model& model) const {
 	ID3D11Buffer* vertex_buffer = model.GetVertexBuffer();
 	device_context->IASetVertexBuffers(0, 1, &vertex_buffer, &model.stride, &model.offset);
 
-	device_context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	device_context->IASetPrimitiveTopology(model.primitive_type);
 
 	device_context->Draw(model.num_vertices, 0);
 }

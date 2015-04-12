@@ -29,6 +29,8 @@ std::string resources_location(".");
 
 IOStateBuffer io_state_buffer;
 
+#define PY_ERR_CHK if (PyErr_Occurred()) return NULL;
+
 void NewThread() {
 	//MainLoop* main_loop = new PrintColor(&state_interpolater);
 
@@ -44,6 +46,7 @@ PyObject* SetResourcesLocation(PyObject* self, PyObject* args) {
 	resources_location.clear();
 	resources_location.insert(0, res_loc_text);
 
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -80,6 +83,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		preparation_cv.wait(preparation_lock);
 	}
 	
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -88,6 +92,7 @@ PyObject* SetColor(PyObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "fff", current_state.color.data(), current_state.color.data() + 1, current_state.color.data() + 2)) {
 		return NULL;
 	}
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -95,14 +100,18 @@ PyObject* SetColor(PyObject* self, PyObject* args) {
 PyObject* BeginModel(PyObject* self, PyObject* args) {
 	assert(!PyErr_Occurred());
 	PyObject* vertex_type;
-	if (!PyArg_ParseTuple(args, "O", &vertex_type)) {
-		Py_INCREF(Py_None);
-		return Py_None;
+	PyObject* primitive_type = Py_None;
+	if (!PyArg_ParseTuple(args, "O|O", &vertex_type, &primitive_type)) {
+		return NULL;
 	}
-
-	assert(!PyErr_Occurred());
-	resource_pool->BeginNewModel(vertex_type);
+	
 	if (PyErr_Occurred()) return NULL;
+	if (primitive_type == Py_None) {
+		resource_pool->BeginNewModel(vertex_type);
+	} else {
+		resource_pool->BeginNewModel(vertex_type, primitive_type);
+	}
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -132,6 +141,7 @@ PyObject* AddVertex(PyObject* self, PyObject* args, PyObject* kwargs) {
 	if (PyErr_Occurred()) {
 		return NULL;
 	}
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -142,6 +152,7 @@ PyObject* EndModel(PyObject* self, PyObject* args) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
+	PY_ERR_CHK
 	return Py_BuildValue("i", entity_id);
 }
 
@@ -157,6 +168,7 @@ PyObject* LoadTexture(PyObject* self, PyObject* args) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
+	PY_ERR_CHK
 	return Py_BuildValue("i", tex_id);
 }
 
@@ -173,6 +185,7 @@ PyObject* LoadShader(PyObject* self, PyObject* args) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
+	PY_ERR_CHK
 	return Py_BuildValue("i", shad_id);
 }
 
@@ -185,6 +198,7 @@ PyObject* CreateModeledEntity(PyObject* self, PyObject* args) {
 	}
 
 	int entity_id = resource_pool->CreateModeledEntity(model_id, shader_id);
+	PY_ERR_CHK
 	return Py_BuildValue("i", entity_id);
 }
 
@@ -198,6 +212,7 @@ PyObject* CreateTexturedEntity(PyObject* self, PyObject* args) {
 	}
 
 	int entity_id = resource_pool->CreateTexturedEntity(model_id, shader_id, texture_id);
+	PY_ERR_CHK
 	return Py_BuildValue("i", entity_id);
 }
 
@@ -243,6 +258,7 @@ PyObject* AddModelToFrameState(int render_bundle_id, int entity_id, PyObject* lo
 		}
 	}
 
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -298,6 +314,7 @@ PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
 	PyObject* returned_id = Py_BuildValue("i", new_render_bundle_id);
 	new_render_bundle_id++;
 
+	PY_ERR_CHK
 	return returned_id;
 }
 
@@ -307,6 +324,8 @@ PyObject* SetCameraLocation(PyObject* self, PyObject* args) {
 		return NULL;
 	}
 	current_state.camera_position.location = location;
+
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -317,6 +336,8 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 	new_state.color = current_state.color;
 	current_state = new_state;
 	current_render_bundle = 0;
+
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -342,6 +363,7 @@ PyObject* GetKeyboardState(PyObject* self, PyObject* args) {
 	IOState latest_state = io_state_buffer.ReadState();
 	PyObject* keys_at_state = GetKeysAtState(latest_state);
 	PyObject* keys_since_state = GetKeysSinceState(latest_state);
+	PY_ERR_CHK
 	return PyTuple_Pack(2, keys_at_state, keys_since_state);
 }
 
@@ -353,6 +375,7 @@ PyObject* SetActiveRenderBundle(PyObject* self, PyObject* args) {
 		}	
 	}
 	current_render_bundle = new_render_bundle;
+	PY_ERR_CHK
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -420,6 +443,7 @@ PyInit_virtualpy(void)
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "VertexType");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Vertex");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Quaternion");
+	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "PrimitiveType");
 	
 
 	return unfinished_module;

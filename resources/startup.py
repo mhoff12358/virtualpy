@@ -6,6 +6,8 @@ sys.path.append(virtualpyloc+'Debug')
 
 import virtualpy
 
+a = virtualpy.PrimitiveType.triangle_list
+
 import pdb
 
 #from model_loader import load_model
@@ -14,7 +16,7 @@ import model_loader
 virtualpy.set_color(1, .5, 0)
 virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
-virtualpy.spawn_thread('directx_oculus')
+virtualpy.spawn_thread('directx')
 
 color_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
 texture_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("texture", "TEXCOORD", 2))
@@ -24,14 +26,12 @@ color_shader = virtualpy.load_shader("shaders.hlsl", color_vertex_type)
 texture_shader = virtualpy.load_shader("texture_shaders.hlsl", texture_vertex_type)
 color_norm_shader = virtualpy.load_shader("color_normals.hlsl", color_vertex_type_with_normal)
 
-virtualpy.begin_model(color_vertex_type_with_normal)
+virtualpy.begin_model(color_vertex_type_with_normal, virtualpy.PrimitiveType.triangle_strip)
 
 virtualpy.add_vertex(location=(1,  1, 0), normal=(0, 0, 1), color=(0.5, 0, 0, 1))
 virtualpy.add_vertex(location=(-1,  1, 0), normal=(0, 0, 1), color=(0, 0.5, 0, 1))
 virtualpy.add_vertex(location=( 1, -1, 0), normal=(0, 0, 1), color=(0, 0, 0.5, 1))
 virtualpy.add_vertex(location=(-1, -1, 0), normal=(0, 0, 1), color=(0.5, 0.5, 0.5, 1))
-virtualpy.add_vertex(location=( 1, -1, 0), normal=(0, 0, 1), color=(0, 0, 0.5, 1))
-virtualpy.add_vertex(location=(-1,  1, 0), normal=(0, 0, 1), color=(0, 0.5, 0, 1))
 
 redsqmod = virtualpy.end_model()
 redsq = virtualpy.create_modeled_entity(redsqmod, color_norm_shader)
@@ -42,8 +42,6 @@ virtualpy.add_vertex(location=(-1, -1, 0), color=(1, 1, 1, 1))
 virtualpy.add_vertex(location=(-1,  1, 0), color=(1, 1, 1, 1))
 virtualpy.add_vertex(location=( 1, -1, 0), color=(1, 1, 1, 1))
 virtualpy.add_vertex(location=( 1,  1, 0), color=(1, 1, 1, 1))
-virtualpy.add_vertex(location=( 1, -1, 0), color=(1, 1, 1, 1))
-virtualpy.add_vertex(location=(-1,  1, 0), color=(1, 1, 1, 1))
 
 whitesqmod = virtualpy.end_model()
 whitesq = virtualpy.create_modeled_entity(whitesqmod, color_shader)
@@ -57,8 +55,6 @@ virtualpy.add_vertex(location=(-1, 0, 1), texture=(0, 0))
 virtualpy.add_vertex(location=(-1, 0, -1), texture=(0, 1))
 virtualpy.add_vertex(location=( 1, 0, 1), texture=(1, 0))
 virtualpy.add_vertex(location=( 1, 0, -1), texture=(1, 1))
-virtualpy.add_vertex(location=( 1, 0, 1), texture=(1, 0))
-virtualpy.add_vertex(location=(-1, 0, -1), texture=(0, 1))
 texsqmod = virtualpy.end_model()
 
 texsq = virtualpy.create_textured_entity(texsqmod, texture_shader, groundtex)

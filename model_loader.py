@@ -5,7 +5,7 @@ def load_model(fname, vertex_type, shader, color = (1, 1, 1, 1)):
 	# loads vertices, returns list of entities
 	# color is white by default
 	vertices = []
-	virtualpy.begin_model(vertex_type)
+	virtualpy.begin_model(vertex_type, virtualpy.PrimitiveType.triangle_list)
 	with open(fname, "r", encoding = "utf-8") as f:
 		while True:
 			line = f.readline()

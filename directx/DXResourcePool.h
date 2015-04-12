@@ -30,7 +30,8 @@ public:
 	void Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con);
 
 	virtual void BeginNewModel(PyObject* vertex_type);
-	virtual void BeginNewModel(VertexType vertex_type);
+	virtual void BeginNewModel(PyObject* vertex_type, PyObject* primitive_type);
+	virtual void BeginNewModel(VertexType vertex_type, D3D_PRIMITIVE_TOPOLOGY primative_type);
 	virtual void AddModelVertex(PyObject* new_vertex);
 	virtual void AddModelVertex(Vertex new_vertex);
 	virtual int FinishModel();
@@ -70,6 +71,7 @@ private:
 	char* PyMetaTypeToSemantic(PyObject* meta_type);
 	VertexType PyVertexTypeToVertexType(PyObject* vertex_type);
 	Vertex PyVertexToVertex(PyObject* vertex);
+	D3D_PRIMITIVE_TOPOLOGY PyPrimitiveTypeToD3DPrimitiveTopology(PyObject* primitive_type);
 
 	void AddModelTransformations(std::vector<std::pair<ConstantBuffer*, int>>& transformations);
 };

@@ -9,7 +9,8 @@ ID3D11Buffer* Model::GetVertexBuffer() const {
 	return vertex_buffer;
 }
 
-ModelGenerator::ModelGenerator(VertexType v_type) : vertex_type(v_type) {
+ModelGenerator::ModelGenerator(VertexType v_type, D3D_PRIMITIVE_TOPOLOGY p_type)
+	: vertex_type(v_type), primitive_type(p_type) {
 
 }
 
@@ -49,6 +50,6 @@ void ModelGenerator::InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceCo
 
 Model ModelGenerator::DumpModel(ID3D11Device* device, ID3D11DeviceContext* device_context) {
 	InitializeVertexBuffer(device, device_context);
-	Model model(vertex_buffer, vertex_type.GetVertexSize(), 0, vertices.size());
+	Model model(vertex_buffer, vertex_type.GetVertexSize(), 0, vertices.size(), primitive_type);
 	return model;
 }
