@@ -305,8 +305,12 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 
 PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
 	// Parse the args as a number of constant buffers
+	int num_constant_buffers = 1;
+	if (!PyArg_ParseTuple(args, "|i", &num_constant_buffers)) {
+		return NULL;
+	}
 
-	RenderBundleState new_render_bundle(1);
+	RenderBundleState new_render_bundle(num_constant_buffers);
 	new_render_bundle.constant_buffers.at(0).data = { { 1, 0.25, 0.5, 1.0 } };
 	current_state.render_bundles.insert(std::make_pair(new_render_bundle_id, new_render_bundle));
 	resource_pool->CreateRenderBundle(new_render_bundle_id, 1);
@@ -334,11 +338,14 @@ PyObject* UpdateRenderBundle(PyObject* self, PyObject* args) {
 	int i = 0;
 	while (item = PyIter_Next(iter)) {
 		float* constant_buffer_data_ptr = rbs.constant_buffers[i].data.data();
-		if (!PyArg_ParseTuple(item, "ffff", constant_buffer_data_ptr, constant_buffer_data_ptr + 1, constant_buffer_data_ptr + 2, constant_buffer_data_ptr + 3)) {
-			return NULL;
+		for (int j = 0; j < 4; j++) {
+			PyObject* float_val = PySequence_GetItem(item, j);
+			constant_buffer_data_ptr[j] = PyFloat_AsDouble(float_val);
+			Py_DECREF(float_val);
 		}
 		// Always release the reference to my item
 		Py_DECREF(item);
+		i++;
 	}
 	PY_ERR_CHK;
 	
