@@ -17,11 +17,11 @@ RenderBundleState::RenderBundleState(int num_const_buff) {
 	constant_buffers.resize(num_const_buff);
 }
 
-FrameState::FrameState() : color({ { 0.0f, 0.0f, 0.0f } }), entities(), camera_position() {
+FrameState::FrameState() : color({ { 0.0f, 0.0f, 0.0f } }), entities(), camera_position(), render_bundles() {
 
 }
 
-FrameState::FrameState(std::array<float, 3> col) : color(col), entities(), camera_position() {
+FrameState::FrameState(std::array<float, 3> col) : color(col), entities(), camera_position(), render_bundles() {
 
 }
 

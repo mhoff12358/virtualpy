@@ -105,7 +105,7 @@ while True:
 		redsqheight = 3
 
 		
-	#virtualpy.update_render_bundle(specific_color_rb, (tuple(random_color),))
+	virtualpy.update_render_bundle(specific_color_rb, (tuple(random_color),))
 
 	virtualpy.show_model(redsq, (-5*math.sin(theta), redsqheight, -5*math.cos(theta)), (1, 1, 1), virtualpy.Quaternion((0, math.sin(theta/2), 0, math.cos(theta/2)))*virtualpy.Quaternion((1, 0, 0, 0)))
 	

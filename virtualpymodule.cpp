@@ -324,19 +324,16 @@ PyObject* UpdateRenderBundle(PyObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "iO", &render_bundle_id, &values)) {
 		return NULL;
 	}
-	RenderBundleState& rbs = current_state.render_bundles.at(render_bundle_id);
-	if (rbs.constant_buffers.size() != PySequence_Size(values)) {
-		char err_txt[100];
-		snprintf(err_txt, 100, "Trying to set the wrong number of values in an update to a render bundle, expected %i, found %i", rbs.constant_buffers.size(), PySequence_Size(values));
-		PyErr_SetString(PyExc_ValueError, err_txt);
-		return NULL;
-	}
+	PY_ERR_CHK;
+	RenderBundleState& rbs = current_state.render_bundles[render_bundle_id];
 	
+	rbs.constant_buffers.resize(PySequence_Size(values));
+
 	PyObject* iter = PyObject_GetIter(values);
 	PyObject* item;
 	int i = 0;
 	while (item = PyIter_Next(iter)) {
-		float* constant_buffer_data_ptr = rbs.constant_buffers.at(i).data.data();
+		float* constant_buffer_data_ptr = rbs.constant_buffers[i].data.data();
 		if (!PyArg_ParseTuple(item, "ffff", constant_buffer_data_ptr, constant_buffer_data_ptr + 1, constant_buffer_data_ptr + 2, constant_buffer_data_ptr + 3)) {
 			return NULL;
 		}

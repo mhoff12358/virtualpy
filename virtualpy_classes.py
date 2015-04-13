@@ -1,5 +1,7 @@
 import math
 
+from enum import Enum
+
 class RawType(object):
     def __init__(self, num_floats):
         if not num_floats in [1, 2, 3, 4]:
@@ -68,6 +70,12 @@ class VertexType(object):
             data_list.append(kwargs[self.name_reverse_lookup[i]])
         return Vertex(self, data_list)
 
+class PrimitiveType(Enum):
+	point_list = 1
+	line_list = 2
+	line_strip = 3
+	triangle_list = 4
+	triangle_strip = 5
 
 class Vertex(object):
     def __init__(self, vertex_type, data_list):
