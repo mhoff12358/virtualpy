@@ -128,8 +128,8 @@ int DXResourcePool::CreateTexturedEntity(int model_id, int shader_id, int textur
 	return entities.size() - 1;
 }
 
-void DXResourcePool::CreateRenderBundle(int render_bundle_id, int num_constant_buffers) {
-	RenderBundle* new_render_bundle = new RenderBundle(device, device_context, num_constant_buffers);
+void DXResourcePool::CreateRenderBundle(int render_bundle_id, int num_constant_buffers, std::vector<char> pipeline_stages) {
+	RenderBundle* new_render_bundle = new RenderBundle(device, device_context, num_constant_buffers, pipeline_stages);
 	render_bundles.insert(std::make_pair(render_bundle_id, new_render_bundle));
 }
 

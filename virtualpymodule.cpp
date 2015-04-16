@@ -306,14 +306,27 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
 	// Parse the args as a number of constant buffers
 	int num_constant_buffers = 1;
-	if (!PyArg_ParseTuple(args, "|i", &num_constant_buffers)) {
+	PyObject* pipeline_stage_bindings = Py_None;
+	if (!PyArg_ParseTuple(args, "|iO", &num_constant_buffers, &pipeline_stage_bindings)) {
 		return NULL;
 	}
 
 	RenderBundleState new_render_bundle(num_constant_buffers);
-	new_render_bundle.constant_buffers.at(0).data = { { 1, 0.25, 0.5, 1.0 } };
+	std::vector<char> pipeline_stages;
+	// If the pipeline_stage_bindings are specified, apply them. Else, bind them all to vertex buffers
+	if (pipeline_stage_bindings != Py_None) {
+		for (int i = 0; i < num_constant_buffers; i++) {
+			PyObject* binding_type = PySequence_GetItem(pipeline_stage_bindings, i);
+			pipeline_stages.push_back((char)PyLong_AsLong(binding_type));
+		}
+	} else {
+		pipeline_stages.resize(num_constant_buffers, 1);
+		//for (int i = 0; i < num_constant_buffers; i++) {
+		//	new_render_bundle.constant_buffers[i].pipeline_stage = 1;
+		//}
+	}
 	current_state.render_bundles.insert(std::make_pair(new_render_bundle_id, new_render_bundle));
-	resource_pool->CreateRenderBundle(new_render_bundle_id, 1);
+	resource_pool->CreateRenderBundle(new_render_bundle_id, 1, pipeline_stages);
 	PyObject* returned_id = Py_BuildValue("i", new_render_bundle_id);
 	new_render_bundle_id++;
 

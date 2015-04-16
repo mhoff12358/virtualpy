@@ -24,18 +24,20 @@ color_vertex_type_with_normal = virtualpy.VertexType(("location", "POSITION", 3)
 
 color_shader = virtualpy.load_shader("shaders.hlsl", color_vertex_type)
 color_override_shader = virtualpy.load_shader("override_colors.hlsl", color_vertex_type)
+color_override_by_pixel_shader = virtualpy.load_shader("override_colors_by_pixel.hlsl", color_vertex_type)
 texture_shader = virtualpy.load_shader("texture_shaders.hlsl", texture_vertex_type)
 color_norm_shader = virtualpy.load_shader("color_normals.hlsl", color_vertex_type_with_normal)
+color_lighting_shader = virtualpy.load_shader("color_lighting.hlsl", color_vertex_type_with_normal)
 
 virtualpy.begin_model(color_vertex_type_with_normal, virtualpy.PrimitiveType.triangle_strip)
 
-virtualpy.add_vertex(location=(1,  1, 0), normal=(0, 0, 1), color=(0.5, 0, 0, 1))
-virtualpy.add_vertex(location=(-1,  1, 0), normal=(0, 0, 1), color=(0, 0.5, 0, 1))
-virtualpy.add_vertex(location=( 1, -1, 0), normal=(0, 0, 1), color=(0, 0, 0.5, 1))
-virtualpy.add_vertex(location=(-1, -1, 0), normal=(0, 0, 1), color=(0.5, 0.5, 0.5, 1))
+virtualpy.add_vertex(location=(1,  1, 0), normal=(0, 0, -1), color=(0.5, 0, 0, 1))
+virtualpy.add_vertex(location=(-1,  1, 0), normal=(0, 0, -1), color=(0, 0.5, 0, 1))
+virtualpy.add_vertex(location=( 1, -1, 0), normal=(0, 0, -1), color=(0, 0, 0.5, 1))
+virtualpy.add_vertex(location=(-1, -1, 0), normal=(0, 0, -1), color=(0.5, 0.5, 0.5, 1))
 
 redsqmod = virtualpy.end_model()
-redsq = virtualpy.create_modeled_entity(redsqmod, color_norm_shader)
+redsq = virtualpy.create_modeled_entity(redsqmod, color_lighting_shader)
 
 virtualpy.begin_model(color_vertex_type)
 
@@ -45,7 +47,7 @@ virtualpy.add_vertex(location=( 1, -1, 0), color=(1, 1, 1, 1))
 virtualpy.add_vertex(location=( 1,  1, 0), color=(1, 1, 1, 1))
 
 whitesqmod = virtualpy.end_model()
-whitesq = virtualpy.create_modeled_entity(whitesqmod, color_override_shader)
+whitesq = virtualpy.create_modeled_entity(whitesqmod, color_override_by_pixel_shader)
 rightwhitesq = virtualpy.create_modeled_entity(whitesqmod, color_shader)
 
 groundtex = virtualpy.load_texture("ground.png")
@@ -62,7 +64,7 @@ texsq = virtualpy.create_textured_entity(texsqmod, texture_shader, groundtex)
 ceilsq = virtualpy.create_textured_entity(texsqmod, texture_shader, ceilingtex)
 
 # load model
-entity = model_loader.load_model(virtualpyloc + "resources\\" + "wt_teapot.obj.txt", color_vertex_type, color_shader)
+#entity = model_loader.load_model(virtualpyloc + "resources\\" + "wt_teapot.obj.txt", color_vertex_type, color_shader)
 
 i = 0
 
@@ -73,8 +75,12 @@ random_color = [0, 0, 0, 1]
 prev_time = time.perf_counter()
 curr_time = prev_time
 
-specific_color_rb = virtualpy.create_render_bundle(1)
+specific_color_rb = virtualpy.create_render_bundle(1, (2,))
 virtualpy.update_render_bundle(specific_color_rb, ((1, 1, 1, 1),))
+
+lighting_rb = virtualpy.create_render_bundle(1, (2,))
+lighting_angle = [1, 0, 0, 0]
+virtualpy.update_render_bundle(lighting_rb, (lighting_angle,))
 
 while True:
 	time_diff = curr_time - prev_time
@@ -107,9 +113,9 @@ while True:
 		
 	virtualpy.update_render_bundle(specific_color_rb, (random_color,))
 
-	virtualpy.show_model(redsq, (-5*math.sin(theta), redsqheight, -5*math.cos(theta)), (1, 1, 1), virtualpy.Quaternion((0, math.sin(theta/2), 0, math.cos(theta/2)))*virtualpy.Quaternion((1, 0, 0, 0)))
+	virtualpy.show_model_with_render_bundle(lighting_rb, redsq, (-5*math.sin(theta), redsqheight, -5*math.cos(theta)), (1, 1, 1), virtualpy.Quaternion((0, math.sin(theta/2), 0, math.cos(theta/2)))*virtualpy.Quaternion((1, 0, 0, 0)))
 	
-	virtualpy.show_model(entity, position=(0, 0, -3), scale=(1, 1, 1), rotation=virtualpy.Quaternion((math.sin(theta/2), 0, 0, math.cos(theta/2))))
+	#virtualpy.show_model(entity, position=(0, 0, -3), scale=(1, 1, 1), rotation=virtualpy.Quaternion((math.sin(theta/2), 0, 0, math.cos(theta/2))))
 
 	virtualpy.show_model(texsq, (0, -1, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))
 	virtualpy.show_model(ceilsq, (0, -.5, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))

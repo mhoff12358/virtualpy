@@ -3,6 +3,7 @@
 #include "Python.h"
 #include "PyHelper.h"
 #include <string>
+#include <vector>
 
 class ResourcePool
 {
@@ -25,7 +26,7 @@ public:
 	virtual int CreateModeledEntity(int model_id, int shader_id) = 0;
 	virtual int CreateTexturedEntity(int model_id, int shader_id, int texture_id) = 0;
 
-	virtual void CreateRenderBundle(int render_bundle_id, int num_constant_buffers) = 0;
+	virtual void CreateRenderBundle(int render_bundle_id, int num_constant_buffers, std::vector<char> pipeline_stages) = 0;
 
 	virtual int GetNumberOfEntities() = 0;
 

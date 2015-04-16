@@ -29,6 +29,7 @@ void World::UpdateLogic(int time_delta) {
 			auto cb = dynamic_cast<ConstantBufferTyped<DirectX::XMFLOAT4>*>(dx_buffers[i]);
 			cb->GetBufferDataRef() = new_val;
 			cb->PushBuffer();
+			//char a = render_bundle_state.second.constant_buffers[i].pipeline_stage;
 		}
 	}
 

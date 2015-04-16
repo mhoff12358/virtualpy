@@ -4,8 +4,13 @@ ConstantBuffer::ConstantBuffer() {}
 
 
 void ConstantBuffer::Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con) {
+	Initialize(dev, dev_con, 1);
+}
+
+void ConstantBuffer::Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con, char stages) {
 	device_interface = dev;
 	device_context = dev_con;
+	SetPipelineStages(stages);
 }
 
 void ConstantBuffer::CreateBuffer() {
@@ -38,8 +43,17 @@ void ConstantBuffer::PushBuffer() {
 	device_context->Unmap(const_buffer, 0);
 }
 
+void ConstantBuffer::SetPipelineStages(char stages) {
+	pipeline_stages = stages;
+}
+
 void ConstantBuffer::ActivateBuffer(int buffer_register) {
-	device_context->VSSetConstantBuffers(buffer_register, 1, &const_buffer);
+	if ((0x1 & pipeline_stages) != 0) {
+		device_context->VSSetConstantBuffers(buffer_register, 1, &const_buffer);
+	}
+	if ((0x2 & pipeline_stages) != 0) {
+		device_context->PSSetConstantBuffers(buffer_register, 1, &const_buffer);
+	}
 }
 
 void XM_CALLCONV ConstantBufferTyped<TransformationMatrixData>::SetTransformation(DirectX::FXMMATRIX new_trasnformation) {

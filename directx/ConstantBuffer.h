@@ -24,9 +24,12 @@ class ConstantBuffer {
 public:
 	ConstantBuffer();
 	void Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con);
+	void Initialize(ID3D11Device* dev, ID3D11DeviceContext* dev_con, char stages);
 
 	void CreateBuffer();
 	void PushBuffer();
+
+	void SetPipelineStages(char stages);
 
 	void ActivateBuffer(int buffer_register);
 
@@ -38,6 +41,8 @@ protected:
 	ID3D11DeviceContext* device_context;
 
 	ID3D11Buffer* const_buffer;
+
+	char pipeline_stages;
 };
 
 template <typename ConstantBufferData>

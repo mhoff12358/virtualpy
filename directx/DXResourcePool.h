@@ -46,7 +46,7 @@ public:
 	virtual int CreateModeledEntity(int model_id, int shader_id);
 	virtual int CreateTexturedEntity(int model_id, int shader_id, int texture_id);
 
-	virtual void CreateRenderBundle(int render_bundle_id, int num_constant_buffers);
+	virtual void CreateRenderBundle(int render_bundle_id, int num_constant_buffers, std::vector<char> pipeline_stages);
 
 	virtual int GetNumberOfEntities();
 
