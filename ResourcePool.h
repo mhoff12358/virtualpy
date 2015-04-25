@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Windows.h>
+
 #include "Python.h"
 #include "PyHelper.h"
 #include <string>
