@@ -17,6 +17,7 @@ public:
 	virtual void BeginNewModel(PyObject* vertex_type, PyObject* primitive_type) = 0;
 	virtual void AddModelVertex(PyObject* new_vertex) = 0;
 	virtual void AddModelVertexFromArgs(PyObject* vertex_args, PyObject* vertex_kwargs);
+	virtual void AddModelVertexFromArgsFast(PyObject* vertex_args);
 	virtual int FinishModel() = 0;
 
 	virtual int LoadTexture(std::string file_name) = 0;
