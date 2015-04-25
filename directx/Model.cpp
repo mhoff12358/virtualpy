@@ -22,6 +22,10 @@ void ModelGenerator::AddVertex(Vertex new_vertex) {
 	vertices.push_back(new_vertex);
 }
 
+void ModelGenerator::AddVertexBatch(std::vector<Vertex>& new_vertexes) {
+	vertices.insert(vertices.end(), new_vertexes.begin(), new_vertexes.end());
+}
+
 void ModelGenerator::InitializeVertexBuffer(ID3D11Device* device, ID3D11DeviceContext* device_context) {
 	int vertex_data_size = vertex_type.GetVertexSize();
 

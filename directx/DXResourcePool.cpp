@@ -34,12 +34,33 @@ void DXResourcePool::AddModelVertex(PyObject* new_vertex) {
 	AddModelVertex(PyVertexToVertex(new_vertex));
 }
 
+void DXResourcePool::AddModelVertexBatch(PyObject* new_vertexes) {
+	PyObject* seq = PySequence_Fast(new_vertexes, "expected a sequence");
+	int num_vertices = PySequence_Size(new_vertexes);
+	std::vector<Vertex> vertices;
+	vertices.reserve(num_vertices);
+	for (int i = 0; i < num_vertices; i++) {
+		PyObject* vertex = PySequence_Fast_GET_ITEM(seq, i);
+		vertices.push_back(PyVertexToVertex(vertex));
+	}
+	Py_DECREF(seq);
+	AddModelVertexBatch(vertices);
+}
+
 void DXResourcePool::AddModelVertex(Vertex new_vertex) {
 	if (active_model_generator == NULL) {
 		OutputFormatted("Error attempting to add a vertex to a non-existant model generator");
 		return;
 	}
 	active_model_generator->AddVertex(new_vertex);
+}
+
+void DXResourcePool::AddModelVertexBatch(std::vector<Vertex>& new_vertexes) {
+	if (active_model_generator == NULL) {
+		OutputFormatted("Error attempting to add a vertex to a non-existant model generator");
+		return;
+	}
+	active_model_generator->AddVertexBatch(new_vertexes);
 }
 
 int DXResourcePool::FinishModel() {

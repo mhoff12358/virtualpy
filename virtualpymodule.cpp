@@ -29,7 +29,6 @@ std::string resources_location(".");
 
 IOStateBuffer io_state_buffer;
 
-#define PY_ERR_CHK if (PyErr_Occurred()) return NULL
 
 void NewThread() {
 	//MainLoop* main_loop = new PrintColor(&state_interpolater);
@@ -137,13 +136,15 @@ PyObject* TextureVertex(PyObject* self, PyObject* args) {
 }*/
 
 PyObject* AddVertex(PyObject* self, PyObject* args, PyObject* kwargs) {
-	resource_pool->AddModelVertexFromArgs(args, kwargs);
-	if (PyErr_Occurred()) {
-		return NULL;
-	}
-	PY_ERR_CHK;
-	Py_INCREF(Py_None);
-	return Py_None;
+	return resource_pool->AddModelVertexFromArgs(args, kwargs);
+}
+
+PyObject* AddVertexFast(PyObject* self, PyObject* args) {
+	return resource_pool->AddModelVertexFromArgsFast(args);
+}
+
+PyObject* AddVertexBatch(PyObject* self, PyObject* args) {
+	return resource_pool->AddModelVertexFromArgsBatch(args);
 }
 
 PyObject* EndModel(PyObject* self, PyObject* args) {
@@ -436,6 +437,8 @@ PyMethodDef virtualpy_methods[] = {
 	//{ "color_vertex", ColorVertex, METH_VARARGS, "color_vertex() doc string" },
 	//{ "texture_vertex", TextureVertex, METH_VARARGS, "texture_vertex() doc string" },
 	{ "add_vertex", (PyCFunction)AddVertex, METH_VARARGS | METH_KEYWORDS, "add_vertex() doc string" },
+	{ "add_vertex_fast", AddVertexFast, METH_VARARGS, "add_vertex_fast() doc string" },
+	{ "add_vertex_batch", AddVertexBatch, METH_VARARGS, "add_vertex_fast() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
 	{ "load_texture", LoadTexture, METH_VARARGS, "load_texture() doc string" },
 	{ "load_shader", LoadShader, METH_VARARGS, "load_shader() doc string" },
@@ -479,6 +482,7 @@ PyInit_virtualpy(void)
 	PyObject* helper_module_dict = PyModule_GetDict(helper_module);
 
 	PyObject* classes_module = PyImport_ImportModule("virtualpy_classes");
+	PY_ERR_CHK;
 	PyObject* classes_module_dict = PyModule_GetDict(classes_module);
 
 	PyObject* classes_module_items = PyDict_Items(classes_module_dict);

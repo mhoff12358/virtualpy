@@ -18,6 +18,7 @@ virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
 virtualpy.spawn_thread('directx')
 
+
 color_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
 texture_vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("texture", "TEXCOORD", 2))
 color_vertex_type_with_normal = virtualpy.VertexType(("location", "POSITION", 3), ("normal", "NORMAL", 3), ("color", "COLOR", 4))

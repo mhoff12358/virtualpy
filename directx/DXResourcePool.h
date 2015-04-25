@@ -36,7 +36,9 @@ public:
 	virtual void BeginNewModel(PyObject* vertex_type, PyObject* primitive_type);
 	virtual void BeginNewModel(VertexType vertex_type, D3D_PRIMITIVE_TOPOLOGY primative_type);
 	virtual void AddModelVertex(PyObject* new_vertex);
+	virtual void AddModelVertexBatch(PyObject* new_vertexes);
 	virtual void AddModelVertex(Vertex new_vertex);
+	virtual void AddModelVertexBatch(std::vector<Vertex>& new_vertexes);
 	virtual int FinishModel();
 
 	virtual int LoadTexture(std::string file_name);

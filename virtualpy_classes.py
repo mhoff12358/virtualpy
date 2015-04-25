@@ -1,4 +1,4 @@
-import math
+import math, functools, itertools
 
 from enum import Enum
 
@@ -69,6 +69,12 @@ class VertexType(object):
             self.type_def[i][1].validateData(kwargs[self.name_reverse_lookup[i]])
             data_list.append(kwargs[self.name_reverse_lookup[i]])
         return Vertex(self, data_list)
+
+    def createVertexFast(self, *args):
+        return Vertex(self, list(args))
+
+    def createVertexBatch(self, *args):
+        return tuple(itertools.starmap(self.createVertex, args))
 
 class PrimitiveType(Enum):
 	point_list = 1

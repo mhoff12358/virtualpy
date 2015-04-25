@@ -18,8 +18,10 @@ public:
 	virtual void BeginNewModel(PyObject* vertex_type) = 0;
 	virtual void BeginNewModel(PyObject* vertex_type, PyObject* primitive_type) = 0;
 	virtual void AddModelVertex(PyObject* new_vertex) = 0;
-	virtual void AddModelVertexFromArgs(PyObject* vertex_args, PyObject* vertex_kwargs);
-	virtual void AddModelVertexFromArgsFast(PyObject* vertex_args);
+	virtual void AddModelVertexBatch(PyObject* new_vertexes) = 0;
+	virtual PyObject* AddModelVertexFromArgs(PyObject* vertex_args, PyObject* vertex_kwargs);
+	virtual PyObject* AddModelVertexFromArgsFast(PyObject* vertex_args);
+	virtual PyObject* AddModelVertexFromArgsBatch(PyObject* vertex_args_kwargs_list);
 	virtual int FinishModel() = 0;
 
 	virtual int LoadTexture(std::string file_name) = 0;

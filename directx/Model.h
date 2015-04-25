@@ -38,6 +38,7 @@ public:
 	virtual ~ModelGenerator() {};
 
 	void AddVertex(Vertex new_vertex);
+	void AddVertexBatch(std::vector<Vertex>& new_vertexes);
 
 	Model DumpModel(ID3D11Device* device, ID3D11DeviceContext* device_context);
 
