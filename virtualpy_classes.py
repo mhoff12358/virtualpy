@@ -74,7 +74,7 @@ class VertexType(object):
         return Vertex(self, list(args))
 
     def createVertexBatch(self, *args):
-        return tuple(itertools.starmap(self.createVertex, args))
+        return tuple(itertools.starmap(self.createVertexFast, args))
 
 class PrimitiveType(Enum):
 	point_list = 1
