@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <array>
+#include <fstream>
 #include <vector>
 #include <unordered_map>
 #include <mutex>
@@ -68,7 +69,13 @@ private:
 
 class FrameStateInterpolater {
 public:
-	FrameStateInterpolater(FrameStateBuffer* fsb) : frame_state_buffer(fsb) {}
+	FrameStateInterpolater(FrameStateBuffer* fsb) : frame_state_buffer(fsb) {
+		performance_file.open("frameinterp_frequency", std::ios::out | std::ios::trunc);
+		LARGE_INTEGER counts_per_second;
+		QueryPerformanceFrequency(&counts_per_second);
+		QueryPerformanceCounter(&prev_count);
+		seconds_per_count = 1 / ((float)counts_per_second.QuadPart);
+	}
 
 	FrameState InterpolateCurrentState();
 
@@ -90,6 +97,9 @@ protected:
 	virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) = 0;
 	
 	FrameStateBuffer* frame_state_buffer;
+	std::ofstream performance_file;
+	float seconds_per_count;
+	LARGE_INTEGER prev_count;
 };
 
 class ConstantDelayInterpolater : public FrameStateInterpolater {

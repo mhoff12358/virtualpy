@@ -66,7 +66,8 @@ void World::Draw(RenderMode& render_mode) {
 				render_mode.PrepareConstantBuffer(buffers[i], PER_BATCH_CONSTANT_BUFFER_REGISTER + i);
 			}
 		}
-		resource_pool->GetEntity(render_bundle_entity_id_pair.second)->Draw(render_mode);
+		auto entity = resource_pool->GetEntity(render_bundle_entity_id_pair.second);
+		entity->Draw(render_mode);
 	}
 }
 

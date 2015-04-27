@@ -122,3 +122,21 @@ class Quaternion(object):
 
 	def __rmul__(self, other):
 		return Quaternion(tuple(other*val for val in self.vector))
+		
+class Position(object):
+	def __init__(self, vector):
+		self.vector = tuple(vector)
+		if len(self.vector) != 3:
+			raise ValueError("Wrong size of vector being passed into Position constructor")
+		
+	def __add__(self, other):
+		return Position(self.vector[i] + other.vector[i] for i in range(3))
+		
+	def __mul__(self, other):
+		if isinstance(other, Position):
+			return sum(self.vector[i] * other.vector[i] for i in range(3))
+		else:
+			return Position(x * other for x in self.vector)
+			
+	def __rmul__(self, other):
+		return __mul__(self, other)

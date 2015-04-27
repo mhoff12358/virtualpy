@@ -19,6 +19,7 @@ void InputHandler::UpdateStates(int frame_index) {
 	GetKeyboardState(keyboard_state.data());
 
 	io_state_buffer->WriteState(keyboard_state);
+
 	active_frame_state = frame_state_interpolater->InterpolateCurrentState();
 
 	if (IsOculusActive()) {

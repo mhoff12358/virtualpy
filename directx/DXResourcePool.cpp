@@ -3,6 +3,10 @@
 
 DXResourcePool::DXResourcePool() : active_model_generator(NULL)
 {
+	entities.reserve(10000);
+	models.reserve(1000);
+	textures.reserve(1000);
+	shaders.reserve(1000);
 }
 
 
@@ -159,6 +163,9 @@ int DXResourcePool::GetNumberOfEntities() {
 }
 
 Entity* DXResourcePool::GetEntity(int entity_index) {
+	if (entities.size() <= entity_index) {
+		printf("DJFIOSE");
+	}
 	return entities[entity_index];
 }
 

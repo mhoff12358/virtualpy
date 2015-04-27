@@ -149,6 +149,12 @@ FrameState FrameStateInterpolater::InterpolateCurrentState() {
 	QueryPerformanceCounter(&interpolate_time);
 	FrameState interpolated_state = this->InterpolateStateFromBuffer(number_of_active_states, &number_unused_states, (long long)interpolate_time.QuadPart);
 	frame_state_buffer->PopStates(number_unused_states);
+	
+	// Performance logging code
+	performance_file << (interpolate_time.QuadPart - prev_count.QuadPart) * seconds_per_count << std::endl;
+	prev_count = interpolate_time;
+	// End performance logging code
+	
 	return interpolated_state;
 }
 

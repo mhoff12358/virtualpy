@@ -16,6 +16,9 @@
 
 namespace vpdb {
 	PyObject* pydebug_fn;
+
+	LARGE_INTEGER next_hiccup;
+	LARGE_INTEGER counts_per_second;
 }
 
 namespace virtualpy {
@@ -327,7 +330,7 @@ PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
 		//}
 	}
 	current_state.render_bundles.insert(std::make_pair(new_render_bundle_id, new_render_bundle));
-	resource_pool->CreateRenderBundle(new_render_bundle_id, 1, pipeline_stages);
+	resource_pool->CreateRenderBundle(new_render_bundle_id, num_constant_buffers, pipeline_stages);
 	PyObject* returned_id = Py_BuildValue("i", new_render_bundle_id);
 	new_render_bundle_id++;
 
@@ -380,6 +383,12 @@ PyObject* SetCameraLocation(PyObject* self, PyObject* args) {
 }
 
 PyObject* PushState(PyObject* self, PyObject* args) {
+	LARGE_INTEGER curr_time;
+	if (curr_time.QuadPart > vpdb::next_hiccup.QuadPart) {
+		vpdb::next_hiccup.QuadPart = curr_time.QuadPart + vpdb::counts_per_second.QuadPart*0.0625;
+		Sleep(10);
+	}
+
 	state_buffer.PushState(current_state);
 	FrameState new_state;
 	new_state.color = current_state.color;
@@ -496,8 +505,11 @@ PyInit_virtualpy(void)
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "VertexType");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Vertex");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Quaternion");
+	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "Position");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "PrimitiveType");
 	
+
+	QueryPerformanceFrequency(&vpdb::counts_per_second);
 
 	return unfinished_module;
 }
