@@ -78,7 +78,7 @@ class Pyramid(object):
 		# Returns an iterator of pyramids
 		return (Pyramid(self.detail_level+1, self.detail_path+(i,), Pyramid.color_bundles[i]) for i in range(4))
 
-pyramids = [Pyramid()]
+pyramids = [[Pyramid()]]
 
 camera_location = [0, 0, 0]
 
@@ -87,15 +87,13 @@ curr_time = prev_time
 move_scale = 7.5
 theta = 0
 
-frequency_out = open('py_frequency', 'w')
+disp_depth_level = 0
+max_depth_level = 5
 
 (prev_keys_at_state, prev_keys_since_state) = virtualpy.get_keyboard_state()
 
 while True:
 	time_diff = curr_time - prev_time
-	frequency_out.write(str(time_diff)+"\n")
-	frequency_out.flush()
-
 	(keys_at_state, keys_since_state) = virtualpy.get_keyboard_state()
 	
 	if keys_since_state[ord('W')]:
@@ -112,8 +110,17 @@ while True:
 		camera_location[1] += move_scale*time_diff
 		
 	if keys_since_state[ord('P')] and not prev_keys_since_state[ord('P')]:
-		pyramids = tuple(itertools.chain(*tuple(p.shatter() for p in pyramids)))
+		if disp_depth_level != max_depth_level:
+			disp_depth_level += 1
+			if disp_depth_level >= len(pyramids):
+				pyramids.append(tuple(itertools.chain(*tuple(p.shatter() for p in pyramids[-1]))))
+			time.sleep(0.2)
 		print ('a')
+	if keys_since_state[ord('O')] and not prev_keys_since_state[ord('O')]:
+		print('b')
+		disp_depth_level = max(disp_depth_level-1, 0)
+		time.sleep(0.2)
+		
 		
 	virtualpy.set_camera_location(camera_location)
 	prev_keys_at_state = keys_at_state
@@ -126,7 +133,7 @@ while True:
 	virtualpy.update_render_bundle(Pyramid.color_bundles[2], ((0,0,1,1),light_dir))
 	virtualpy.update_render_bundle(Pyramid.color_bundles[3], ((1,0,1,1),light_dir))
 	
-	for pyramid in pyramids:
+	for pyramid in pyramids[disp_depth_level]:
 		pyramid.display()
 	
 	virtualpy.push_state()

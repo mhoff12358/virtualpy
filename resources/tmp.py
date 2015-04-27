@@ -15,7 +15,7 @@ import model_loader
 virtualpy.set_color(0, 0, 0)
 virtualpy.push_state()
 virtualpy.set_resources_location(virtualpyloc+'resources\\')
-virtualpy.spawn_thread('directx_oculus')
+virtualpy.spawn_thread('directx')
 
 
 vertex_type = virtualpy.VertexType(("location", "POSITION", 3), ("color", "COLOR", 4))
