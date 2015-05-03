@@ -2,6 +2,10 @@ from multiprocessing import Process, Pipe
 import dynamic_loader
 import sys, os
 
+
+virtualpyloc = sys.argv[1]
+sys.path.append(virtualpyloc+'Debug')
+
 class LocalsHolder(object):
     pass
 
