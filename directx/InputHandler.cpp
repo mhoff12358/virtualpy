@@ -36,8 +36,8 @@ void InputHandler::UpdateStates(int frame_index) {
 
 		ovrHmd_GetEyePoses(oculus->head_mounted_display, frame_index, hmd_to_eye_view_offset,
 			oculus->eye_rendering_pose, &oculus->tracking_state);
-//		oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, begin_timing.ScanoutMidpointSeconds);
-		oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, ovr_GetTimeInSeconds());
+		oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, begin_timing.EyeScanoutSeconds[0]);
+//		oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, ovr_GetTimeInSeconds());
 	}
 }
 
