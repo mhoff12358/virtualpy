@@ -139,4 +139,16 @@ class Position(object):
 			return Position(x * other for x in self.vector)
 			
 	def __rmul__(self, other):
-		return __mul__(self, other)
+		return self.__mul__(other)
+		
+	def __truediv__(self, other):
+		return self.__mul__(1.0/other)
+		
+	def __str__(self):
+		return str(self.vector)
+		
+	def normsq(self):
+		return sum(x*x for x in self.vector)
+		
+	def norm(self):
+		return math.sqrt(self.normsq())
