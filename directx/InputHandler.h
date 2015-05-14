@@ -24,6 +24,7 @@ public:
 	void HandleKeydown(unsigned int key_code);
 
 	bool GetKeyPressed(char key) const;
+	bool GetKeyToggled(char key) const;
 	FrameState GetFrameState() const;
 	ovrPoseStatef GetHeadPose() const;
 	ovrVector3f GetHeadOffset() const;
@@ -43,6 +44,7 @@ public:
 private:
 	// State variables
 	std::array<BYTE, 256> keyboard_state;
+	std::array<BYTE, 256> prev_keyboard_state;
 	FrameState active_frame_state;
 	FrameStateInterpolater* frame_state_interpolater;
 
@@ -56,6 +58,10 @@ private:
 	Oculus* oculus = NULL;
 	ovrVector3f eye_pose_offsets[2];
 	ovrVector3f head_pose_center; // The location head offsets are taken from
+
+	// Head tracking config variables
+	bool use_predictive = false;
+	int predictive_offset_ms = 0;
 
 	static FrameState dud_frame_state;
 };

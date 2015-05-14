@@ -16,6 +16,7 @@ void InputHandler::HandleKeydown(unsigned int key_code) {
 }
 
 void InputHandler::UpdateStates(int frame_index) {
+	prev_keyboard_state = keyboard_state;
 	GetKeyboardState(keyboard_state.data());
 
 	io_state_buffer->WriteState(keyboard_state);
@@ -29,6 +30,18 @@ void InputHandler::UpdateStates(int frame_index) {
 		if (GetKeyPressed('L')) {
 			ovrHmd_DismissHSWDisplay(oculus->head_mounted_display);
 		}
+		if (GetKeyToggled('1')) {
+			use_predictive = !use_predictive;
+			std::cout << "Using prediction: " << use_predictive << std::endl;
+		}
+		if (GetKeyToggled('9')) {
+			predictive_offset_ms -= 1;
+			std::cout << "Predictive offset: " << predictive_offset_ms << std::endl;
+		}
+		if (GetKeyToggled('0')) {
+			predictive_offset_ms += 1;
+			std::cout << "Predictive offset: " << predictive_offset_ms << std::endl;
+		}
 
 		ovrFrameTiming begin_timing = ovrHmd_BeginFrame(oculus->head_mounted_display, frame_index);
 		ovrVector3f hmd_to_eye_view_offset[2] = { oculus->eye_rendering_desc[0].HmdToEyeViewOffset, oculus->eye_rendering_desc[1].HmdToEyeViewOffset };
@@ -36,8 +49,11 @@ void InputHandler::UpdateStates(int frame_index) {
 
 		ovrHmd_GetEyePoses(oculus->head_mounted_display, frame_index, hmd_to_eye_view_offset,
 			oculus->eye_rendering_pose, &oculus->tracking_state);
-		oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, begin_timing.EyeScanoutSeconds[0]);
-//		oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, ovr_GetTimeInSeconds());
+		if (use_predictive) {
+			oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, begin_timing.EyeScanoutSeconds[0]+predictive_offset_ms);
+		} else {
+			oculus->tracking_state = ovrHmd_GetTrackingState(oculus->head_mounted_display, ovr_GetTimeInSeconds());
+		}
 	}
 }
 
@@ -47,6 +63,10 @@ void InputHandler::ResetHeadTracking() {
 
 bool InputHandler::GetKeyPressed(char key) const {
 	return keyboard_state[key] & 0x80;
+}
+
+bool InputHandler::GetKeyToggled(char key) const {
+	return (keyboard_state[key] & 0x80) && !(prev_keyboard_state[key] & 0x80);
 }
 
 FrameState InputHandler::GetFrameState() const {
