@@ -26,27 +26,30 @@ def update(local_vars):
     
     (keys_at_state, keys_since_state) = virtualpy.get_keyboard_state()
 
+    movescale = 0.003
     virtualpy_loader.debug("keys")
     if keys_since_state[ord('W')]:
-        camera_location[2] -= 0.003
+        camera_location[2] -= movescale
     if keys_since_state[ord('S')]:
-        camera_location[2] += 0.003
+        camera_location[2] += movescale
     if keys_since_state[ord('A')]:
-        camera_location[0] -= 0.003
+        camera_location[0] -= movescale
     if keys_since_state[ord('D')]:
-        camera_location[0] += 0.003
+        camera_location[0] += movescale
     if keys_since_state[ord('Q')]:
-        camera_location[1] -= 0.003
+        camera_location[1] -= movescale
     if keys_since_state[ord('E')]:
-        camera_location[1] += 0.003
+        camera_location[1] += movescale
     
     #print(camera_location)
     virtualpy_loader.debug("update camera")
     virtualpy.set_camera_location(camera_location)
     
-    #virtualpy.show_model(local_vars.texsq, (0, -1, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))
-    #virtualpy.show_model(local_vars.ceilsq, (0, -.5, 0), (10, 1, 10), virtualpy.Quaternion((0, 0, 0, 1)))
-
+    
     virtualpy_loader.debug("show start")
-    virtualpy.show_model(local_vars.entity, position=(0, 0, -3), scale=(0.01, 0.01, 0.01), rotation=virtualpy.Quaternion((math.sin(theta/2), 0, 0, math.cos(theta/2))))
+    #virtualpy.show_model(local_vars.entity, position=(0, 0, -3), scale=(0.01, 0.01, 0.01), rotation=virtualpy.Quaternion((math.sin(theta/2), 0, 0, math.cos(theta/2))))
+    
+    virtualpy.update_render_bundle(local_vars.override_color_bundle, ((1,1,1,1),))
+    virtualpy.show_model_with_render_bundle(local_vars.override_color_bundle, local_vars.teapot, position=(0, 0, -3), scale=(0.01, 0.01, 0.01), rotation=virtualpy.Quaternion((math.sin(theta/2), 0, 0, math.cos(theta/2))))
+    
     virtualpy_loader.debug("show end")

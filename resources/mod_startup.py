@@ -14,7 +14,7 @@ def startup():
     virtualpy.set_color(0.392, 0.584, 0.929)
     virtualpy.push_state()
     virtualpy.set_resources_location(resourcesloc)
-    virtualpy.spawn_thread('directx_oculus')
+    virtualpy.spawn_thread('directx')
     virtualpy_loader.debug("thread spawned")
     
     a = virtualpy.PrimitiveType.triangle_list
@@ -54,6 +54,9 @@ def startup():
     virtualpy_loader.debug("loading model")
     #entity = loader.load_model(resourcesloc + "Inosaedron_Wires_Linked.obj", virtualpy_loader.COLOR_VERTEX, color_shader)
     texture = loader.load_texture("babylonstation.jpg")
+
+    override_color_bundle = virtualpy.create_render_bundle(1)
+    teapot = loader.load_model(resourcesloc + "wt_teapot.obj.txt", virtualpy_loader.COLOR_VERTEX, color_override_shader)
     entity = loader.load_model(resourcesloc + "babylon station.obj", virtualpy_loader.TEXTURE_VERTEX, texture_shader, texture = texture)
     
     
