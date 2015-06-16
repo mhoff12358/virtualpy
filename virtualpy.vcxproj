@@ -68,28 +68,30 @@
     <OutDir>.\Release\</OutDir>
     <IntDir>.\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\Debug\</OutDir>
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.pyd</TargetExt>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <CustomBuildAfterTargets>Link</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.pyd</TargetExt>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <CustomBuildAfterTargets>Link</CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -112,8 +114,8 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:PyInit_virtualpy %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ws2_32.lib;odbc32.lib;odbccp32.lib;python35.lib;libovr.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Release/virtualpy.pyd</OutputFile>
+      <AdditionalDependencies>VRBackend.lib;ws2_32.lib;odbc32.lib;odbccp32.lib;python35.lib;libovr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\PCbuild\win32;C:\OculusSDK\LibOVR\Lib\Win32\VS2013;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile />
@@ -156,8 +158,8 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:PyInit_virtualpy %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ws2_32.lib;odbc32.lib;odbccp32.lib;python35.lib;libovr64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Release/virtualpy.pyd</OutputFile>
+      <AdditionalDependencies>VRBackend.lib;ws2_32.lib;odbc32.lib;odbccp32.lib;python35.lib;libovr64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\PCbuild\amd64;C:\OculusSDK\LibOVR\Lib\x64\VS2013;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
@@ -197,8 +199,8 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:PyInit_virtualpy %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ws2_32.lib;odbc32.lib;odbccp32.lib;python35_d.lib;libovrd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Debug/virtualpy_d.pyd</OutputFile>
+      <AdditionalDependencies>VRBackend.lib;ws2_32.lib;odbc32.lib;odbccp32.lib;python35_d.lib;libovrd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\PCbuild\win32;C:\OculusSDK\LibOVR\Lib\Win32\VS2013;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile />
@@ -249,8 +251,8 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:PyInit_virtualpy %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>ws2_32.lib;odbc32.lib;odbccp32.lib;python35_d.lib;libovr64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Debug/virtualpy_d.pyd</OutputFile>
+      <AdditionalDependencies>VRBackend.lib;ws2_32.lib;odbc32.lib;odbccp32.lib;python35_d.lib;libovr64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\PCbuild\amd64;C:\OculusSDK\LibOVR\Lib\x64\VS2013;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
@@ -286,78 +288,22 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="directx\Camera.cpp" />
-    <ClCompile Include="directx\ConstantBuffer.cpp" />
-    <ClCompile Include="directx\DirectxLoop.cpp" />
-    <ClCompile Include="directx\DrawHandler.cpp" />
-    <ClCompile Include="directx\DXResourcePool.cpp" />
-    <ClCompile Include="directx\Entity.cpp" />
-    <ClCompile Include="directx\EntityFactory.cpp" />
-    <ClCompile Include="directx\GridGenerator.cpp" />
-    <ClCompile Include="directx\Ground.cpp" />
-    <ClCompile Include="directx\InputHandler.cpp" />
-    <ClCompile Include="directx\Logging.cpp" />
-    <ClCompile Include="directx\Model.cpp" />
-    <ClCompile Include="directx\my_math.cpp" />
-    <ClCompile Include="directx\Oculus.cpp" />
-    <ClCompile Include="directx\OrthoCamera.cpp" />
-    <ClCompile Include="directx\PerspectiveCamera.cpp" />
-    <ClCompile Include="directx\RenderingPipeline.cpp" />
-    <ClCompile Include="directx\RenderMode.cpp" />
-    <ClCompile Include="directx\ShaderPipeline.cpp" />
-    <ClCompile Include="directx\simplex_generator.cpp" />
-    <ClCompile Include="directx\terrain_generator.cpp" />
-    <ClCompile Include="directx\terrain_map.cpp" />
-    <ClCompile Include="directx\terrain_point.cpp" />
-    <ClCompile Include="directx\terrain_writer.cpp" />
-    <ClCompile Include="directx\Texture.cpp" />
-    <ClCompile Include="directx\Vertices.cpp" />
-    <ClCompile Include="directx\ViewState.cpp" />
-    <ClCompile Include="directx\World.cpp" />
     <ClCompile Include="FrameState.cpp" />
     <ClCompile Include="IOState.cpp" />
     <ClCompile Include="MainLoop.cpp" />
-    <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="ResourcePool.cpp" />
     <ClCompile Include="virtualpymodule.cpp" />
-    <ClCompile Include="WindowsMainLoop.cpp" />
+    <ClCompile Include="VRBackendMainLoop.cpp" />
+    <ClCompile Include="VRBackendResourcePool.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="directx\Camera.h" />
-    <ClInclude Include="directx\ConstantBuffer.h" />
-    <ClInclude Include="directx\DirectxLoop.h" />
-    <ClInclude Include="directx\DrawHandler.h" />
-    <ClInclude Include="directx\DXResourcePool.h" />
-    <ClInclude Include="directx\Entity.h" />
-    <ClInclude Include="directx\EntityFactory.h" />
-    <ClInclude Include="directx\GridGenerator.h" />
-    <ClInclude Include="directx\Ground.h" />
-    <ClInclude Include="directx\InputHandler.h" />
-    <ClInclude Include="directx\Logging.h" />
-    <ClInclude Include="directx\Model.h" />
-    <ClInclude Include="directx\my_math.h" />
-    <ClInclude Include="directx\Oculus.h" />
-    <ClInclude Include="directx\OrthoCamera.h" />
-    <ClInclude Include="directx\PerspectiveCamera.h" />
-    <ClInclude Include="directx\RenderingPipeline.h" />
-    <ClInclude Include="directx\RenderMode.h" />
-    <ClInclude Include="directx\ShaderPipeline.h" />
-    <ClInclude Include="directx\simplex_generator.h" />
-    <ClInclude Include="directx\terrain_generator.h" />
-    <ClInclude Include="directx\terrain_map.h" />
-    <ClInclude Include="directx\terrain_point.h" />
-    <ClInclude Include="directx\terrain_writer.h" />
-    <ClInclude Include="directx\Texture.h" />
-    <ClInclude Include="directx\Vertices.h" />
-    <ClInclude Include="directx\ViewState.h" />
-    <ClInclude Include="directx\World.h" />
     <ClInclude Include="FrameState.h" />
     <ClInclude Include="IOState.h" />
     <ClInclude Include="MainLoop.h" />
     <ClInclude Include="PyHelper.h" />
-    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="ResourcePool.h" />
-    <ClInclude Include="WindowsMainLoop.h" />
+    <ClInclude Include="VRBackendMainLoop.h" />
+    <ClInclude Include="VRBackendResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\shaders.hlsl">

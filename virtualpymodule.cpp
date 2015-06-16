@@ -9,19 +9,22 @@
 #include "FrameState.h"
 #include "IOState.h"
 #include "ResourcePool.h"
-#include "WindowsMainLoop.h"
-#include "directx/DirectxLoop.h"
-#include "directx/DXResourcePool.h"
-#include "directx/Vertices.h"
+#include "VRBackendMainLoop.h"
+#include "VRBackendResourcePool.h"
+#include "VRBackend/ResourcePool.h"
+#include "VRBackend/Vertices.h"
+
+
+namespace virtualpy {
+
 
 namespace vpdb {
 	PyObject* pydebug_fn;
 
 	LARGE_INTEGER next_hiccup;
 	LARGE_INTEGER counts_per_second;
-}
+} // vpdb
 
-namespace virtualpy {
 FrameStateBuffer state_buffer;
 ConstantDelayNoPreemeptingExtrapolateInterpolater state_interpolater(&state_buffer, 0.5);
 ResourcePool* resource_pool;
@@ -31,13 +34,6 @@ int new_render_bundle_id = 1;
 std::string resources_location(".");
 
 IOStateBuffer io_state_buffer;
-
-
-void NewThread() {
-	//MainLoop* main_loop = new PrintColor(&state_interpolater);
-
-	//main_loop->Begin();
-}
 
 PyObject* SetResourcesLocation(PyObject* self, PyObject* args) {
 	char* res_loc_text;
@@ -68,9 +64,8 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::mutex preparation_mutex;
 		std::condition_variable preparation_cv;
 		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
-		resource_pool = new DXResourcePool();
-		DirectxLoop* main_loop = new DirectxLoop(false, resources_location, (DXResourcePool*)resource_pool, &state_interpolater, &io_state_buffer);
-		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
+		VRBackendMainLoop* main_loop = new VRBackendMainLoop(false, resources_location, &resource_pool, &state_interpolater, &io_state_buffer);
+		std::thread new_thread(&VRBackendMainLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
 	}
@@ -78,9 +73,8 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::mutex preparation_mutex;
 		std::condition_variable preparation_cv;
 		std::unique_lock<std::mutex> preparation_lock(preparation_mutex);
-		resource_pool = new DXResourcePool();
-		DirectxLoop* main_loop = new DirectxLoop(true, resources_location, (DXResourcePool*)resource_pool, &state_interpolater, &io_state_buffer);
-		std::thread new_thread(&DirectxLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
+		VRBackendMainLoop* main_loop = new VRBackendMainLoop(true, resources_location, &resource_pool, &state_interpolater, &io_state_buffer);
+		std::thread new_thread(&VRBackendMainLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
 	}
@@ -475,7 +469,8 @@ struct PyModuleDef virtualpymodule = {
 	NULL,
 	NULL
 };
-}
+
+} // virtualpy
 
 void MergeModuleDictionaryElement(PyObject* dest_mod, PyObject* src_mod, const char* elem_name) {
 	PyDict_SetItemString(dest_mod, elem_name, PyDict_GetItemString(src_mod, elem_name));
@@ -498,7 +493,7 @@ PyInit_virtualpy(void)
 	Py_ssize_t num_module_items = PyList_Size(classes_module_items);
 
 
-	vpdb::pydebug_fn = PyDict_GetItemString(helper_module_dict, "debugObj");
+	virtualpy::vpdb::pydebug_fn = PyDict_GetItemString(helper_module_dict, "debugObj");
 
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "RawType");
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "MetaType");
@@ -509,7 +504,7 @@ PyInit_virtualpy(void)
 	MergeModuleDictionaryElement(unfinished_module_dict, classes_module_dict, "PrimitiveType");
 	
 
-	QueryPerformanceFrequency(&vpdb::counts_per_second);
+	QueryPerformanceFrequency(&virtualpy::vpdb::counts_per_second);
 
 	return unfinished_module;
 }

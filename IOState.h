@@ -8,27 +8,31 @@
 #include <atomic>
 #include <utility>
 
-struct IOState {
-	std::array<BYTE, 256> keyboard_at_request;
-	std::array<BYTE, 256> keyboard_since_request;
+namespace virtualpy {
 
-	void ClearSince();
-	void UpdateWithNewState(std::array<BYTE, 256> src_state);
-};
+	struct IOState {
+		std::array<BYTE, 256> keyboard_at_request;
+		std::array<BYTE, 256> keyboard_since_request;
 
-class IOStateBuffer {
-public:
-	IOStateBuffer();
+		void ClearSince();
+		void UpdateWithNewState(std::array<BYTE, 256> src_state);
+	};
 
-	IOState ReadState();
-	void WriteState(std::array<BYTE, 256> new_state);
+	class IOStateBuffer {
+	public:
+		IOStateBuffer();
 
-private:
-	std::pair<std::mutex, IOState>* GetPrimaryState();
-	std::pair<std::mutex, IOState>* GetSecondaryState();
+		IOState ReadState();
+		void WriteState(std::array<BYTE, 256> new_state);
 
-	std::pair<std::mutex, IOState> state1;
-	std::pair<std::mutex, IOState> state2;
+	private:
+		std::pair<std::mutex, IOState>* GetPrimaryState();
+		std::pair<std::mutex, IOState>* GetSecondaryState();
 
-	std::atomic<bool> state1primary;
-};
+		std::pair<std::mutex, IOState> state1;
+		std::pair<std::mutex, IOState> state2;
+
+		std::atomic<bool> state1primary;
+	};
+
+} // virtualpy

@@ -7,28 +7,32 @@
 #include "FrameState.h"
 #include "IOState.h"
 
-class MainLoop
-{
-public:
-	MainLoop(FrameStateInterpolater* ss, IOStateBuffer* iosb);
-	~MainLoop();
+namespace virtualpy {
 
-	virtual void Begin() = 0;
+	class MainLoop
+	{
+	public:
+		MainLoop(FrameStateInterpolater* ss, IOStateBuffer* iosb);
+		~MainLoop();
 
-protected:
-	FrameStateInterpolater* state_source;
-	IOStateBuffer* io_state_buffer;
-	double ticks_per_second;
-};
+		virtual void Begin() = 0;
 
-class PrintColor : public MainLoop {
-public:
-	PrintColor(FrameStateInterpolater* ss, IOStateBuffer* iosb);
+	protected:
+		FrameStateInterpolater* state_source;
+		IOStateBuffer* io_state_buffer;
+		double ticks_per_second;
+	};
 
-	void Begin();
-};
+	class PrintColor : public MainLoop {
+	public:
+		PrintColor(FrameStateInterpolater* ss, IOStateBuffer* iosb);
 
-class WindowsWindow : public MainLoop {
-public:
-	void Begin();
-};
+		void Begin();
+	};
+
+	class WindowsWindow : public MainLoop {
+	public:
+		void Begin();
+	};
+
+} // virtualpy
