@@ -70,17 +70,19 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <TargetExt>.pdb</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <TargetExt>.pdb</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
-    <IntDir>.\Debug\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <TargetExt>.pyd</TargetExt>
+    <TargetExt>.pdb</TargetExt>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -88,7 +90,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetExt>.pyd</TargetExt>
+    <TargetExt>.pdb</TargetExt>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -136,6 +138,15 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <CustomBuildStep>
+      <Command>copy py_libraries\* Debug\</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>py_libraries\*</Outputs>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Inputs>py_libraries\*</Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -180,6 +191,15 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <CustomBuildStep>
+      <Command>copy py_libraries\* Debug\</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>py_libraries\*</Outputs>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Inputs>py_libraries\*</Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -227,9 +247,9 @@
       </Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>copy virtualpy_classes.py Debug\</Command>
-      <Inputs>virtualpy_classes.py</Inputs>
-      <Outputs>virtualpy_classes.py</Outputs>
+      <Command>copy py_libraries\* Debug\</Command>
+      <Inputs>py_libraries\*</Inputs>
+      <Outputs>py_libraries\*</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -279,9 +299,9 @@
       </Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>copy virtualpy_classes.py Debug\ &amp; copy virtualpy_helpers.py Debug\</Command>
-      <Inputs>virtualpy_classes.py virtualpy_helpers.py</Inputs>
-      <Outputs>virtualpy_classes.py virtualpy_helpers.py</Outputs>
+      <Command>copy py_libraries\* Debug\</Command>
+      <Inputs>py_libraries\*</Inputs>
+      <Outputs>py_libraries\*</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>

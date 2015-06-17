@@ -2,8 +2,10 @@
 
 #include <mutex>
 #include <condition_variable>
+#include <string>
 
 #include "MainLoop.h"
+#include "ResourcePool.h"
 #include "VRBackend/BeginDirectx.h"
 
 namespace virtualpy {
@@ -11,6 +13,7 @@ namespace virtualpy {
 	class VRBackendMainLoop : MainLoop {
 	public:
 		VRBackendMainLoop(bool in_use_oculus, std::string in_resources_location, ResourcePool** in_resource_pool_location, FrameStateInterpolater* ss, IOStateBuffer* iosb);
+		VRBackendMainLoop();
 
 		void Begin();
 		void BeginWithPrep(std::mutex* preparation_mutex, std::condition_variable* preparation_cv);

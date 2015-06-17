@@ -7,6 +7,10 @@ namespace virtualpy {
 
 	}
 
+	VRBackendMainLoop::VRBackendMainLoop() : MainLoop(NULL, NULL) {
+
+	}
+
 
 	void VRBackendMainLoop::Begin() {
 		std::mutex preparation_mutex;

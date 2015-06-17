@@ -1,8 +1,6 @@
 import time
 import sys
 import math
-virtualpyloc = sys.argv[1]
-sys.path.append(virtualpyloc+'Debug')
 
 import virtualpy
 
