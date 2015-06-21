@@ -24,6 +24,8 @@ namespace virtualpy {
 
 		void SignalFrameStateUpdate();
 
+		void SetEntityPositions(const FrameState& frame_state);
+
 	private:
 		void CheckForFrameStates();
 

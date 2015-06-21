@@ -91,6 +91,17 @@ namespace virtualpy {
 	}
 
 	void VRBackendMainLoop::CheckForFrameStates() {
+		std::unique_lock<std::mutex> fsb_check_lock2(fsb_check_mutex);
+		//fsb_check_lock.unlock();
+		while (true) { // While loop to handle spurious wakeups
+			if (frame_state_buffer->GetNumberOfStates() >= 1) {
+				break;
+			}
+			fsb_check_cond.wait(fsb_check_lock2);
+		}
+		fsb_check_lock2.unlock();
+		fsb_check_lock2.release();
+
 		while (true) {
 			auto upcoming_state_iter = frame_state_buffer->GetFirstState();
 			// Set the position of all entities based on the upcoming timed state (S_n+1)
@@ -98,16 +109,16 @@ namespace virtualpy {
 			bool velocities_zeroed = false;
 			bool velocities_correctly_set = false;
 			// Wait for it to be S_n+1's time, or for S_n+2 to appear if it hasn't already
-			std::unique_lock<std::mutex> fsb_check_lock(fsb_check_mutex);
 			
 			// Now wait until another state is added
+			std::unique_lock<std::mutex> fsb_check_lock(fsb_check_mutex);
 			while (true) { // While loop to handle spurious wakeups
 				if (frame_state_buffer->GetNumberOfStates() >= 2) {
 					break;
 				}
 				fsb_check_cond.wait(fsb_check_lock);
-
 			}
+			fsb_check_lock.unlock();
 
 			// No spurious call happened to the condition variable, so S_n+2 now exists
 			// Set the velocities correctly
