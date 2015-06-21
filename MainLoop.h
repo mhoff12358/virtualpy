@@ -17,6 +17,8 @@ namespace virtualpy {
 
 		virtual void Begin() = 0;
 
+		virtual void SignalFrameStateUpdate();
+
 	protected:
 		FrameStateInterpolater* state_source;
 		IOStateBuffer* io_state_buffer;

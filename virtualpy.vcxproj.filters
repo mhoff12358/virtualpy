@@ -86,11 +86,20 @@
     <None Include="resources\startup.py">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="virtualpy_classes.py">
+    <None Include="py_libraries\virtualpy_classes.py">
       <Filter>Python Files</Filter>
     </None>
-    <None Include="virtualpy_helpers.py">
+    <None Include="py_libraries\virtualpy_helpers.py">
       <Filter>Python Files</Filter>
+    </None>
+    <None Include="py_libraries\virtualpy_loader.py">
+      <Filter>Python Files</Filter>
+    </None>
+    <None Include="py_libraries\virtualpy_obj.py">
+      <Filter>Python Files</Filter>
+    </None>
+    <None Include="resources\objshader.hlsl">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
 </Project>

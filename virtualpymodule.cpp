@@ -28,6 +28,7 @@ namespace vpdb {
 FrameStateBuffer state_buffer;
 ConstantDelayNoPreemeptingExtrapolateInterpolater state_interpolater(&state_buffer, 0.5);
 ResourcePool* resource_pool;
+MainLoop* main_cpp_loop = NULL;
 FrameState current_state;
 int current_render_bundle = 0;
 int new_render_bundle_id = 1;
@@ -59,6 +60,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		PrintColor* main_loop = new PrintColor(&state_interpolater, &io_state_buffer);
 		std::thread new_thread(&PrintColor::Begin, main_loop);
 		new_thread.detach();
+		main_cpp_loop = main_loop;
 	}
 	else if (strcmp(version_string, "directx") == 0) {
 		std::mutex preparation_mutex;
@@ -68,6 +70,7 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::thread new_thread(&VRBackendMainLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
+		main_cpp_loop = main_loop;
 	}
 	else if (strcmp(version_string, "directx_oculus") == 0) {
 		std::mutex preparation_mutex;
@@ -77,8 +80,11 @@ PyObject* SpawnThread(PyObject* self, PyObject* args) {
 		std::thread new_thread(&VRBackendMainLoop::BeginWithPrep, main_loop, &preparation_mutex, &preparation_cv);
 		new_thread.detach();
 		preparation_cv.wait(preparation_lock);
+		main_cpp_loop = main_loop;
 	}
 	
+	std::cout << "EFJIOESF" << std::endl;
+
 	PY_ERR_CHK;
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -154,6 +160,18 @@ PyObject* EndModel(PyObject* self, PyObject* args) {
 	return Py_BuildValue("i", entity_id);
 }
 
+PyObject* LoadModelFromFile(PyObject* self, PyObject* args) {
+	char* file_name_cstr;
+	if (!PyArg_ParseTuple(args, "s", &file_name_cstr)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	std::string file_name(file_name_cstr);
+	int model_id = resource_pool->LoadModelFromFile(resources_location + file_name);
+	PY_ERR_CHK;
+	return Py_BuildValue("i", model_id);
+}
+
 PyObject* LoadTexture(PyObject* self, PyObject* args) {
 	char* file_name_cstr;
 	if (!PyArg_ParseTuple(args, "s", &file_name_cstr)) {
@@ -161,7 +179,7 @@ PyObject* LoadTexture(PyObject* self, PyObject* args) {
 		return Py_None;
 	}
 	std::string file_name(file_name_cstr);
-	int tex_id = resource_pool->LoadTexture(resources_location + file_name);
+	int tex_id = -1; //resource_pool->LoadTexture(resources_location + file_name);
 	if (tex_id < 0) {
 		Py_INCREF(Py_None);
 		return Py_None;
@@ -170,7 +188,7 @@ PyObject* LoadTexture(PyObject* self, PyObject* args) {
 	return Py_BuildValue("i", tex_id);
 }
 
-PyObject* LoadShader(PyObject* self, PyObject* args) {
+PyObject* LoadVertexShader(PyObject* self, PyObject* args) {
 	char* file_name_cstr;
 	PyObject* vertex_type;
 	if (!PyArg_ParseTuple(args, "sO", &file_name_cstr, &vertex_type)) {
@@ -178,7 +196,7 @@ PyObject* LoadShader(PyObject* self, PyObject* args) {
 		return Py_None;
 	}
 	std::string file_name(file_name_cstr);
-	int shad_id = resource_pool->LoadShader(resources_location + file_name, vertex_type);
+	int shad_id = resource_pool->LoadVertexShader(resources_location + file_name, vertex_type);
 	if (shad_id < 0) {
 		Py_INCREF(Py_None);
 		return Py_None;
@@ -187,15 +205,39 @@ PyObject* LoadShader(PyObject* self, PyObject* args) {
 	return Py_BuildValue("i", shad_id);
 }
 
+PyObject* LoadPixelShader(PyObject* self, PyObject* args) {
+	char* file_name_cstr;
+	if (!PyArg_ParseTuple(args, "s", &file_name_cstr)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	std::string file_name(file_name_cstr);
+	int shad_id = resource_pool->LoadPixelShader(resources_location + file_name);
+	if (shad_id < 0) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	PY_ERR_CHK;
+	return Py_BuildValue("i", shad_id);
+}
+
+PyObject* CreateObjectSettings(PyObject* self, PyObject* args) {
+	int object_settings_id = resource_pool->CreateObjectSettings();
+	PY_ERR_CHK;
+	return Py_BuildValue("i", object_settings_id);
+}
+
 PyObject* CreateModeledEntity(PyObject* self, PyObject* args) {
 	unsigned int model_id;
-	unsigned int shader_id;
-	if (!PyArg_ParseTuple(args, "II", &model_id, &shader_id)) {
+	unsigned int vertex_shader_id;
+	unsigned int pixel_shader_id;
+	unsigned int object_setting_id;
+	if (!PyArg_ParseTuple(args, "IIII", &model_id, &vertex_shader_id, &pixel_shader_id, &object_setting_id)) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
 
-	int entity_id = resource_pool->CreateModeledEntity(model_id, shader_id);
+	int entity_id = resource_pool->CreateModeledEntity(model_id, vertex_shader_id, pixel_shader_id, object_setting_id);
 	PY_ERR_CHK;
 	return Py_BuildValue("i", entity_id);
 }
@@ -209,7 +251,7 @@ PyObject* CreateTexturedEntity(PyObject* self, PyObject* args) {
 		return Py_None;
 	}
 
-	int entity_id = resource_pool->CreateTexturedEntity(model_id, shader_id, texture_id);
+	int entity_id = -1;//resource_pool->CreateTexturedEntity(model_id, shader_id, texture_id);
 	PY_ERR_CHK;
 	return Py_BuildValue("i", entity_id);
 }
@@ -324,7 +366,7 @@ PyObject* CreateRenderBundle(PyObject* self, PyObject* args) {
 		//}
 	}
 	current_state.render_bundles.insert(std::make_pair(new_render_bundle_id, new_render_bundle));
-	resource_pool->CreateRenderBundle(new_render_bundle_id, num_constant_buffers, pipeline_stages);
+	//resource_pool->CreateRenderBundle(new_render_bundle_id, num_constant_buffers, pipeline_stages);
 	PyObject* returned_id = Py_BuildValue("i", new_render_bundle_id);
 	new_render_bundle_id++;
 
@@ -384,10 +426,16 @@ PyObject* PushState(PyObject* self, PyObject* args) {
 	}
 
 	state_buffer.PushState(current_state);
+	if (main_cpp_loop != NULL) {
+		main_cpp_loop->SignalFrameStateUpdate();
+	}
+
 	FrameState new_state;
 	new_state.color = current_state.color;
 	current_state = new_state;
 	current_render_bundle = 0;
+
+
 
 	PY_ERR_CHK;
 	Py_INCREF(Py_None);
@@ -443,8 +491,11 @@ PyMethodDef virtualpy_methods[] = {
 	{ "add_vertex_fast", AddVertexFast, METH_VARARGS, "add_vertex_fast() doc string" },
 	{ "add_vertex_batch", AddVertexBatch, METH_VARARGS, "add_vertex_fast() doc string" },
 	{ "end_model", EndModel, METH_VARARGS, "end_model() doc string" },
+	{ "load_model_from_file", LoadModelFromFile, METH_VARARGS, "load_model_from_file() doc string" },
 	{ "load_texture", LoadTexture, METH_VARARGS, "load_texture() doc string" },
-	{ "load_shader", LoadShader, METH_VARARGS, "load_shader() doc string" },
+	{ "load_vertex_shader", LoadVertexShader, METH_VARARGS, "load_vertex_shader() doc string" },
+	{ "load_pixel_shader", LoadPixelShader, METH_VARARGS, "load_pixel_shader() doc string" },
+	{ "create_object_settings", CreateObjectSettings, METH_VARARGS, "create_object_settings() doc string" },
 	{ "create_modeled_entity", CreateModeledEntity, METH_VARARGS, "create_modeled_entity() doc string" },
 	{ "create_textured_entity", CreateTexturedEntity, METH_VARARGS, "create_textured_entity() doc string" },
 	{ "create_render_bundle", CreateRenderBundle, METH_VARARGS, "create_render_bundle() doc string" },

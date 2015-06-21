@@ -65,24 +65,24 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Release\</OutDir>
-    <IntDir>.\Release\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
-    <TargetExt>.pdb</TargetExt>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
-    <TargetExt>.pdb</TargetExt>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <TargetExt>.pdb</TargetExt>
+    <TargetExt>.pyd</TargetExt>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -90,7 +90,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetExt>.pdb</TargetExt>
+    <TargetExt>.pyd</TargetExt>
     <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
     <TargetName>$(ProjectName)_d</TargetName>
     <IncludePath>C:\Users\Matt\Documents\VRBackend;C:\OculusSDK\LibOVR\Include;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -247,7 +247,7 @@
       </Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>copy py_libraries\* Debug\</Command>
+      <Command>copy py_libraries\* $(SolutionDir)$(Platform)\$(Configuration)\</Command>
       <Inputs>py_libraries\*</Inputs>
       <Outputs>py_libraries\*</Outputs>
     </CustomBuildStep>
@@ -299,7 +299,7 @@
       </Command>
     </PostBuildEvent>
     <CustomBuildStep>
-      <Command>copy py_libraries\* Debug\</Command>
+      <Command>copy py_libraries\* $(SolutionDir)$(Platform)\$(Configuration)\</Command>
       <Inputs>py_libraries\*</Inputs>
       <Outputs>py_libraries\*</Outputs>
     </CustomBuildStep>
@@ -326,6 +326,10 @@
     <ClInclude Include="VRBackendResourcePool.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\objshader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </None>
     <FxCompile Include="resources\shaders.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VShader</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
@@ -361,9 +365,11 @@
     <Image Include="resources\ground.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="py_libraries\virtualpy_classes.py" />
+    <None Include="py_libraries\virtualpy_helpers.py" />
+    <None Include="py_libraries\virtualpy_loader.py" />
+    <None Include="py_libraries\virtualpy_obj.py" />
     <None Include="resources\startup.py" />
-    <None Include="virtualpy_classes.py" />
-    <None Include="virtualpy_helpers.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

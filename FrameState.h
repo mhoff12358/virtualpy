@@ -81,6 +81,8 @@ namespace virtualpy {
 
 		FrameState InterpolateCurrentState();
 
+		FrameStateBuffer* frame_state_buffer;
+
 	protected:
 		// Interpolates from state_0 to state_1 with weight representing how far.
 		// A weight of 0 means state_0, a weight of 1 means state_1, and a weight
@@ -98,7 +100,6 @@ namespace virtualpy {
 
 		virtual FrameState InterpolateStateFromBuffer(int num_available_states, int* number_states_unused, long long interpolate_time) = 0;
 
-		FrameStateBuffer* frame_state_buffer;
 		std::ofstream performance_file;
 		float seconds_per_count;
 		LARGE_INTEGER prev_count;

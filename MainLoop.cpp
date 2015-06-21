@@ -14,6 +14,10 @@ namespace virtualpy {
 	{
 	}
 
+	void MainLoop::SignalFrameStateUpdate() {
+
+	}
+
 	PrintColor::PrintColor(FrameStateInterpolater* ss, IOStateBuffer* iosb) : MainLoop(ss, iosb) {
 
 	}
