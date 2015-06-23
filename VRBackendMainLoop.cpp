@@ -105,6 +105,7 @@ namespace virtualpy {
 		while (true) {
 			auto upcoming_state_iter = frame_state_buffer->GetFirstState();
 			// Set the position of all entities based on the upcoming timed state (S_n+1)
+			SetEntityPositions(upcoming_state_iter->second);
 
 			bool velocities_zeroed = false;
 			bool velocities_correctly_set = false;
@@ -125,10 +126,19 @@ namespace virtualpy {
 			velocities_correctly_set = true;
 
 			// Wait until it is time to display S_n+1
-			ConstantBufferTyped<TransformationMatrixAndInvTransData>* obj_set = vr_backend.entity_handler->GetEntityObjectSettings<TransformationMatrixAndInvTransData>(0);
-			obj_set->SetBothTransformations(DirectX::XMMatrixTranslation(0, 0, -4));
+			//ConstantBufferTyped<TransformationMatrixAndInvTransData>* obj_set = vr_backend.entity_handler->GetEntityObjectSettings<TransformationMatrixAndInvTransData>(0);
+			//obj_set->SetBothTransformations(DirectX::XMMatrixTranslation(0, 0, -4));
 			vr_backend.entity_handler->FinishUpdate();
 			frame_state_buffer->PopState();
+		}
+	}
+
+	void VRBackendMainLoop::SetEntityPositions(const FrameState& frame_state) {
+		for (const std::pair<int, EntityState> entity_state_and_num : frame_state.entities) {
+			const EntityState& entity_state = entity_state_and_num.second;
+			ConstantBufferTyped<TransformationMatrixAndInvTransData>* object_settings = vr_backend.entity_handler->GetEntityObjectSettings<TransformationMatrixAndInvTransData>(entity_state.entity_id);
+
+			object_settings->SetBothTransformations(VRBackendTranslator::PositionStateToMatrix(entity_state.position));
 		}
 	}
 }

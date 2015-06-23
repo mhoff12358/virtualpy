@@ -258,13 +258,10 @@ PyObject* CreateTexturedEntity(PyObject* self, PyObject* args) {
 
 PyObject* AddModelToFrameState(int render_bundle_id, int entity_id, PyObject* location_tuple, PyObject* scale_tuple, PyObject* orientation_quaternion) {
 	// Ensures that there is an entity state for the current entity
-	if (current_state.entities.size() <= entity_id) {
-		current_state.entities.resize(entity_id + 1);
-	}
-		current_state.entities[entity_id].entity_id = entity_id;
-		current_state.entities[entity_id].position.location = { { 0.0f, 0.0f, 0.0f } };
-		current_state.entities[entity_id].position.scale = { { 1.0f, 1.0f, 1.0f } };
-		current_state.entities[entity_id].position.orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+	current_state.entities[entity_id].entity_id = entity_id;
+	current_state.entities[entity_id].position.location = { { 0.0f, 0.0f, 0.0f } };
+	current_state.entities[entity_id].position.scale = { { 1.0f, 1.0f, 1.0f } };
+	current_state.entities[entity_id].position.orientation = { { 0.0f, 0.0f, 0.0f, 1.0f } };
 
 	current_state.entities[entity_id].render_bundle_id = render_bundle_id;
 
@@ -328,6 +325,7 @@ PyObject* ShowModel(PyObject* self, PyObject* args, PyObject* kwargs) {
 
 	//static char *kwlist[] = { "entity_id", "x_pos", "y_pos", "z_pos", "x_scale", "y_scale", "z_scale", "a", "b", "c", "d", NULL };
 	static char *kwlist[] = { "entity_id", "position", "scale", "rotation", NULL };
+
 	PyObject* location_tuple;
 	PyObject* scale_tuple;
 	PyObject* orientation_quaternion;

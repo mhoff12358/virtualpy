@@ -42,6 +42,9 @@
     <ClCompile Include="VRBackendResourcePool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VRBackendTranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameState.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VRBackendResourcePool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VRBackendTranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

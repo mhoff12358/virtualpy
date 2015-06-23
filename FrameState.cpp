@@ -70,9 +70,9 @@ namespace virtualpy {
 	}
 
 	EntityState* FrameState::GetEntityStateForId(int entity_id) {
-		for (EntityState& entity_state : entities) {
-			if (entity_state.entity_id == entity_id) {
-				return &entity_state;
+		for (std::pair<const int, EntityState>& entity_state : entities) {
+			if (entity_state.second.entity_id == entity_id) {
+				return &entity_state.second;
 			}
 		}
 		return NULL;
@@ -82,13 +82,14 @@ namespace virtualpy {
 		FrameState new_state;
 		new_state.color = InterpolateBetweenArrays(state_0.color, state_1.color, weight);
 		new_state.camera_position = InterpolateBetweenPositionStates(state_0.camera_position, state_1.camera_position, weight);
-		for (EntityState& state_1_entity : state_1.entities) {
+		for (const std::pair<int, EntityState>& state_1_num_entity : state_1.entities) {
+			const EntityState& state_1_entity = state_1_num_entity.second;
 			EntityState* state_0_entity = state_0.GetEntityStateForId(state_1_entity.entity_id);
 			if (state_0_entity == NULL) {
-				new_state.entities.push_back(state_1_entity);
+				new_state.entities[state_1_entity.entity_id] = state_1_entity;
 			}
 			else {
-				new_state.entities.push_back(InterpolateBetweenEntityStates(*state_0_entity, state_1_entity, weight));
+				new_state.entities[state_1_entity.entity_id] = InterpolateBetweenEntityStates(*state_0_entity, state_1_entity, weight);
 			}
 		}
 		for (auto render_bundle_iter : state_1.render_bundles) {

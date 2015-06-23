@@ -315,6 +315,7 @@
     <ClCompile Include="virtualpymodule.cpp" />
     <ClCompile Include="VRBackendMainLoop.cpp" />
     <ClCompile Include="VRBackendResourcePool.cpp" />
+    <ClCompile Include="VRBackendTranslator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameState.h" />
@@ -324,6 +325,7 @@
     <ClInclude Include="ResourcePool.h" />
     <ClInclude Include="VRBackendMainLoop.h" />
     <ClInclude Include="VRBackendResourcePool.h" />
+    <ClInclude Include="VRBackendTranslator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\objshader.hlsl">

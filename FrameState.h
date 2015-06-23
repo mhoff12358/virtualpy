@@ -2,8 +2,6 @@
 
 #include <Windows.h>
 
-#include "Quaternion.h"
-
 #include <chrono>
 #include <array>
 #include <fstream>
@@ -13,6 +11,8 @@
 #include <atomic>
 #include <list>
 #include <time.h>
+
+#include "VRBackend/Quaternion.h"
 
 namespace virtualpy {
 
@@ -44,7 +44,7 @@ namespace virtualpy {
 		FrameState();
 		FrameState(std::array<float, 3> col);
 		std::array<float, 3> color;
-		std::vector<EntityState> entities;
+		std::unordered_map<int, EntityState> entities;
 		std::unordered_map<int, RenderBundleState> render_bundles;
 
 		PositionState camera_position;

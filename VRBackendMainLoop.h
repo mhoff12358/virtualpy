@@ -10,6 +10,7 @@
 #include "MainLoop.h"
 #include "ResourcePool.h"
 #include "VRBackendResourcePool.h"
+#include "VRBackendTranslator.h"
 #include "VRBackend/BeginDirectx.h"
 
 namespace virtualpy {

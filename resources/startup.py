@@ -31,5 +31,8 @@ object_settings = virtualpy.create_object_settings()
 
 object_entity = virtualpy.create_modeled_entity(object_model, object_vertex_shader, object_pixel_shader, object_settings);
 
+virtualpy.show_model(entity_id = object_entity, position = (0, 0, -4), scale = (1, 1, 1), rotation = virtualpy.Quaternion((0, 0, 0, 1)))
+
 while True:
+    input()
     virtualpy.push_state()
